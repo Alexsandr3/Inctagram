@@ -5,16 +5,5 @@
   "testRegex": ".e2e-spec.ts$",
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
-  },
-  "setupFilesAfterEnv": ["test/tests.utils.ts"],
-  "globals": {
-    "ts-jest": {
-      "tsconfig": "jest-e2e.json"
-    }
-  },
-  "collectCoverage": true,
-  "coverageDirectory": "coverage/e2e",
-  "collectCoverageFrom": [
-    "**/*.e2e-spec.ts"
-  ]
+  }
 }
