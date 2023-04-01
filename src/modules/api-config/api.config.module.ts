@@ -9,7 +9,6 @@ import Joi from 'joi';
     ConfigModule.forRoot({
       isGlobal: true,
       load: [configuration],
-
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test', 'provision')
@@ -48,6 +47,7 @@ import Joi from 'joi';
 
         IP_RESTRICTION: Joi.boolean(),
       }),
+      expandVariables: true,
     }),
   ],
   providers: [ApiConfigService],
