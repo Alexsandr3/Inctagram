@@ -9,3 +9,4 @@ export const appConfig = (app: INestApplication) => {
   exceptionFilterSetup(app);
   return app;
 };
+
