@@ -5,9 +5,9 @@
 
 
 2/ Setting up the project
--config app 
+-config app +
 -add pipe filter exception 
--module mailler
+-module mailler +
 -logger
 -swagger setting +
--routing //example 
+-routing //example  +
