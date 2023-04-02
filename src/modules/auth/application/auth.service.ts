@@ -9,7 +9,11 @@ export class AuthService {
 
   async checkCredentialsOfUser(dto: LoginInputDto): Promise<number | null> {
     const foundUser = await this.usersRepository.findUserByEmail(dto.email);
-    if (!foundUser || !foundUser.isConfirmed || !(await this.passwordIsCorrect(dto.password, foundUser.passwordHash)))
+    if (
+      !foundUser ||
+      !foundUser.emailConfirmation.isConfirmed ||
+      !(await this.passwordIsCorrect(dto.password, foundUser.passwordHash))
+    )
       return null;
     return foundUser.id;
   }

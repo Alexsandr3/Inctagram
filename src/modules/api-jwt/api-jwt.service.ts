@@ -6,7 +6,7 @@ import { SessionDto } from '../security/application/dto/SessionDto';
 
 @Injectable()
 export class ApiJwtService {
-  constructor(private readonly jwtService: JwtService, private readonly apiConfigService: ApiConfigService) {}
+  constructor(private jwtService: JwtService, private apiConfigService: ApiConfigService) {}
 
   /**
    * Create JWT tokens

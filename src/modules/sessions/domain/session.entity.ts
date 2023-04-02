@@ -1,23 +1,23 @@
-//@Entity('Sessions')
 import { SessionExtendedDto } from '../application/dto/SessionExtendedDto';
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../users/domain/user.entity';
 
+@Entity('Sessions')
 export class Session {
-  //@PrimaryGeneratedColumn('increment')
-  id: number;
-  //@Column('uuid')
-  userId: string;
-  //@Column()
+  @PrimaryGeneratedColumn('increment')
+  deviceId: number;
+  @Column()
+  userId: number;
+  @Column()
   exp: number;
-  //@Column()
+  @Column()
   ip: string;
-  //@Column()
+  @Column()
   title: string;
-  //@Column()
+  @Column()
   iat: number;
-  //@Column()
-  deviceId: string;
-  //@ManyToOne(() => User)
-  //user: User;
+  @ManyToOne(() => User)
+  user: User;
 
   constructor({ ...dto }: SessionExtendedDto) {
     this.userId = dto.userId;
@@ -25,7 +25,6 @@ export class Session {
     this.ip = dto.ip;
     this.title = dto.title;
     this.iat = dto.iat;
-    this.deviceId = dto.deviceId;
   }
 
   updateSessionData(dto: SessionExtendedDto) {
