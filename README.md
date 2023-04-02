@@ -1,14 +1,12 @@
 1/ 
 
--strategy + guards
--users
-
+dto - correct without exchange name
+controller - logout, refresh + decorators
+cookie add app.config
+add module service
 
 
 2/ 
-- DTO input and output
-- database
-+ name command
 
 
 

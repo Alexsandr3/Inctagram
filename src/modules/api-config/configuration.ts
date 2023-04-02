@@ -7,7 +7,13 @@ export const configuration = () => ({
 
   CURRENT_APP_BASE_URL: process.env.CURRENT_APP_BASE_URL,
 
-  PGSQL_URL: process.env.PGSQL_URL,
+  POSTGRES_HOST: process.env.POSTGRES_HOST,
+  POSTGRES_PORT: process.env.POSTGRES_PORT,
+  POSTGRES_USER: process.env.POSTGRES_USER,
+  POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
+  POSTGRES_DB: process.env.POSTGRES_DB,
+
+  DATABASE_URL: process.env.DATABASE_URL,
 
   MAIL_USER: process.env.MAIL_USER,
   MAIL_PASSWORD: process.env.MAIL_PASSWORD,

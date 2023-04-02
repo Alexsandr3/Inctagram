@@ -10,14 +10,12 @@ import Joi from 'joi';
       isGlobal: true,
       load: [configuration],
       validationSchema: Joi.object({
-        NODE_ENV: Joi.string()
-          .valid('development', 'production', 'test', 'provision')
-          .default('development'),
+        NODE_ENV: Joi.string().valid('development', 'production', 'test', 'provision').default('development'),
         PORT: Joi.number(),
 
         CURRENT_APP_BASE_URL: Joi.string(),
 
-        //PGSQL_URL: Joi.string(),
+        DATABASE_URL: Joi.string().required(),
 
         //MAIL_USER: Joi.string().required(),
         //MAIL_PASSWORD: Joi.string().required(),

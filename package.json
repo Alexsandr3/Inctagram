@@ -5,6 +5,9 @@
   "author": "Team jobs",
   "private": true,
   "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -18,7 +21,10 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
-    "test:all": "jest --config ./test/jest-e2e.json --detectOpenHandles --watch"
+    "test:all": "jest --config ./test/jest-e2e.json --detectOpenHandles --watch",
+    "typeorm": "ts-node ./node_modules/typeorm/cli.js -d ./src/db-migration/torm.config.ts",
+    "db:generate": "npm run typeorm migration:generate ./src/db-migration/migrations/migration",
+    "db:migrate": "npm run typeorm migration:run"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.8.1",
@@ -31,6 +37,7 @@
     "@nestjs/passport": "^9.0.3",
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.2.1",
+    "@nestjs/typeorm": "^9.0.1",
     "bcrypt": "^5.1.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
@@ -43,7 +50,8 @@
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "typeorm": "^0.3.12"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

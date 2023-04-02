@@ -4,16 +4,7 @@ import { ApiConfigService } from '../../../modules/api-config/api.config.service
 
 @Injectable()
 export class MailService {
-  constructor(
-    private mailerService: MailerService,
-    private configService: ApiConfigService,
-  ) {
-    console.log(
-      `${
-        this.configService.CLIENT_URL
-      }/registration-confirmation?code=${'code'}`,
-    );
-  }
+  constructor(private mailerService: MailerService, private configService: ApiConfigService) {}
 
   /**
    * Send email to user with confirmation code
