@@ -4,9 +4,10 @@ import { ApiConfigModule } from './modules/api-config/api.config.module';
 import { MailModule } from './providers/mailer/mail.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
+import { ApiJwtModule } from './modules/api-jwt/api-jwt.module';
 
 @Module({
-  imports: [ApiConfigModule, MailModule, AuthModule, UsersModule],
+  imports: [ApiConfigModule, MailModule, AuthModule, UsersModule, ApiJwtModule],
   controllers: [AppController],
   providers: [],
 })
