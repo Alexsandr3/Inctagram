@@ -1,10 +1,10 @@
 import { Controller, Delete, Get, HttpCode, Post } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { ApiExcludeController } from '@nestjs/swagger';
 
+@ApiExcludeController()
 @Controller('sa/users')
 export class UsersController {
-  constructor() {}
-
   @Get()
   async findUsers() {
     return { route: 'findUsers', status: 'OK' };
