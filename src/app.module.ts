@@ -5,9 +5,10 @@ import { MailModule } from './providers/mailer/mail.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ApiJwtModule } from './modules/api-jwt/api-jwt.module';
+import { SecurityModule } from './modules/security/security.module';
 
 @Module({
-  imports: [ApiConfigModule, MailModule, AuthModule, UsersModule, ApiJwtModule],
+  imports: [ApiConfigModule, MailModule, AuthModule, UsersModule, ApiJwtModule, SecurityModule],
   controllers: [AppController],
   providers: [],
 })

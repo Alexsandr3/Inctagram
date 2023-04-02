@@ -1,4 +1,4 @@
-import { Body, Controller, HttpCode, Ip, Post, Request, Res } from '@nestjs/common';
+import { Body, Controller, HttpCode, Ip, Post, Request, Res, UseGuards } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
 import { LoginInputDto } from './input-dto/login.input.dto';
@@ -17,6 +17,9 @@ import { LogoutCommand } from '../application/use-cases/logout.handler';
 import { ApiErrorResultDto } from '../../../configuration/swagger/swaggers/api-error-result.dto';
 import { TokenTypeSwaggerDto } from '../../../configuration/swagger/swaggers/token-type-swagger.dto';
 import { PasswordResendingCommand } from '../application/use-cases/password-resending.handler';
+import { Response } from 'express';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -126,6 +129,7 @@ export class AuthController {
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('login')
+  @UseGuards(LocalAuthGuard)
   @HttpCode(HTTP_Status.OK_200)
   async login(
     @Request() req,
@@ -204,6 +208,7 @@ export class AuthController {
     description: 'JWT refreshToken inside cookie is missing, expired or incorrect',
   })
   @Post('logout')
+  @UseGuards(RefreshTokenGuard)
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async logout() {
     await this.commandBus.execute(new LogoutCommand());

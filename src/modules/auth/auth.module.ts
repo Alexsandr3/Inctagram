@@ -10,6 +10,15 @@ import { RecoveryHandler } from './application/use-cases/recovery.handler';
 import { ResendingHandler } from './application/use-cases/resending.handler';
 import { CqrsModule } from '@nestjs/cqrs';
 import { PasswordResendingHandler } from './application/use-cases/password-resending.handler';
+import { BasicStrategy } from './api/strategies/basic.strategy';
+import { LocalStrategy } from './api/strategies/local.strategy';
+import { JwtStrategy } from './api/strategies/jwt.strategy';
+import { ApiConfigModule } from '../api-config/api.config.module';
+import { ApiJwtModule } from '../api-jwt/api-jwt.module';
+import { SecurityModule } from '../security/security.module';
+import { PassportModule } from '@nestjs/passport';
+import { AuthService } from './application/auth.service';
+import { UsersModule } from '../users/users.module';
 
 const handlers = [
   ConfirmByCodeHandler,
@@ -23,18 +32,12 @@ const handlers = [
   PasswordResendingHandler,
 ];
 
-const strategies = [
-  BasicStrategy, LocalStrategy, JwtStrategy
-]
-
-import { BasicStrategy } from './api/strategies/basic.strategy';
-import { LocalStrategy } from './api/strategies/local.strategy';
-import { JwtStrategy } from './api/strategies/jwt.strategy';
-import { ApiConfigModule } from '../api-config/api.config.module';
+const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];
 
 @Module({
-  imports: [CqrsModule, ApiConfigModule],
+  imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SecurityModule, PassportModule, UsersModule],
   controllers: [AuthController],
-  providers: [...handlers, ...strategies],
+  providers: [AuthService, ...handlers, ...strategies],
+  exports: [AuthService],
 })
 export class AuthModule {}

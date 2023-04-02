@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from 'class-validator';
+import { IsEmail } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
@@ -8,8 +8,6 @@ export class RegistrationEmailResendingInputDto {
   /**
    * Email User for recovery
    */
-  // @Trim()
-  @IsString()
   @IsEmail()
   @ApiProperty({
     pattern: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',

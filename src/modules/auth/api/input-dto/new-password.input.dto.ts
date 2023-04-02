@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
+import { Transform } from 'class-transformer';
 
 /**
  * Input data for new password.
@@ -7,7 +8,7 @@ export class NewPasswordInputDto {
   /**
    * New account recovery password.
    */
-  // @Trim()
+  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Length(6, 20)
   @IsString()
   newPassword: string;
