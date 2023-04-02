@@ -18,8 +18,8 @@ export class ApiConfigService {
     return this.configService.get('CURRENT_APP_BASE_URL', { infer: true });
   }
 
-  get PGSQL_URL(): string {
-    return this.configService.get('PGSQL_URL', { infer: true });
+  get DATABASE_URL(): string {
+    return this.configService.get('DATABASE_URL', { infer: true });
   }
 
   get MAIL_USER(): string {
