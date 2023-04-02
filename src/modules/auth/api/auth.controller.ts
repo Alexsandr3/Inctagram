@@ -139,10 +139,10 @@ export class AuthController {
   ) {
     const deviceName = req.headers['user-agent'];
     const createdToken = await this.commandBus.execute(new LoginCommand(loginInputModel, ip, deviceName));
-    // res.cookie('refreshToken', createdToken.refreshToken, {
-    //   httpOnly: true,
-    //   secure: true,
-    // });
+    res.cookie('refreshToken', createdToken.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    });
     return { accessToken: createdToken.accessToken };
   }
 
