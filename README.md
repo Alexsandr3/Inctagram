@@ -1,13 +1,14 @@
-1/ API and DTOs
--init module auth, user, without use-cases
--add config module
+1/ 
+
+-strategy + guards
+-users
 
 
 
-2/ Setting up the project
--config app +
--add pipe filter exception 
--module mailler +
--logger
--swagger setting +
--routing //example  +
+2/ 
+- DTO input and output
+- database
++ name command
+
+
+
