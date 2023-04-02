@@ -23,9 +23,18 @@ const handlers = [
   PasswordResendingHandler,
 ];
 
+const strategies = [
+  BasicStrategy, LocalStrategy, JwtStrategy
+]
+
+import { BasicStrategy } from './api/strategies/basic.strategy';
+import { LocalStrategy } from './api/strategies/local.strategy';
+import { JwtStrategy } from './api/strategies/jwt.strategy';
+import { ApiConfigModule } from '../api-config/api.config.module';
+
 @Module({
-  imports: [CqrsModule],
+  imports: [CqrsModule, ApiConfigModule],
   controllers: [AuthController],
-  providers: [...handlers],
+  providers: [...handlers, ...strategies],
 })
 export class AuthModule {}
