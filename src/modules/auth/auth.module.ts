@@ -15,7 +15,7 @@ import { LocalStrategy } from './api/strategies/local.strategy';
 import { JwtStrategy } from './api/strategies/jwt.strategy';
 import { ApiConfigModule } from '../api-config/api.config.module';
 import { ApiJwtModule } from '../api-jwt/api-jwt.module';
-import { SecurityModule } from '../security/security.module';
+import { SessionsModule } from '../sessions/sessions.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './application/auth.service';
 import { UsersModule } from '../users/users.module';
@@ -35,7 +35,7 @@ const handlers = [
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];
 
 @Module({
-  imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SecurityModule, PassportModule, UsersModule],
+  imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule],
   controllers: [AuthController],
   providers: [AuthService, ...handlers, ...strategies],
   exports: [AuthService],
