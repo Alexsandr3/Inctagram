@@ -21,4 +21,9 @@ export class AuthService {
   private async passwordIsCorrect(password: string, passwordHash: string) {
     return await bcrypt.compare(password, passwordHash);
   }
+
+  async getPasswordHash(password: string): Promise<string> {
+    const passwordSalt = await bcrypt.genSalt(10);
+    return bcrypt.hash(password, passwordSalt);
+  }
 }

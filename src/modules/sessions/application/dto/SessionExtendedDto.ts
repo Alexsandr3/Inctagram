@@ -3,6 +3,6 @@ export type SessionExtendedDto = {
   userId: number;
   exp: number;
   ip: string;
-  title: string;
+  deviceName: string;
   iat: number;
 };

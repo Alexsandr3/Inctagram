@@ -8,5 +8,5 @@ export class ConfirmationCodeInputDto {
    * Code that be sent via Email inside link
    */
   @IsString()
-  code: string;
+  confirmationCode: string;
 }

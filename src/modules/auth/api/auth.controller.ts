@@ -1,7 +1,6 @@
-import { Body, Controller, HttpCode, Ip, Post, Request, Res, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
-import { LoginInputDto } from './input-dto/login.input.dto';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { CreateUserCommand } from '../application/use-cases/create-user.handler';
@@ -20,6 +19,11 @@ import { PasswordResendingCommand } from '../application/use-cases/password-rese
 import { Response } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
+import { SessionDto } from '../../sessions/application/dto/SessionDto';
+import { SessionData } from '../../../main/decorators/session-data.decorator';
+import { ResendingCommand } from '../application/use-cases/resending.handler';
+import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
+import { UserId } from '../../../main/decorators/user.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -73,9 +77,9 @@ export class AuthController {
   })
   @Post('registration-confirmation')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registrationConfirmation(@Body() body: ConfirmationCodeInputDto): Promise<boolean> {
-    await this.commandBus.execute(new ConfirmByCodeCommand(body));
-    return;
+  async registrationConfirmation(@Body() body: ConfirmationCodeInputDto) {
+    const isConfirm = await this.commandBus.execute(new ConfirmByCodeCommand(body));
+    if (!isConfirm) throw new BadRequestException([{ message: `Code isn't valid`, field: 'code' }]);
   }
 
   /**
@@ -100,17 +104,16 @@ export class AuthController {
   })
   @Post('registration-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registrationEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<boolean> {
-    await this.commandBus.execute(new RecoveryCommand(body));
-    return;
+  async registrationEmailResending(@Body() body: RegistrationEmailResendingInputDto) {
+    await this.commandBus.execute(new ResendingCommand(body));
   }
 
   /**
    * @description Login user to the system
-   * @param req
    * @param ip
-   * @param loginInputModel
+   * @param deviceName
    * @param res
+   * @param userId
    */
   @ApiOperation({ summary: 'Try login user to the system' })
   @ApiResponse({
@@ -132,18 +135,15 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HTTP_Status.OK_200)
   async login(
-    @Request() req,
-    @Ip() ip,
-    @Body() loginInputModel: LoginInputDto,
+    @Ip() ip: string,
+    @Headers('user-agent') deviceName = 'unknown',
     @Res({ passthrough: true }) res: Response,
-  ) {
-    const deviceName = req.headers['user-agent'];
-    const createdToken = await this.commandBus.execute(new LoginCommand(loginInputModel, ip, deviceName));
-    // res.cookie('refreshToken', createdToken.refreshToken, {
-    //   httpOnly: true,
-    //   secure: true,
-    // });
-    return { accessToken: createdToken.accessToken };
+    @UserId() userId: number,
+  ): Promise<LoginSuccessViewDto> {
+    const { accessToken, refreshToken } = await this.commandBus.execute(new LoginCommand(userId, ip, deviceName));
+
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    return { accessToken };
   }
 
   /**
@@ -162,9 +162,8 @@ export class AuthController {
   })
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<boolean> {
+  async passwordRecovery(@Body() body: PasswordRecoveryInputDto) {
     await this.commandBus.execute(new RecoveryCommand(body));
-    return;
   }
 
   /**
@@ -191,9 +190,9 @@ export class AuthController {
   })
   @Post('new-password')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async newPassword(@Body() body: NewPasswordInputDto): Promise<boolean> {
-    await this.commandBus.execute(new NewPasswordCommand(body));
-    return;
+  async newPassword(@Body() body: NewPasswordInputDto) {
+    const isChangedPassword = await this.commandBus.execute(new NewPasswordCommand(body));
+    if (!isChangedPassword) throw new BadRequestException();
   }
 
   /**
@@ -210,8 +209,8 @@ export class AuthController {
   @Post('logout')
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async logout() {
-    await this.commandBus.execute(new LogoutCommand());
-    return;
+  async logout(@SessionData() sessionData: SessionDto, @Res({ passthrough: true }) res: Response) {
+    await this.commandBus.execute(new LogoutCommand(sessionData.userId, sessionData.deviceId));
+    res.clearCookie('refreshToken');
   }
 }

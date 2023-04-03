@@ -19,4 +19,8 @@ export class SessionsRepository {
   async deleteSessionByDeviceId(deviceId: number) {
     await this.sessionsRepositoryT.delete({ deviceId: deviceId });
   }
+
+  async newDeviceId(): Promise<Session> {
+    return this.sessionsRepositoryT.create();
+  }
 }

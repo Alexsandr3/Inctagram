@@ -13,7 +13,7 @@ export class Session {
   @Column()
   ip: string;
   @Column()
-  title: string;
+  deviceName: string;
   @Column()
   iat: number;
   @ManyToOne(() => User)
@@ -23,13 +23,13 @@ export class Session {
     this.userId = dto.userId;
     this.exp = dto.exp;
     this.ip = dto.ip;
-    this.title = dto.title;
+    this.deviceName = dto.deviceName;
     this.iat = dto.iat;
   }
 
   updateSessionData(dto: SessionExtendedDto) {
     this.ip = dto.ip;
-    this.title = dto.title;
+    this.deviceName = dto.deviceName;
     this.exp = dto.exp;
     this.iat = dto.iat;
   }
