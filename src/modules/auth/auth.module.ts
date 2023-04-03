@@ -23,14 +23,14 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordRecoveryRepository } from './infrastructure/password-recovery.repository';
 
 const handlers = [
-  ConfirmByCodeHandler,
   CreateUserHandler,
+  ConfirmByCodeHandler,
   LoginHandler,
-  LogoutHandler,
-  NewPasswordHandler,
-  RefreshHandler,
-  RecoveryHandler,
   ResendingHandler,
+  NewPasswordHandler,
+  RecoveryHandler,
+  RefreshHandler,
+  LogoutHandler,
 ];
 
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];

@@ -21,8 +21,8 @@ export class LogoutHandler implements ICommandHandler<LogoutCommand> {
     const { userId, deviceId } = command;
 
     const foundSession = await this.sessionsRepository.findSessionByDeviceId(deviceId);
-    if (!foundSession) throw new NotFoundException();
-    if (foundSession.userId !== userId) throw new ForbiddenException();
+    if (!foundSession) throw new NotFoundException('Session not found');
+    if (foundSession.userId !== userId) throw new ForbiddenException('You are not allowed to do this');
 
     await this.sessionsRepository.deleteSessionByDeviceId(deviceId);
   }

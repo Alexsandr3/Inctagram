@@ -24,7 +24,7 @@ export class ResendingHandler implements ICommandHandler<ResendingCommand> {
 
     const foundUser = await this.usersRepository.findUserByEmail(email);
     if (!foundUser || foundUser.emailConfirmation.isConfirmed)
-      throw new BadRequestException([{ field: 'email', message: `Email isn't valid or already confirmed` }]);
+      throw new BadRequestException(`Email isn't valid or already confirmed`, 'email');
 
     foundUser.updateEmailConfirmation();
     await this.usersRepository.saveUser(foundUser);

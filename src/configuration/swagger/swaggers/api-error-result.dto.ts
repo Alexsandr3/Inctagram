@@ -1,5 +1,7 @@
 export class ApiErrorResultDto {
-  public errorsMessages: FieldError[];
+  public statusCode: number;
+  public messages: FieldError[];
+  public error: string;
 }
 
 export class FieldError {

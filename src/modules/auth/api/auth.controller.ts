@@ -78,7 +78,7 @@ export class AuthController {
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registrationConfirmation(@Body() body: ConfirmationCodeInputDto) {
     const isConfirm = await this.commandBus.execute(new ConfirmByCodeCommand(body));
-    if (!isConfirm) throw new BadRequestException([{ message: `Code isn't valid`, field: 'code' }]);
+    if (!isConfirm) throw new BadRequestException(`Code isn't valid`, 'code');
   }
 
   /**
@@ -191,7 +191,7 @@ export class AuthController {
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async newPassword(@Body() body: NewPasswordInputDto) {
     const isChangedPassword = await this.commandBus.execute(new NewPasswordCommand(body));
-    if (!isChangedPassword) throw new BadRequestException();
+    if (!isChangedPassword) throw new BadRequestException('Code is not valid', 'code');
   }
 
   /**

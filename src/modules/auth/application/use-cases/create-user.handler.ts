@@ -50,6 +50,6 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
    */
   private async validateUser(email: string) {
     const user = await this.usersRepository.findUserByEmail(email);
-    if (user) throw new BadRequestException(`email are already exists`);
+    if (user) throw new BadRequestException(`email are already exists`, 'email');
   }
 }

@@ -8,7 +8,7 @@ import { PasswordRecoveryRepository } from '../../infrastructure/password-recove
  * @description - command for new password
  */
 export class NewPasswordCommand {
-  constructor(public dto: NewPasswordInputDto) {}
+  constructor(public readonly dto: NewPasswordInputDto) {}
 }
 
 @CommandHandler(NewPasswordCommand)
