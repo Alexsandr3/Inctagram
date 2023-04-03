@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { MailService } from '../../../../providers/mailer/application/mail.service';
+import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegistrationEmailResendingInputDto } from '../../api/input-dto/registration-email-resending.input.dto';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { BadRequestException } from '@nestjs/common';
@@ -13,7 +13,7 @@ export class ResendingCommand {
 
 @CommandHandler(ResendingCommand)
 export class ResendingHandler implements ICommandHandler<ResendingCommand> {
-  constructor(protected usersRepository: UsersRepository, private readonly mailService: MailService) {}
+  constructor(protected usersRepository: UsersRepository, private readonly mailService: MailManager) {}
 
   /**
    * Resending code confirmation

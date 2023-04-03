@@ -1,9 +1,10 @@
 import { Global, Module } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { MailService } from './application/mail.service';
+import { MailManager } from './application/mail-manager.service';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { ApiConfigModule } from '../../modules/api-config/api.config.module';
 import { ApiConfigService } from '../../modules/api-config/api.config.service';
+import { EmailAdapter } from './email.adapter';
 
 @Global() // 👈 global module
 @Module({
@@ -37,7 +38,7 @@ import { ApiConfigService } from '../../modules/api-config/api.config.service';
     }),
     ApiConfigModule,
   ],
-  providers: [MailService],
-  exports: [MailService], // 👈 export for DI
+  providers: [MailManager, EmailAdapter],
+  exports: [MailManager], // 👈 export for DI
 })
 export class MailModule {}

@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { MailService } from '../../../../providers/mailer/application/mail.service';
+import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegisterInputDto } from '../../api/input-dto/register.input.dto';
 import { User } from '../../../users/domain/user.entity';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
@@ -18,7 +18,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
     private readonly authService: AuthService,
     private readonly usersRepository: UsersRepository,
-    private readonly mailService: MailService,
+    private readonly mailService: MailManager,
   ) {}
 
   /**

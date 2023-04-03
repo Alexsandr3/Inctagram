@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PasswordRecoveryInputDto } from '../../api/input-dto/password-recovery.input.dto';
-import { MailService } from '../../../../providers/mailer/application/mail.service';
+import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { PasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
 import { PasswordRecovery } from '../../domain/password-recovery.entity';
@@ -17,7 +17,7 @@ export class RecoveryHandler implements ICommandHandler<RecoveryCommand> {
   constructor(
     protected usersRepository: UsersRepository,
     protected passwordRepository: PasswordRecoveryRepository,
-    private readonly mailService: MailService,
+    private readonly mailService: MailManager,
   ) {}
 
   /**
