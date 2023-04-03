@@ -12,13 +12,13 @@ import DatabaseLogger from './utils/databaseLogger';
       useFactory: (configService: ApiConfigService) => {
         const url = configService.DATABASE_URL;
         return {
-          type: 'postgres',
+          autoLoadEntities: true,
           logger: new DatabaseLogger(),
           // entities: [...entities],
-          url: url,
-          autoLoadEntities: true,
           synchronize: true,
-          // ssl: true,
+          type: 'postgres',
+          url: url,
+          ssl: true,
         };
       },
     }),

@@ -23,6 +23,7 @@ import { SessionData } from '../../../main/decorators/session-data.decorator';
 import { ResendingCommand } from '../application/use-cases/resending.handler';
 import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 import { UserId } from '../../../main/decorators/user.decorator';
+import { LoginInputDto } from './input-dto/login.input.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -113,6 +114,7 @@ export class AuthController {
    * @param deviceName
    * @param res
    * @param userId
+   * @param body
    */
   @ApiOperation({ summary: 'Try login user to the system' })
   @ApiResponse({
@@ -138,6 +140,7 @@ export class AuthController {
     @Headers('user-agent') deviceName = 'unknown',
     @Res({ passthrough: true }) res: Response,
     @UserId() userId: number,
+    @Body() body: LoginInputDto, //need for swagger
   ): Promise<LoginSuccessViewDto> {
     const { accessToken, refreshToken } = await this.commandBus.execute(new LoginCommand(userId, ip, deviceName));
 
