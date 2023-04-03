@@ -13,9 +13,7 @@ import { appConfig } from '../../src/configuration/app.config';
 //   }
 // }
 
-export const getAppForE2ETesting = async (
-  setupModuleBuilder?: (appModuleBuilder: TestingModuleBuilder) => void,
-) => {
+export const getAppForE2ETesting = async (setupModuleBuilder?: (appModuleBuilder: TestingModuleBuilder) => void) => {
   const appModule: TestingModuleBuilder = await Test.createTestingModule({
     imports: [AppModule],
   });

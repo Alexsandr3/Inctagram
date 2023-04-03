@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ApiConfigService } from '../api-config/api.config.service';
 import { AccessTokenDataType, TokensType } from '../auth/application/types/types';
-import { SessionDto } from '../security/application/dto/SessionDto';
+import { SessionDto } from '../sessions/application/dto/SessionDto';
 
 @Injectable()
 export class ApiJwtService {
@@ -13,7 +13,7 @@ export class ApiJwtService {
    * @param userId
    * @param deviceId
    */
-  async createJWT(userId: string, deviceId: string): Promise<TokensType> {
+  async createJWT(userId: number, deviceId: number): Promise<TokensType> {
     const secretRT = this.apiConfigService.REFRESH_TOKEN_SECRET;
     const expiresInRT = this.apiConfigService.EXPIRED_REFRESH;
 
@@ -40,7 +40,7 @@ export class ApiJwtService {
    * Get user id from access token
    * @param accessToken
    */
-  async getUserIdByAccessToken(accessToken: string): Promise<string | null> {
+  async getUserIdByAccessToken(accessToken: string): Promise<number | null> {
     try {
       const result = this.jwtService.verify(accessToken) as AccessTokenDataType;
       return result.userId;

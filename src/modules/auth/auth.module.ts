@@ -9,7 +9,6 @@ import { RefreshHandler } from './application/use-cases/refresh.handler';
 import { RecoveryHandler } from './application/use-cases/recovery.handler';
 import { ResendingHandler } from './application/use-cases/resending.handler';
 import { CqrsModule } from '@nestjs/cqrs';
-import { PasswordResendingHandler } from './application/use-cases/password-resending.handler';
 import { BasicStrategy } from './api/strategies/basic.strategy';
 import { LocalStrategy } from './api/strategies/local.strategy';
 import { JwtStrategy } from './api/strategies/jwt.strategy';
@@ -32,7 +31,6 @@ const handlers = [
   RefreshHandler,
   RecoveryHandler,
   ResendingHandler,
-  PasswordResendingHandler,
 ];
 
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];

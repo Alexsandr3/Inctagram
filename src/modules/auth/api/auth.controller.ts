@@ -15,7 +15,6 @@ import { NewPasswordCommand } from '../application/use-cases/new-password.handle
 import { LogoutCommand } from '../application/use-cases/logout.handler';
 import { ApiErrorResultDto } from '../../../configuration/swagger/swaggers/api-error-result.dto';
 import { TokenTypeSwaggerDto } from '../../../configuration/swagger/swaggers/token-type-swagger.dto';
-import { PasswordResendingCommand } from '../application/use-cases/password-resending.handler';
 import { Response } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
@@ -173,7 +172,7 @@ export class AuthController {
   @Post('password-recovery-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<boolean> {
-    await this.commandBus.execute(new PasswordResendingCommand(body));
+    await this.commandBus.execute(new RecoveryCommand(body));
     return;
   }
 

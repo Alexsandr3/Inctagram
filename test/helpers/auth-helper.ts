@@ -9,8 +9,8 @@ export class AuthHelper {
   async registration() {
     const result = await request(this.app.getHttpServer())
       .post(endpoints.registration())
-      .send({})
-      .expect(HTTP_Status.OK_200);
+      .send({ email: 'asdasdf1211@dsf.ds', password: '123456789' })
+      .expect(HTTP_Status.NO_CONTENT_204);
     return result.body;
   }
 
