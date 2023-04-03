@@ -19,6 +19,9 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './application/auth.service';
 import { UsersModule } from '../users/users.module';
+import { PasswordRecovery } from './domain/password-recovery.entity';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { PasswordRecoveryRepository } from './infrastructure/password-recovery.repository';
 
 const handlers = [
   ConfirmByCodeHandler,
@@ -33,11 +36,20 @@ const handlers = [
 ];
 
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];
+const entities = [PasswordRecovery];
 
 @Module({
-  imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature(entities),
+    CqrsModule,
+    ApiConfigModule,
+    ApiJwtModule,
+    SessionsModule,
+    PassportModule,
+    UsersModule,
+  ],
   controllers: [AuthController],
-  providers: [AuthService, ...handlers, ...strategies],
+  providers: [AuthService, PasswordRecoveryRepository, ...handlers, ...strategies],
   exports: [AuthService],
 })
 export class AuthModule {}
