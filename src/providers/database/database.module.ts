@@ -18,7 +18,7 @@ import DatabaseLogger from './utils/databaseLogger';
           synchronize: true,
           type: 'postgres',
           url: url,
-          ssl: true,
+          // ssl: true,
         };
       },
     }),

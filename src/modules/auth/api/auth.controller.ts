@@ -3,7 +3,6 @@ import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../application/use-cases/create-user.handler';
 import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code.handler';
 import { ConfirmationCodeInputDto } from './input-dto/confirmation-code.input.dto';
 import { RecoveryCommand } from '../application/use-cases/recovery.handler';
@@ -24,6 +23,7 @@ import { ResendingCommand } from '../application/use-cases/resending.handler';
 import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 import { UserId } from '../../../main/decorators/user.decorator';
 import { LoginInputDto } from './input-dto/login.input.dto';
+import { CreateUserCommand } from '../application/use-cases/create-user.handler';
 
 @ApiTags('Auth')
 @Controller('auth')
