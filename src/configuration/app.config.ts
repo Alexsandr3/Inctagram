@@ -10,6 +10,7 @@ export const appConfig = (app: INestApplication) => {
   exceptionFilterSetup(app);
   //add work with cookies
   app.use(cookieParser());
-
+  //add cors
+  app.enableCors({});
   return app;
 };
