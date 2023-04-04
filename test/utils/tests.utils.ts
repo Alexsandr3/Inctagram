@@ -2,6 +2,7 @@ import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
 import { appConfig } from '../../src/configuration/app.config';
 import { DataSource } from 'typeorm';
+import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 
 // async function truncateDBTables(prisma: PrismaClient): Promise<void> {
 //   const models = Object.keys(prisma)
@@ -22,36 +23,20 @@ export async function truncateDBTables(connection: DataSource): Promise<void> {
   }
 }
 
-export const getAppForE2ETesting = async (setupModuleBuilder?: (appModuleBuilder: TestingModuleBuilder) => void) => {
-  const appModule: TestingModuleBuilder = await Test.createTestingModule({
+export const getAppForE2ETesting = async (
+  mailerOn: boolean,
+  setupModuleBuilder?: (appModuleBuilder: TestingModuleBuilder) => void,
+) => {
+  let appModule: TestingModuleBuilder = await Test.createTestingModule({
     imports: [AppModule],
   });
-
-  if (setupModuleBuilder) {
-    setupModuleBuilder(appModule);
-    const appModuleCompile = await appModule.compile();
-    const app = appModuleCompile.createNestApplication();
-    appConfig(app);
-    await app.init();
-    //need for prisma -----
-    // const connection = appModuleCompile.get(PrismaClient);
-    // await truncateDBTables(connection); // очищаем таблицы перед каждым запуском тестов
-    //need for typeOrm ----
-    const connection = appModuleCompile.get(DataSource);
-    await truncateDBTables(connection); // очищаем таблицы перед каждым запуском тестов
-
-    return app;
-  } else {
-    const appCompile = await appModule.compile();
-    const app = appCompile.createNestApplication();
-    appConfig(app);
-    await app.init();
-    //need for prisma -----
-    // const connection = appCompile.get(PrismaClient);
-    // await truncateDBTables(connection); // очищаем таблицы перед каждым запуском тестов
-    //need for typeOrm ----
-    const connection = appCompile.get(DataSource);
-    await truncateDBTables(connection); // очищаем таблицы перед каждым запуском тестов
-    return app;
-  }
+  if (setupModuleBuilder) setupModuleBuilder(appModule);
+  if (!mailerOn) appModule.overrideProvider(EmailAdapter).useValue({ sendEmail: () => 'SENT EMAIL' });
+  const appCompile = await appModule.compile();
+  const app = appCompile.createNestApplication();
+  appConfig(app);
+  await app.init();
+  const connection = appCompile.get(DataSource); //If you need to use Prisma, you need to  exchange  PrismaClient instead of DataSource
+  await truncateDBTables(connection); // очищаем таблицы перед каждым запуском тестов
+  return app;
 };

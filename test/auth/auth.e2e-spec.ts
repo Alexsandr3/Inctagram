@@ -1,16 +1,13 @@
 import { INestApplication } from '@nestjs/common';
 import { getAppForE2ETesting } from '../utils/tests.utils';
 import { AuthHelper } from '../helpers/auth-helper';
-import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 
 describe('Clients-admin e2e', () => {
   let app: INestApplication;
   let authHelper: AuthHelper;
 
   beforeAll(async () => {
-    app = await getAppForE2ETesting(module => {
-      module.overrideProvider(EmailAdapter).useValue({ sendEmail: () => 'SENT EMAIL' });
-    });
+    app = await getAppForE2ETesting(false);
     authHelper = new AuthHelper(app);
   });
 

@@ -14,7 +14,7 @@ export class CreateUserCommandw {
 }
 
 @CommandHandler(CreateUserCommandw)
-export class CreateUserHandler implements ICommandHandler<CreateUserCommandw> {
+export class CreateUserHandlerw implements ICommandHandler<CreateUserCommandw> {
   constructor(
     private readonly authService: AuthService,
     private readonly usersRepository: UsersRepository,
@@ -32,7 +32,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommandw> {
     //check email for uniqueness
     const existsUser = await this.usersRepository.findUserByEmail(email);
     if (existsUser) {
-      notification.addError('Email are already exists', 'email', 2);
+      notification.addError('Email are already exists', null, 1);
       console.log(notification);
       return notification;
     }
@@ -43,6 +43,13 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommandw> {
     //save user
     await this.usersRepository.saveUser(user);
     await this.mailService.sendUserConfirmation(email, user.emailConfirmation.confirmationCode);
+    notification.addData(user);
     return notification;
   }
 }
+
+// notification.hasErrors() new CheckerErrorsException ( if status code 400 = throw new BadRequest => exception)
+// notification.getData()
+
+// if(notification.hasErrors()){
+//throw new Forbidden()
