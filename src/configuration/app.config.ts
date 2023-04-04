@@ -11,6 +11,10 @@ export const appConfig = (app: INestApplication) => {
   //add work with cookies
   app.use(cookieParser());
   //add cors
-  app.enableCors({});
+  app.enableCors({
+    origin: true,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  });
   return app;
 };
