@@ -11,8 +11,9 @@ export const appConfig = (app: INestApplication) => {
   //add work with cookies
   app.use(cookieParser());
   //add cors
+  // const url = app.get(ApiConfigService).FRONTEND_URL
   app.enableCors({
-    origin: true,
+    origin: ['http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   });
