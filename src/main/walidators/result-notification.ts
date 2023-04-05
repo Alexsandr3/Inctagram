@@ -1,12 +1,3 @@
-enum ErrorCodesAny {
-  OK = 0,
-  NOT_FOUND = 1,
-  BAD_REQUEST = 2,
-  UNAUTHORIZED = 3,
-  FORBIDDEN = 4,
-  SERVER_ERROR = 5,
-}
-
 export class ResultNotification<T = null> {
   extensions: NotificationExtension[] = []; // array of mistakes
   code = 0; // status code {0 - success, 1 - error}
@@ -27,6 +18,14 @@ export class ResultNotification<T = null> {
 
   addData(data: T) {
     this.data = data;
+  }
+
+  getData() {
+    return this.data;
+  }
+
+  getCode() {
+    return this.code;
   }
 }
 
