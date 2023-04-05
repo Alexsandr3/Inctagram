@@ -97,4 +97,8 @@ export class ApiConfigService {
   get IP_RESTRICTION(): boolean {
     return this.configService.get('IP_RESTRICTION') !== false;
   }
+
+  get RECAPTCHA_SECRET_KEY(): boolean {
+    return this.configService.get('RECAPTCHA_SECRET_KEY', { infer: true });
+  }
 }

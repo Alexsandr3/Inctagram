@@ -43,6 +43,8 @@ import Joi from 'joi';
         SA_LOGIN: Joi.string().required(),
         SA_PASSWORD: Joi.string().required(),
 
+        RECAPTCHA_SECRET_KEY: Joi.string().required(),
+
         IP_RESTRICTION: Joi.boolean(),
       }),
       expandVariables: true,

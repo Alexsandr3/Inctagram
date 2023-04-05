@@ -42,6 +42,8 @@ export const configuration = () => ({
   SA_PASSWORD: process.env.SA_PASSWORD,
 
   IP_RESTRICTION: process.env.IP_RESTRICTION,
+
+  RECAPTCHA_SECRET_KEY: process.env.RECAPTCHA_SECRET_KEY,
 });
 
 export type EnvType = ReturnType<typeof configuration>;
