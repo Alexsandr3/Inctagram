@@ -7,7 +7,7 @@ describe('Users e2e', () => {
   let usersHelper: UsersHelper;
 
   beforeAll(async () => {
-    app = await getAppForE2ETesting();
+    app = await getAppForE2ETesting(false);
     usersHelper = new UsersHelper(app);
   });
 

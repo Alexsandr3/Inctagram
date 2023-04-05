@@ -1,1 +1,1 @@
-{"statusCode":404,"error":"Cannot GET /api/swagger-ui-bundle.js","timestamp":"2023-04-03T13:23:38.849Z","path":"/api/swagger-ui-bundle.js"}
+{"statusCode":404,"error":"Cannot GET /api/swagger-ui-bundle.js","timestamp":"2023-04-05T13:13:15.200Z","path":"/api/swagger-ui-bundle.js"}
