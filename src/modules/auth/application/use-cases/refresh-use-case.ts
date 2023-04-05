@@ -8,7 +8,7 @@ export class RefreshCommand {
 }
 
 @CommandHandler(RefreshCommand)
-export class RefreshHandler implements ICommandHandler<RefreshCommand> {
+export class RefreshUseCase implements ICommandHandler<RefreshCommand> {
   constructor() {}
 
   /**

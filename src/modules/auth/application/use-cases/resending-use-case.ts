@@ -12,7 +12,7 @@ export class ResendingCommand {
 }
 
 @CommandHandler(ResendingCommand)
-export class ResendingHandler implements ICommandHandler<ResendingCommand> {
+export class ResendingUseCase implements ICommandHandler<ResendingCommand> {
   constructor(protected usersRepository: UsersRepository, private readonly mailService: MailManager) {}
 
   /**

@@ -12,7 +12,7 @@ export class LoginCommand {
 }
 
 @CommandHandler(LoginCommand)
-export class LoginHandler implements ICommandHandler<LoginCommand> {
+export class LoginUseCase implements ICommandHandler<LoginCommand> {
   constructor(protected apiJwtService: ApiJwtService, protected sessionsRepository: SessionsRepository) {}
 
   /**

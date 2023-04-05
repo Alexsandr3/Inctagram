@@ -13,7 +13,7 @@ export class RecoveryCommand {
 }
 
 @CommandHandler(RecoveryCommand)
-export class RecoveryHandler implements ICommandHandler<RecoveryCommand> {
+export class RecoveryUseCase implements ICommandHandler<RecoveryCommand> {
   constructor(
     protected usersRepository: UsersRepository,
     protected passwordRepository: PasswordRecoveryRepository,

@@ -9,7 +9,7 @@ export class AuthHelper {
   async registration() {
     const result = await request(this.app.getHttpServer())
       .post(endpoints.registration())
-      .send({ email: 'asdasdf1211@dsf.ds', password: '123456789' })
+      .send({ email: 'test@test.tst', password: '123456789' })
       .expect(HTTP_Status.NO_CONTENT_204);
     return result.body;
   }
@@ -46,15 +46,15 @@ export class AuthHelper {
   async passwordRecoveryEmailResending() {
     const result = await request(this.app.getHttpServer())
       .post(endpoints.passwordRecoveryEmailResending())
-      .send({})
-      .expect(HTTP_Status.OK_200);
+      .send({ email: 'test@test.tst' })
+      .expect(HTTP_Status.NO_CONTENT_204);
     return result.body;
   }
 
   async newPassword() {
     const result = await request(this.app.getHttpServer())
       .post(endpoints.newPassword())
-      .send({})
+      .send()
       .expect(HTTP_Status.OK_200);
     return result.body;
   }
