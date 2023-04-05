@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConfirmationCodeInputDto } from '../../api/input-dto/confirmation-code.input.dto';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { ResultNotification } from '../../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../../main/validators/result-notification';
 
 /**
  * @description confirm user by code

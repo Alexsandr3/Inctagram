@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegistrationEmailResendingInputDto } from '../../api/input-dto/registration-email-resending.input.dto';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { ResultNotification } from '../../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../../main/validators/result-notification';
 
 /**
  * @description Resending command

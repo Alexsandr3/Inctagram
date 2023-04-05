@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../../main/validators/result-notification';
 
 /**
  * @description Refresh command

@@ -3,7 +3,7 @@ import { NewPasswordInputDto } from '../../api/input-dto/new-password.input.dto'
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { AuthService } from '../auth.service';
 import { PasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
-import { ResultNotification } from '../../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../../main/validators/result-notification';
 
 /**
  * @description - command for new password

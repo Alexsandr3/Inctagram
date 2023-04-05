@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository.service';
-import { ResultNotification } from '../../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../../main/validators/result-notification';
 
 /**
  * @description Logout command

@@ -1,7 +1,7 @@
 import { PasswordRecoveryCodeInputDto } from '../../api/input-dto/password-recovery-code.input.dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
-import { ResultNotification } from '../../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../../main/validators/result-notification';
 
 /**
  * @description check if the recovery code is valid

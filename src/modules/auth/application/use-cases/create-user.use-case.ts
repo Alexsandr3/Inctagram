@@ -4,7 +4,7 @@ import { RegisterInputDto } from '../../api/input-dto/register.input.dto';
 import { User } from '../../../users/domain/user.entity';
 import { AuthService } from '../auth.service';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { ResultNotification } from '../../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../../main/validators/result-notification';
 
 /**
  * @description create new user and send email for confirmation
