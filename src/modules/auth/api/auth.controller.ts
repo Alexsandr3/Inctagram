@@ -1,18 +1,13 @@
-import { BadRequestException, Body, Controller, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
-import { CreateUserCommand } from '../application/use-cases/create-user.handler';
-import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code.handler';
 import { ConfirmationCodeInputDto } from './input-dto/confirmation-code.input.dto';
-import { RecoveryCommand } from '../application/use-cases/recovery-use-case';
-import { LoginCommand } from '../application/use-cases/login-use-case';
 import { PasswordRecoveryInputDto } from './input-dto/password-recovery.input.dto';
 import { RegistrationEmailResendingInputDto } from './input-dto/registration-email-resending.input.dto';
 import { NewPasswordInputDto } from './input-dto/new-password.input.dto';
-import { NewPasswordCommand } from '../application/use-cases/new-password-use-case';
-import { LogoutCommand } from '../application/use-cases/logout-use-case';
+import { NewPasswordCommand } from '../application/use-cases/new-password.use-case';
 import { ApiErrorResultDto } from '../../../configuration/swagger/swaggers/api-error-result.dto';
 import { TokenTypeSwaggerDto } from '../../../configuration/swagger/swaggers/token-type-swagger.dto';
 import { Response } from 'express';
@@ -20,14 +15,20 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
 import { SessionDto } from '../../sessions/application/dto/SessionDto';
 import { SessionData } from '../../../main/decorators/session-data.decorator';
-import { ResendingCommand } from '../application/use-cases/resending-use-case';
-import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 import { UserId } from '../../../main/decorators/user.decorator';
 import { LoginInputDto } from './input-dto/login.input.dto';
-import { CreateUserCommand } from '../application/use-cases/create-user.handler';
 import { PasswordRecoveryCodeInputDto } from './input-dto/password-recovery-code.input.dto';
-import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check-password-recovery-code-use-case';
-import { CheckPasswordRecoveryViewDto } from './view-dto/check-password-recovery.view.dto';
+import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check-password-recovery-code.use-case';
+import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
+import { CheckerNotificationErrors } from '../../../main/walidators/checker-notification.errors';
+import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
+import { ResendingCommand } from '../application/use-cases/resending.use-case';
+import { LoginCommand } from '../application/use-cases/login.use-case';
+import { RecoveryCommand } from '../application/use-cases/recovery.use-case';
+import { LogoutCommand } from '../application/use-cases/logout.use-case';
+import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code.use-case';
+import { ResultNotification } from '../../../main/walidators/result-notification';
+import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -57,7 +58,10 @@ export class AuthController {
   @Post('registration')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registration(@Body() body: RegisterInputDto): Promise<boolean> {
-    await this.commandBus.execute(new CreateUserCommand(body));
+    const notification = await this.commandBus.execute<CreateUserCommand, ResultNotification>(
+      new CreateUserCommand(body),
+    );
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;
   }
 
@@ -82,8 +86,11 @@ export class AuthController {
   @Post('registration-confirmation')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registrationConfirmation(@Body() body: ConfirmationCodeInputDto) {
-    const isConfirm = await this.commandBus.execute(new ConfirmByCodeCommand(body));
-    if (!isConfirm) throw new BadRequestException(`Code isn't valid`, 'code');
+    const notification = await this.commandBus.execute<ConfirmByCodeCommand, ResultNotification>(
+      new ConfirmByCodeCommand(body),
+    );
+    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    return;
   }
 
   /**
@@ -109,7 +116,11 @@ export class AuthController {
   @Post('registration-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registrationEmailResending(@Body() body: RegistrationEmailResendingInputDto) {
-    await this.commandBus.execute(new ResendingCommand(body));
+    const notification = await this.commandBus.execute<ResendingCommand, ResultNotification>(
+      new ResendingCommand(body),
+    );
+    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    return;
   }
 
   /**
@@ -146,8 +157,10 @@ export class AuthController {
     @UserId() userId: number,
     @Body() body: LoginInputDto, //need for swagger
   ): Promise<LoginSuccessViewDto> {
-    const { accessToken, refreshToken } = await this.commandBus.execute(new LoginCommand(userId, ip, deviceName));
-
+    const notification = await this.commandBus.execute<LoginCommand, ResultNotification>(
+      new LoginCommand(userId, ip, deviceName),
+    );
+    const { accessToken, refreshToken }: any = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
     return { accessToken };
   }
@@ -169,7 +182,9 @@ export class AuthController {
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto) {
-    await this.commandBus.execute(new RecoveryCommand(body));
+    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(new RecoveryCommand(body));
+    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    return;
   }
 
   /**
@@ -177,7 +192,7 @@ export class AuthController {
    * @param body
    */
   @ApiOperation({ summary: 'Check recovery code for valid' })
-  @ApiResponse({ status: 200, description: 'Recovery code is valid', type: CheckPasswordRecoveryViewDto })
+  @ApiResponse({ status: 200, description: 'Recovery code is valid', type: PasswordRecoveryViewDto })
   @ApiResponse({ status: 400, description: 'If the recovery code is incorrect, expired or already been applied' })
   @ApiResponse({
     status: 429,
@@ -185,10 +200,12 @@ export class AuthController {
   })
   @Post('check-recovery-code')
   @HttpCode(HTTP_Status.OK_200)
-  async checkPasswordRecovery(@Body() body: PasswordRecoveryCodeInputDto): Promise<CheckPasswordRecoveryViewDto> {
-    const email = await this.commandBus.execute<CheckPasswordRecoveryCodeCommand, string>(
+  async checkPasswordRecovery(@Body() body: PasswordRecoveryCodeInputDto): Promise<PasswordRecoveryViewDto> {
+    const notification = await this.commandBus.execute<CheckPasswordRecoveryCodeCommand, ResultNotification>(
       new CheckPasswordRecoveryCodeCommand(body),
     );
+    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    const { email }: any = notification.getData();
     return { email };
   }
 
@@ -199,7 +216,8 @@ export class AuthController {
   @Post('password-recovery-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<boolean> {
-    await this.commandBus.execute(new RecoveryCommand(body));
+    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(new RecoveryCommand(body));
+    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
     return;
   }
 
@@ -217,8 +235,11 @@ export class AuthController {
   @Post('new-password')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async newPassword(@Body() body: NewPasswordInputDto) {
-    const isChangedPassword = await this.commandBus.execute(new NewPasswordCommand(body));
-    if (!isChangedPassword) throw new BadRequestException('Code is not valid', 'code');
+    const notification = await this.commandBus.execute<NewPasswordCommand, ResultNotification>(
+      new NewPasswordCommand(body),
+    );
+    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    return;
   }
 
   /**
@@ -236,7 +257,10 @@ export class AuthController {
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async logout(@SessionData() sessionData: SessionDto, @Res({ passthrough: true }) res: Response) {
-    await this.commandBus.execute(new LogoutCommand(sessionData.userId, sessionData.deviceId));
+    const notification = await this.commandBus.execute<LogoutCommand, ResultNotification>(
+      new LogoutCommand(sessionData.userId, sessionData.deviceId),
+    );
+    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
     res.clearCookie('refreshToken');
   }
 }

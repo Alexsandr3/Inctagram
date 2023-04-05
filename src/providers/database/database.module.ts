@@ -11,6 +11,7 @@ import DatabaseLogger from './utils/databaseLogger';
       inject: [ApiConfigService],
       useFactory: (configService: ApiConfigService) => {
         const url = configService.DATABASE_URL;
+        // const ssl =
         return {
           autoLoadEntities: true,
           logger: new DatabaseLogger(),
@@ -18,7 +19,7 @@ import DatabaseLogger from './utils/databaseLogger';
           synchronize: true,
           type: 'postgres',
           url: url,
-          ssl: true,
+          // ssl: true,
         };
       },
     }),

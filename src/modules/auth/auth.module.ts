@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './api/auth.controller';
-import { CreateUserUseCase } from './application/use-cases/create-user-use-case';
-import { ConfirmByCodeUseCase } from './application/use-cases/confirmation-by-code-use-case';
-import { LoginUseCase } from './application/use-cases/login-use-case';
-import { LogoutUseCase } from './application/use-cases/logout-use-case';
-import { NewPasswordUseCase } from './application/use-cases/new-password-use-case';
-import { RefreshUseCase } from './application/use-cases/refresh-use-case';
-import { RecoveryUseCase } from './application/use-cases/recovery-use-case';
-import { ResendingUseCase } from './application/use-cases/resending-use-case';
+import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
+import { ConfirmByCodeUseCase } from './application/use-cases/confirmation-by-code.use-case';
+import { LoginUseCase } from './application/use-cases/login.use-case';
+import { LogoutUseCase } from './application/use-cases/logout.use-case';
+import { NewPasswordUseCase } from './application/use-cases/new-password.use-case';
+import { RefreshUseCase } from './application/use-cases/refresh.use-case';
+import { RecoveryUseCase } from './application/use-cases/recovery.use-case';
+import { ResendingUseCase } from './application/use-cases/resending.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BasicStrategy } from './api/strategies/basic.strategy';
 import { LocalStrategy } from './api/strategies/local.strategy';
@@ -21,7 +21,7 @@ import { UsersModule } from '../users/users.module';
 import { PasswordRecovery } from './domain/password-recovery.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordRecoveryRepository } from './infrastructure/password-recovery.repository';
-import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code-use-case';
+import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
 
 const useCases = [
   CreateUserUseCase,
