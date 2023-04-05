@@ -1,4 +1,4 @@
-import { IsEmail } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 /**
@@ -14,4 +14,8 @@ export class PasswordRecoveryInputDto {
     example: 'string',
   })
   email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  recaptcha: string;
 }

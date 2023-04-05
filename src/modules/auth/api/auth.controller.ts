@@ -8,7 +8,7 @@ import { PasswordRecoveryInputDto } from './input-dto/password-recovery.input.dt
 import { RegistrationEmailResendingInputDto } from './input-dto/registration-email-resending.input.dto';
 import { NewPasswordInputDto } from './input-dto/new-password.input.dto';
 import { NewPasswordCommand } from '../application/use-cases/new-password.use-case';
-import { ApiErrorResultDto } from '../../../configuration/swagger/swaggers/api-error-result.dto';
+import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
 import { TokenTypeSwaggerDto } from '../../../configuration/swagger/swaggers/token-type-swagger.dto';
 import { Response } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -20,15 +20,16 @@ import { LoginInputDto } from './input-dto/login.input.dto';
 import { PasswordRecoveryCodeInputDto } from './input-dto/password-recovery-code.input.dto';
 import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check-password-recovery-code.use-case';
 import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
-import { CheckerNotificationErrors } from '../../../main/walidators/checker-notification.errors';
+import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
 import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
 import { ResendingCommand } from '../application/use-cases/resending.use-case';
 import { LoginCommand } from '../application/use-cases/login.use-case';
 import { RecoveryCommand } from '../application/use-cases/recovery.use-case';
 import { LogoutCommand } from '../application/use-cases/logout.use-case';
 import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code.use-case';
-import { ResultNotification } from '../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../main/validators/result-notification';
 import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
+import { TokensType } from '../application/types/types';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -157,10 +158,10 @@ export class AuthController {
     @UserId() userId: number,
     @Body() body: LoginInputDto, //need for swagger
   ): Promise<LoginSuccessViewDto> {
-    const notification = await this.commandBus.execute<LoginCommand, ResultNotification>(
+    const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
       new LoginCommand(userId, ip, deviceName),
     );
-    const { accessToken, refreshToken }: any = notification.getData();
+    const { accessToken, refreshToken } = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
     return { accessToken };
   }
@@ -182,7 +183,9 @@ export class AuthController {
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto) {
-    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(new RecoveryCommand(body));
+    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
+      new RecoveryCommand(body.email, true, body.recaptcha),
+    );
     if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
     return;
   }
@@ -205,7 +208,7 @@ export class AuthController {
       new CheckPasswordRecoveryCodeCommand(body),
     );
     if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
-    const { email }: any = notification.getData();
+    const email = notification.getData();
     return { email };
   }
 
@@ -216,7 +219,9 @@ export class AuthController {
   @Post('password-recovery-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<boolean> {
-    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(new RecoveryCommand(body));
+    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
+      new RecoveryCommand(body.email, false),
+    );
     if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
     return;
   }

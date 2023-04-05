@@ -22,6 +22,7 @@ import { PasswordRecovery } from './domain/password-recovery.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordRecoveryRepository } from './infrastructure/password-recovery.repository';
 import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
+import { RecaptchaModule } from '../../providers/recaptcha/recaptcha.module';
 
 const useCases = [
   CreateUserUseCase,
@@ -47,6 +48,7 @@ const entities = [PasswordRecovery];
     SessionsModule,
     PassportModule,
     UsersModule,
+    RecaptchaModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, PasswordRecoveryRepository, ...useCases, ...strategies],

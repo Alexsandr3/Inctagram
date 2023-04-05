@@ -3,7 +3,7 @@ import { ApiJwtService } from '../../../api-jwt/api-jwt.service';
 import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository.service';
 import { Session } from '../../../sessions/domain/session.entity';
 import { TokensType } from '../types/types';
-import { ResultNotification } from '../../../../main/walidators/result-notification';
+import { ResultNotification } from '../../../../main/validators/result-notification';
 
 /**
  * @description login user and return tokens
