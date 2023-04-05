@@ -1,6 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConfirmationCodeInputDto } from '../../api/input-dto/confirmation-code.input.dto';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { ResultNotification } from '../../../../main/walidators/result-notification';
 
 /**
  * @description confirm user by code
@@ -17,19 +18,23 @@ export class ConfirmByCodeUseCase implements ICommandHandler<ConfirmByCodeComman
    * @description confirm user by code
    * @param command
    */
-  async execute(command: ConfirmByCodeCommand): Promise<boolean> {
+  async execute(command: ConfirmByCodeCommand): Promise<ResultNotification> {
     const { confirmationCode } = command.codeInputModel;
-
+    //prepare a notification for result
+    const notification = new ResultNotification();
     const foundUser = await this.usersRepository.findUserByConfirmationCode(confirmationCode);
-    if (!foundUser) return false;
-
+    if (!foundUser) return notification;
     const { emailConfirmation } = foundUser;
-    if (emailConfirmation.isConfirmed) return false;
-    if (emailConfirmation.codeExpirationDate < new Date()) return false;
-    if (emailConfirmation.confirmationCode !== confirmationCode) return false;
-
+    if (
+      emailConfirmation.isConfirmed ||
+      emailConfirmation.codeExpirationDate < new Date() ||
+      emailConfirmation.confirmationCode !== confirmationCode
+    ) {
+      notification.addError('Confirmation code is invalid', 'code', 2);
+      return notification;
+    }
     foundUser.confirmUser();
     await this.usersRepository.saveUser(foundUser);
-    return true;
+    return notification;
   }
 }

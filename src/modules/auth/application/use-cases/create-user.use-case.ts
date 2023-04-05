@@ -2,19 +2,19 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegisterInputDto } from '../../api/input-dto/register.input.dto';
 import { User } from '../../../users/domain/user.entity';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { AuthService } from '../auth.service';
-import { ResultNotification } from '../../../../configuration/notification';
+import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { ResultNotification } from '../../../../main/walidators/result-notification';
 
 /**
  * @description create new user and send email for confirmation
  */
-export class CreateUserCommandw {
+export class CreateUserCommand {
   constructor(public readonly userInputModel: RegisterInputDto) {}
 }
 
-@CommandHandler(CreateUserCommandw)
-export class CreateUserHandlerw implements ICommandHandler<CreateUserCommandw> {
+@CommandHandler(CreateUserCommand)
+export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
   constructor(
     private readonly authService: AuthService,
     private readonly usersRepository: UsersRepository,
@@ -25,15 +25,14 @@ export class CreateUserHandlerw implements ICommandHandler<CreateUserCommandw> {
    * @description create new user and send email for confirmation
    * @param command
    */
-  async execute(command: CreateUserCommandw): Promise<ResultNotification<User>> {
+  async execute(command: CreateUserCommand): Promise<ResultNotification<User>> {
     const { email, password } = command.userInputModel;
     //prepare a notification for result
     const notification = new ResultNotification<User>();
     //check email for uniqueness
     const existsUser = await this.usersRepository.findUserByEmail(email);
     if (existsUser) {
-      notification.addError('Email are already exists', null, 1);
-      console.log(notification);
+      notification.addError('User with this email is already\n' + 'registered', 'email', 2);
       return notification;
     }
     //generate password hash
@@ -47,9 +46,3 @@ export class CreateUserHandlerw implements ICommandHandler<CreateUserCommandw> {
     return notification;
   }
 }
-
-// notification.hasErrors() new CheckerErrorsException ( if status code 400 = throw new BadRequest => exception)
-// notification.getData()
-
-// if(notification.hasErrors()){
-//throw new Forbidden()

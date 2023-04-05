@@ -3,6 +3,7 @@ import { NewPasswordInputDto } from '../../api/input-dto/new-password.input.dto'
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { AuthService } from '../auth.service';
 import { PasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
+import { ResultNotification } from '../../../../main/walidators/result-notification';
 
 /**
  * @description - command for new password
@@ -23,26 +24,29 @@ export class NewPasswordUseCase implements ICommandHandler<NewPasswordCommand> {
    * @description - handler for new password
    * @param command
    */
-  async execute(command: NewPasswordCommand): Promise<boolean> {
+  async execute(command: NewPasswordCommand): Promise<ResultNotification> {
     const { newPassword, recoveryCode } = command.dto;
-
+    const notification = new ResultNotification();
     const passwordRecovery = await this.passwordRepository.findPassRecovery(recoveryCode);
-    if (!passwordRecovery) return false;
-
+    if (!passwordRecovery) {
+      notification.addError('Password recovery code is invalid', 'code', 2);
+      return notification;
+    }
     if (new Date() > passwordRecovery.expirationDate) {
       await this.passwordRepository.deletePassRecovery(recoveryCode);
-      return false;
+      notification.addError('Password recovery code is expired', 'code', 2);
+      return notification;
     }
-
     const foundUser = await this.usersRepository.findUserByEmail(passwordRecovery.email);
-    if (!foundUser) return false;
-
+    if (!foundUser) {
+      notification.addError('User not found', 'code', 2);
+      return notification;
+    }
     const passwordHash = await this.authService.getPasswordHash(newPassword);
 
     foundUser.updatePassword(passwordHash);
     await this.usersRepository.saveUser(foundUser);
-
     await this.passwordRepository.deletePassRecovery(recoveryCode);
-    return true;
+    return notification;
   }
 }

@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegistrationEmailResendingInputDto } from '../../api/input-dto/registration-email-resending.input.dto';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { BadRequestException } from '@nestjs/common';
+import { ResultNotification } from '../../../../main/walidators/result-notification';
 
 /**
  * @description Resending command
@@ -21,14 +21,16 @@ export class ResendingUseCase implements ICommandHandler<ResendingCommand> {
    */
   async execute(command: ResendingCommand) {
     const { email } = command.dto;
-
+    //prepare a notification for result
+    const notification = new ResultNotification();
     const foundUser = await this.usersRepository.findUserByEmail(email);
-    if (!foundUser || foundUser.emailConfirmation.isConfirmed)
-      throw new BadRequestException(`Email isn't valid or already confirmed`, 'email');
-
+    if (!foundUser || foundUser.emailConfirmation.isConfirmed) {
+      notification.addError("Email isn't valid or already confirmed", 'email', 2);
+      return notification;
+    }
     foundUser.updateEmailConfirmation();
     await this.usersRepository.saveUser(foundUser);
-
     await this.mailService.sendUserConfirmation(email, foundUser.emailConfirmation.confirmationCode);
+    return notification;
   }
 }

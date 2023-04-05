@@ -4,6 +4,7 @@ import { MailManager } from '../../../../providers/mailer/application/mail-manag
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { PasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
 import { PasswordRecovery } from '../../domain/password-recovery.entity';
+import { ResultNotification } from '../../../../main/walidators/result-notification';
 
 /**
  * Recovery password
@@ -24,19 +25,20 @@ export class RecoveryUseCase implements ICommandHandler<RecoveryCommand> {
    *  Recovery password
    * @param command
    */
-  async execute(command: RecoveryCommand): Promise<boolean> {
+  async execute(command: RecoveryCommand): Promise<ResultNotification> {
     const { email } = command.emailInputModel;
+    //prepare a notification for result
+    const notification = new ResultNotification();
     //search user by login or email
     const isUserExist = await this.usersRepository.findUserByEmail(email);
-    if (!isUserExist) return;
-
+    if (!isUserExist) {
+      notification.addError(`${email} has invalid`, 'email', 2);
+      return notification;
+    }
     const passwordRecovery = new PasswordRecovery(email);
     await this.passwordRepository.savePassRecovery(passwordRecovery);
 
-    try {
-      await this.mailService.sendEmailRecoveryMessage(email, passwordRecovery.recoveryCode);
-    } catch (e) {
-      console.log(e);
-    }
+    await this.mailService.sendEmailRecoveryMessage(email, passwordRecovery.recoveryCode);
+    return notification;
   }
 }

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository.service';
-import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ResultNotification } from '../../../../main/walidators/result-notification';
 
 /**
  * @description Logout command
@@ -17,13 +17,20 @@ export class LogoutUseCase implements ICommandHandler<LogoutCommand> {
    * @description logout user from all devices
    * @param command
    */
-  async execute(command: LogoutCommand) {
+  async execute(command: LogoutCommand): Promise<ResultNotification> {
     const { userId, deviceId } = command;
+    const notification = new ResultNotification();
 
     const foundSession = await this.sessionsRepository.findSessionByDeviceId(deviceId);
-    if (!foundSession) throw new NotFoundException('Session not found');
-    if (foundSession.userId !== userId) throw new ForbiddenException('You are not allowed to do this');
-
+    if (!foundSession) {
+      notification.addError('Session not found', 'session', 1);
+      return notification;
+    }
+    if (foundSession.userId !== userId) {
+      notification.addError("You don't have permission to delete this session", 'session', 4);
+      return notification;
+    }
     await this.sessionsRepository.deleteSessionByDeviceId(deviceId);
+    return notification;
   }
 }
