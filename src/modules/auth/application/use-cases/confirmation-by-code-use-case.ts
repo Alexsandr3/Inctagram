@@ -10,7 +10,7 @@ export class ConfirmByCodeCommand {
 }
 
 @CommandHandler(ConfirmByCodeCommand)
-export class ConfirmByCodeHandler implements ICommandHandler<ConfirmByCodeCommand> {
+export class ConfirmByCodeUseCase implements ICommandHandler<ConfirmByCodeCommand> {
   constructor(protected usersRepository: UsersRepository) {}
 
   /**

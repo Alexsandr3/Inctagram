@@ -14,7 +14,7 @@ export class CreateUserCommand {
 }
 
 @CommandHandler(CreateUserCommand)
-export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
+export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
   constructor(
     private readonly authService: AuthService,
     private readonly usersRepository: UsersRepository,

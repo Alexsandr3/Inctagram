@@ -12,7 +12,7 @@ export class NewPasswordCommand {
 }
 
 @CommandHandler(NewPasswordCommand)
-export class NewPasswordHandler implements ICommandHandler<NewPasswordCommand> {
+export class NewPasswordUseCase implements ICommandHandler<NewPasswordCommand> {
   constructor(
     private readonly authService: AuthService,
     private readonly usersRepository: UsersRepository,

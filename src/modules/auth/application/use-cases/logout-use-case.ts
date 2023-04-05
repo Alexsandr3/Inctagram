@@ -10,7 +10,7 @@ export class LogoutCommand {
 }
 
 @CommandHandler(LogoutCommand)
-export class LogoutHandler implements ICommandHandler<LogoutCommand> {
+export class LogoutUseCase implements ICommandHandler<LogoutCommand> {
   constructor(protected sessionsRepository: SessionsRepository) {}
 
   /**

@@ -34,9 +34,8 @@ describe('Clients-admin e2e', () => {
     const result: { route: string; status: string } = await authHelper.passwordRecovery();
     expect(result.status).toBe('OK');
   });
-  it.skip('should resend recovery password email', async () => {
-    const result: { route: string; status: string } = await authHelper.passwordRecoveryEmailResending();
-    expect(result.status).toBe('OK');
+  it('should resend recovery password email', async () => {
+    await authHelper.passwordRecoveryEmailResending();
   });
   it.skip('should set new password', async () => {
     const result: { route: string; status: string } = await authHelper.newPassword();
