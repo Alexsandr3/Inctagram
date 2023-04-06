@@ -1,7 +1,7 @@
 import { Body, Controller, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConfirmationCodeInputDto } from './input-dto/confirmation-code.input.dto';
 import { PasswordRecoveryInputDto } from './input-dto/password-recovery.input.dto';
@@ -179,7 +179,7 @@ export class AuthController {
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto) {
     const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
-      new RecoveryCommand(body.email, true, body.recaptcha),
+      new RecoveryCommand(body.email, false, body.recaptcha),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;
@@ -265,5 +265,17 @@ export class AuthController {
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     res.clearCookie('refreshToken');
+  }
+
+  //need for testing recaptcha --- > remove in production
+  @ApiExcludeEndpoint()
+  @Post('password-recovery-test')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto) {
+    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
+      new RecoveryCommand(body.email, true, body.recaptcha),
+    );
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
+    return;
   }
 }

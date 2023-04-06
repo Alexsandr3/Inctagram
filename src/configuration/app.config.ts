@@ -13,7 +13,7 @@ export const appConfig = (app: INestApplication) => {
   //add cors
   // const url = app.get(ApiConfigService).FRONTEND_URL
   app.enableCors({
-    origin: ['http://localhost:3000', 'http://localhost:3001'],
+    origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:63342'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   });

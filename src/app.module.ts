@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { ApiConfigModule } from './modules/api-config/api.config.module';
 import { MailModule } from './providers/mailer/mail.module';
@@ -8,6 +8,8 @@ import { ApiJwtModule } from './modules/api-jwt/api-jwt.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
 import { DatabaseModule } from './providers/database/database.module';
 import { TestingModule } from './providers/testing/testing.module';
+import { LoggerModule } from './providers/logger/logger.module';
+import LogsMiddleware from './providers/logger/logs.middleware';
 
 @Module({
   imports: [
@@ -19,8 +21,13 @@ import { TestingModule } from './providers/testing/testing.module';
     SessionsModule,
     DatabaseModule,
     TestingModule, //need for testing !!!
+    LoggerModule,
   ],
   controllers: [AppController],
   providers: [],
 })
-export class AppModule {}
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogsMiddleware).forRoutes('*');
+  }
+}
