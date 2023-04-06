@@ -1,7 +1,7 @@
 import { Body, Controller, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
-import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConfirmationCodeInputDto } from './input-dto/confirmation-code.input.dto';
 import { PasswordRecoveryInputDto } from './input-dto/password-recovery.input.dto';
@@ -170,16 +170,11 @@ export class AuthController {
    * @description Recovery password via email
    * @param body
    */
-  @ApiHeader({ name: 'password-recovery' })
   @ApiOperation({
     summary: 'Password recovery via Email confirmation. Email should be sent with RecoveryCode inside',
   })
   @ApiResponse({ status: 204, description: 'success' })
-  @ApiResponse({ status: 400, description: 'Incorrect input data by field' })
-  @ApiResponse({
-    status: 429,
-    description: 'More than 5 attempts from one IP-address during 10 seconds',
-  })
+  @ApiResponse({ status: 400, description: 'Incorrect input data by field or reCaptcha' })
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto) {
@@ -216,6 +211,9 @@ export class AuthController {
    * @description Confirm password recovery via email
    * @param body
    */
+  @ApiOperation({ summary: 'password recovery via Email resending' })
+  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: 400, description: 'Incorrect input data by field' })
   @Post('password-recovery-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<boolean> {

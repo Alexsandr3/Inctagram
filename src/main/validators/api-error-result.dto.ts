@@ -6,5 +6,5 @@ export class ApiErrorResultDto {
 
 export class FieldError {
   public message: string;
-  public key: string;
+  public field: string;
 }

@@ -44,14 +44,11 @@ export class RecoveryUseCase implements ICommandHandler<RecoveryCommand> {
     }
     //search user by login or email
     const isUserExist = await this.usersRepository.findUserByEmail(email);
-    if (!isUserExist) {
-      notification.addError(`${email} has invalid`, 'email', 2);
-      return notification;
-    }
+    if (!isUserExist) return notification;
     const passwordRecovery = new PasswordRecovery(email);
     await this.passwordRepository.savePassRecovery(passwordRecovery);
 
-    await this.mailService.sendEmailRecoveryMessage(email, passwordRecovery.recoveryCode);
+    await this.mailService.sendPasswordRecoveryMessage(email, passwordRecovery.recoveryCode);
     return notification;
   }
 }
