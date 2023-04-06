@@ -90,7 +90,7 @@ export class AuthController {
     const notification = await this.commandBus.execute<ConfirmByCodeCommand, ResultNotification>(
       new ConfirmByCodeCommand(body),
     );
-    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;
   }
 
@@ -120,7 +120,7 @@ export class AuthController {
     const notification = await this.commandBus.execute<ResendingCommand, ResultNotification>(
       new ResendingCommand(body),
     );
-    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;
   }
 
@@ -181,7 +181,7 @@ export class AuthController {
     const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
       new RecoveryCommand(body.email, true, body.recaptcha),
     );
-    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;
   }
 
@@ -202,7 +202,7 @@ export class AuthController {
     const notification = await this.commandBus.execute<CheckPasswordRecoveryCodeCommand, ResultNotification>(
       new CheckPasswordRecoveryCodeCommand(body),
     );
-    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     const email = notification.getData();
     return { email };
   }
@@ -220,7 +220,7 @@ export class AuthController {
     const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
       new RecoveryCommand(body.email, false),
     );
-    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;
   }
 
@@ -241,7 +241,7 @@ export class AuthController {
     const notification = await this.commandBus.execute<NewPasswordCommand, ResultNotification>(
       new NewPasswordCommand(body),
     );
-    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;
   }
 
@@ -263,7 +263,7 @@ export class AuthController {
     const notification = await this.commandBus.execute<LogoutCommand, ResultNotification>(
       new LogoutCommand(sessionData.userId, sessionData.deviceId),
     );
-    if (notification.hasError()) new CheckerNotificationErrors('Error', notification);
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     res.clearCookie('refreshToken');
   }
 }
