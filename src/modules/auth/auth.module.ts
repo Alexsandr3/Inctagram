@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './api/auth.controller';
-import { ConfirmByCodeUseCase } from './application/use-cases/confirmation-by-code.use-case';
+import { ConfirmRegistrationUseCase } from './application/use-cases/confirm-registration.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { NewPasswordUseCase } from './application/use-cases/new-password.use-case';
 import { RefreshUseCase } from './application/use-cases/refresh.use-case';
 import { RecoveryUseCase } from './application/use-cases/recovery.use-case';
-import { ResendingUseCase } from './application/use-cases/resending.use-case';
+import { ResendRegistrationEmailUseCase } from './application/use-cases/resend-registration-email.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BasicStrategy } from './api/strategies/basic.strategy';
 import { LocalStrategy } from './api/strategies/local.strategy';
@@ -26,9 +26,9 @@ import { RegisterUserUseCase } from './application/use-cases/register-user.use-c
 
 const useCases = [
   RegisterUserUseCase,
-  ConfirmByCodeUseCase,
+  ConfirmRegistrationUseCase,
   LoginUseCase,
-  ResendingUseCase,
+  ResendRegistrationEmailUseCase,
   NewPasswordUseCase,
   RecoveryUseCase,
   RefreshUseCase,

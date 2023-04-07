@@ -33,7 +33,7 @@ export class RegisterUserUseCase
    * @param command
    */
 
-  async executeUseCase(command) {
+  async executeUseCase(command: RegisterUserCommand) {
     const { email, password } = command.userInputModel; //prepare a notification for result
 
     const existsUser = await this.usersRepository.findUserByEmail(email); //throw new NotificationException('Code is not valid', 'code', 2);

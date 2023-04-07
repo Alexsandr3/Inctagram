@@ -19,11 +19,11 @@ import { UserId } from '../../../main/decorators/user.decorator';
 import { PasswordRecoveryCodeInputDto } from './input-dto/password-recovery-code.input.dto';
 import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check-password-recovery-code.use-case';
 import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
-import { ResendingCommand } from '../application/use-cases/resending.use-case';
+import { ResendRegistrationEmailCommand } from '../application/use-cases/resend-registration-email.use-case';
 import { LoginCommand } from '../application/use-cases/login.use-case';
 import { RecoveryCommand } from '../application/use-cases/recovery.use-case';
 import { LogoutCommand } from '../application/use-cases/logout.use-case';
-import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code.use-case';
+import { ConfirmRegistrationCommand } from '../application/use-cases/confirm-registration.use-case';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 import { TokensType } from '../application/types/types';
@@ -88,8 +88,8 @@ export class AuthController {
   @Post('registration-confirmation')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registrationConfirmation(@Body() body: ConfirmationCodeInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<ConfirmByCodeCommand, ResultNotification<null>>(
-      new ConfirmByCodeCommand(body),
+    const notification = await this.commandBus.execute<ConfirmRegistrationCommand, ResultNotification<null>>(
+      new ConfirmRegistrationCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();
@@ -117,12 +117,12 @@ export class AuthController {
   })
   @Post('registration-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registrationEmailResending(@Body() body: RegistrationEmailResendingInputDto) {
-    const notification = await this.commandBus.execute<ResendingCommand, ResultNotification>(
-      new ResendingCommand(body),
+  async registrationEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<ResendRegistrationEmailCommand, ResultNotification<null>>(
+      new ResendRegistrationEmailCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**

@@ -8,14 +8,14 @@ import { NotificationCode } from '../../../../configuration/exception.filter';
 /**
  * @description confirm user by code
  */
-export class ConfirmByCodeCommand {
+export class ConfirmRegistrationCommand {
   constructor(public readonly codeInputModel: ConfirmationCodeInputDto) {}
 }
 
-@CommandHandler(ConfirmByCodeCommand)
-export class ConfirmByCodeUseCase
-  extends BaseNotificationUseCase<ConfirmByCodeCommand, void>
-  implements ICommandHandler<ConfirmByCodeCommand>
+@CommandHandler(ConfirmRegistrationCommand)
+export class ConfirmRegistrationUseCase
+  extends BaseNotificationUseCase<ConfirmRegistrationCommand, void>
+  implements ICommandHandler<ConfirmRegistrationCommand>
 {
   constructor(protected usersRepository: UsersRepository) {
     super();
@@ -25,7 +25,7 @@ export class ConfirmByCodeUseCase
    * @description confirm user by code
    * @param command
    */
-  async executeUseCase(command: ConfirmByCodeCommand) {
+  async executeUseCase(command: ConfirmRegistrationCommand) {
     const { confirmationCode } = command.codeInputModel;
 
     const foundUser = await this.usersRepository.findUserByConfirmationCode(confirmationCode);
