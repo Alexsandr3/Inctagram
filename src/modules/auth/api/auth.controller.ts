@@ -163,9 +163,14 @@ export class AuthController {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
       new LoginCommand(userId, ip, deviceName),
     );
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
+
     const { accessToken, refreshToken } = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-    return { accessToken };
+
+    const newNotification = new ResultNotification<LoginSuccessViewDto>();
+    newNotification.addData({ accessToken });
+    return notification.getData();
   }
 
   /**
