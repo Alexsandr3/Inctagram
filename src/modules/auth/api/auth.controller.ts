@@ -21,7 +21,7 @@ import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check
 import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
 import { ResendRegistrationEmailCommand } from '../application/use-cases/resend-registration-email.use-case';
 import { LoginCommand } from '../application/use-cases/login.use-case';
-import { RecoveryCommand } from '../application/use-cases/recovery.use-case';
+import { PasswordRecoveryCommand } from '../application/use-cases/password-recovery.use-case';
 import { LogoutCommand } from '../application/use-cases/logout.use-case';
 import { ConfirmRegistrationCommand } from '../application/use-cases/confirm-registration.use-case';
 import { ResultNotification } from '../../../main/validators/result-notification';
@@ -184,12 +184,12 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Incorrect input data by field or reCaptcha' })
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecovery(@Body() body: PasswordRecoveryInputDto) {
-    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
-      new RecoveryCommand(body.email, false, body.recaptcha),
+  async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
+      new PasswordRecoveryCommand(body.email, false, body.recaptcha),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -224,8 +224,8 @@ export class AuthController {
   @Post('password-recovery-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<boolean> {
-    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
-      new RecoveryCommand(body.email, false),
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification>(
+      new PasswordRecoveryCommand(body.email, false),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;
@@ -279,8 +279,8 @@ export class AuthController {
   @Post('password-recovery-test')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto) {
-    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
-      new RecoveryCommand(body.email, true, body.recaptcha),
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification>(
+      new PasswordRecoveryCommand(body.email, true, body.recaptcha),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return;

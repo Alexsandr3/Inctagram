@@ -5,7 +5,7 @@ import { LoginUseCase } from './application/use-cases/login.use-case';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { NewPasswordUseCase } from './application/use-cases/new-password.use-case';
 import { RefreshUseCase } from './application/use-cases/refresh.use-case';
-import { RecoveryUseCase } from './application/use-cases/recovery.use-case';
+import { PasswordRecoveryUseCase } from './application/use-cases/password-recovery.use-case';
 import { ResendRegistrationEmailUseCase } from './application/use-cases/resend-registration-email.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { BasicStrategy } from './api/strategies/basic.strategy';
@@ -30,7 +30,7 @@ const useCases = [
   LoginUseCase,
   ResendRegistrationEmailUseCase,
   NewPasswordUseCase,
-  RecoveryUseCase,
+  PasswordRecoveryUseCase,
   RefreshUseCase,
   LogoutUseCase,
   CheckPasswordRecoveryCodeUseCase,
