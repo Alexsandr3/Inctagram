@@ -18,7 +18,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
   }
 }
 
-enum NotificationCode {
+export enum NotificationCode {
   OK = 0,
   NOT_FOUND = 1,
   BAD_REQUEST = 2,
