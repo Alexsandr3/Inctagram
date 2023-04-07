@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository.service';
-import { ResultNotification } from '../../../../main/validators/result-notification';
+import { NotificationException } from '../../../../main/validators/result-notification';
+import { BaseNotificationUseCase } from './base-notification.use-case';
+import { NotificationCode } from '../../../../configuration/exception.filter';
 
 /**
  * @description Logout command
@@ -10,27 +12,31 @@ export class LogoutCommand {
 }
 
 @CommandHandler(LogoutCommand)
-export class LogoutUseCase implements ICommandHandler<LogoutCommand> {
-  constructor(protected sessionsRepository: SessionsRepository) {}
+export class LogoutUseCase
+  extends BaseNotificationUseCase<LogoutCommand, void>
+  implements ICommandHandler<LogoutCommand>
+{
+  constructor(protected sessionsRepository: SessionsRepository) {
+    super();
+  }
 
   /**
    * @description logout user from all devices
    * @param command
    */
-  async execute(command: LogoutCommand): Promise<ResultNotification> {
+  async executeUseCase(command: LogoutCommand) {
     const { userId, deviceId } = command;
-    const notification = new ResultNotification();
 
     const foundSession = await this.sessionsRepository.findSessionByDeviceId(deviceId);
-    if (!foundSession) {
-      notification.addError('Session not found', 'session', 1);
-      return notification;
-    }
-    if (foundSession.userId !== userId) {
-      notification.addError("You don't have permission to delete this session", 'session', 4);
-      return notification;
-    }
+    if (!foundSession) throw new NotificationException('Session not found', 'session', NotificationCode.NOT_FOUND);
+
+    if (foundSession.userId !== userId)
+      throw new NotificationException(
+        "You don't have permission to delete this session",
+        'session',
+        NotificationCode.FORBIDDEN,
+      );
+
     await this.sessionsRepository.deleteSessionByDeviceId(deviceId);
-    return notification;
   }
 }

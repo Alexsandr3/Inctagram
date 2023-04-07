@@ -223,12 +223,12 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Incorrect input data by field' })
   @Post('password-recovery-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<boolean> {
-    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification>(
+  async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
       new PasswordRecoveryCommand(body.email, false),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -244,12 +244,12 @@ export class AuthController {
   })
   @Post('new-password')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async newPassword(@Body() body: NewPasswordInputDto) {
-    const notification = await this.commandBus.execute<NewPasswordCommand, ResultNotification>(
+  async newPassword(@Body() body: NewPasswordInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<NewPasswordCommand, ResultNotification<null>>(
       new NewPasswordCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -266,23 +266,24 @@ export class AuthController {
   @Post('logout')
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async logout(@SessionData() sessionData: SessionDto, @Res({ passthrough: true }) res: Response) {
-    const notification = await this.commandBus.execute<LogoutCommand, ResultNotification>(
+  async logout(@SessionData() sessionData: SessionDto, @Res({ passthrough: true }) res: Response): Promise<null> {
+    const notification = await this.commandBus.execute<LogoutCommand, ResultNotification<null>>(
       new LogoutCommand(sessionData.userId, sessionData.deviceId),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     res.clearCookie('refreshToken');
+    return notification.getData();
   }
 
   //need for testing recaptcha --- > remove in production
   @ApiExcludeEndpoint()
   @Post('password-recovery-test')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto) {
-    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification>(
+  async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
       new PasswordRecoveryCommand(body.email, true, body.recaptcha),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 }
