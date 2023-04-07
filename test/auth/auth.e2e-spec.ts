@@ -121,21 +121,8 @@ describe('Clients-admin e2e', () => {
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('recoveryCode');
   });
-  //auth/password-recovery-email-resending
-  it('17 - / (POST) - should return 400 if email is incorrect', async () => {
-    const command = { email: 'validvalidamail.tr' };
-    const response: ApiErrorResultDto = await authHelper.passwordRecoveryEmailResending(command, { expectedCode: 400 });
-    expect(response.messages).toHaveLength(1);
-    expect(response.messages[0].field).toBe('email');
-  });
-  it('18 - / (POST) - should return 400 if email is empty', async () => {
-    const command = { email: '' };
-    const response: ApiErrorResultDto = await authHelper.passwordRecoveryEmailResending(command, { expectedCode: 400 });
-    expect(response.messages).toHaveLength(1);
-    expect(response.messages[0].field).toBe('email');
-  });
   //auth/new-password
-  it('19 - / (POST) - should return 400 if password is incorrect', async () => {
+  it('17 - / (POST) - should return 400 if password is incorrect', async () => {
     const command = { newPassword: 'qwert', recoveryCode: '12345678' };
     const response: ApiErrorResultDto = await authHelper.newPassword(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
@@ -146,14 +133,14 @@ describe('Clients-admin e2e', () => {
     expect(response2.messages).toHaveLength(1);
     expect(response2.messages[0].field).toBe('newPassword');
   });
-  it('20 - / (POST) - should return 400 if recoveryCode is empty', async () => {
+  it('18 - / (POST) - should return 400 if recoveryCode is empty', async () => {
     const command = { newPassword: 'qwertys', recoveryCode: '' };
     const response: ApiErrorResultDto = await authHelper.newPassword(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('recoveryCode');
   });
   //auth/logout
-  it('21 - / (POST) - should return 401 if user not unauthorized', async () => {});
+  it('19 - / (POST) - should return 401 if user not unauthorized', async () => {});
 
   // Registration correct data
   it('007 - / (POST) - should return 201 if email and password is correct', async () => {

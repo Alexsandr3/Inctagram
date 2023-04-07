@@ -213,22 +213,6 @@ export class AuthController {
    * @description Confirm password recovery via email
    * @param body
    */
-  @ApiOperation({ summary: 'password recovery via Email resending' })
-  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
-  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field' })
-  @Post('password-recovery-email-resending')
-  @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
-      new PasswordRecoveryCommand(body.email, false),
-    );
-    return notification.getData();
-  }
-
-  /**
-   * @description Confirm password recovery via email
-   * @param body
-   */
   @ApiOperation({ summary: 'Confirm Password recovery' })
   @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
   @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field' })
