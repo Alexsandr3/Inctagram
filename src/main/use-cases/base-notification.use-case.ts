@@ -1,8 +1,7 @@
-import { ResultNotification } from '../../../../main/validators/result-notification';
+import { ResultNotification } from '../validators/result-notification';
+import { CheckerNotificationErrors } from '../validators/checker-notification.errors';
 
 export abstract class BaseNotificationUseCase<TCommand, TResult> {
-  protected constructor() {}
-
   /**
    *
    * @param command
@@ -16,6 +15,9 @@ export abstract class BaseNotificationUseCase<TCommand, TResult> {
     } catch (e) {
       notification.addErrorFromNotificationException(e);
     }
+
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
+
     return notification;
   }
 

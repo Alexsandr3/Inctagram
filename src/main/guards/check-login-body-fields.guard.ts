@@ -11,7 +11,8 @@ export class CheckLoginBodyFieldsGuard implements CanActivate {
     const object2 = plainToInstance(LoginInputDto, req.body);
     const res = await validate(object2, { stopAtFirstError: true });
 
-    if (res.length > 0) throw new BadRequestException('bad email or password');
+    if (res.length > 0)
+      throw new BadRequestException([{ message: 'bad email or password', field: 'login, email or password' }]);
 
     return true;
   }

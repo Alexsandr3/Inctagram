@@ -77,17 +77,17 @@ describe('Clients-admin e2e', () => {
     expect(response.messages[0].field).toBe('email');
   });
   //auth/login
-  it.skip('10 - / (POST) - should return 400 if email is incorrect', async () => {
+  it('10 - / (POST) - should return 400 if email is incorrect', async () => {
     const command = { password: '12345678', email: 'Doe' };
     const response: ApiErrorResultDto = await authHelper.login(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
-    expect(response.messages[0].field).toBe('email');
+    expect(response.messages[0].field).toBe('login, email or password');
   });
-  it.skip('11 - / (POST) - should return 400 if password is incorrect', async () => {
-    const command = { password: 'qwert', email: 'dafsfd@dsaff.te' };
+  it('11 - / (POST) - should return 400 if password is incorrect', async () => {
+    const command = { password: '', email: 'dafsfd@dsaff.te' };
     const response: ApiErrorResultDto = await authHelper.login(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
-    expect(response.messages[0].field).toBe('password');
+    expect(response.messages[0].field).toBe('login, email or password');
   });
   it('12 - / (POST) - should return 401 if user not unauthorized', async () => {
     const command = { password: '12345678', email: 'Doe@doede.he' };

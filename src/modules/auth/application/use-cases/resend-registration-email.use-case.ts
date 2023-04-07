@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegistrationEmailResendingInputDto } from '../../api/input-dto/registration-email-resending.input.dto';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { BaseNotificationUseCase } from './base-notification.use-case';
+import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
 

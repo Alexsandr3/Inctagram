@@ -5,7 +5,7 @@ import { PasswordRecoveryRepository } from '../../infrastructure/password-recove
 import { PasswordRecovery } from '../../domain/password-recovery.entity';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { RecaptchaAdapter } from '../../../../providers/recaptcha/recaptcha.adapter';
-import { BaseNotificationUseCase } from './base-notification.use-case';
+import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationCode } from '../../../../configuration/exception.filter';
 
 /**

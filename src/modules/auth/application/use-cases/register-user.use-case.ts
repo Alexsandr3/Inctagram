@@ -4,7 +4,7 @@ import { RegisterInputDto } from '../../api/input-dto/register.input.dto';
 import { User } from '../../../users/domain/user.entity';
 import { AuthService } from '../auth.service';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { BaseNotificationUseCase } from './base-notification.use-case';
+import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
 

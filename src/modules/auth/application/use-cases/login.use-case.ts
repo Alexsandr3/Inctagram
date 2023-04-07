@@ -3,7 +3,7 @@ import { ApiJwtService } from '../../../api-jwt/api-jwt.service';
 import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository.service';
 import { Session } from '../../../sessions/domain/session.entity';
 import { TokensType } from '../types/types';
-import { BaseNotificationUseCase } from './base-notification.use-case';
+import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 
 /**
  * @description login user and return tokens

@@ -4,7 +4,7 @@ import { UsersRepository } from '../../../users/infrastructure/users.repository'
 import { AuthService } from '../auth.service';
 import { PasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { BaseNotificationUseCase } from './base-notification.use-case';
+import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationCode } from '../../../../configuration/exception.filter';
 
 /**

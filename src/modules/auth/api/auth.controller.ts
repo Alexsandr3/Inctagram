@@ -30,7 +30,6 @@ import { TokensType } from '../application/types/types';
 import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { CheckLoginBodyFieldsGuard } from '../../../main/guards/check-login-body-fields.guard';
 import { LoginInputDto } from './input-dto/login.input.dto';
-import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -63,7 +62,7 @@ export class AuthController {
     const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
       new RegisterUserCommand(body),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
+    //notification.setCode(HTTP_Status.CREATED_201);
     return notification.getData();
   }
 
@@ -91,7 +90,6 @@ export class AuthController {
     const notification = await this.commandBus.execute<ConfirmRegistrationCommand, ResultNotification<null>>(
       new ConfirmRegistrationCommand(body),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();
   }
 
@@ -121,7 +119,6 @@ export class AuthController {
     const notification = await this.commandBus.execute<ResendRegistrationEmailCommand, ResultNotification<null>>(
       new ResendRegistrationEmailCommand(body),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();
   }
 
@@ -163,14 +160,11 @@ export class AuthController {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
       new LoginCommand(userId, ip, deviceName),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
 
     const { accessToken, refreshToken } = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 
-    const newNotification = new ResultNotification<LoginSuccessViewDto>();
-    newNotification.addData({ accessToken });
-    return notification.getData();
+    return { accessToken };
   }
 
   /**
@@ -188,7 +182,6 @@ export class AuthController {
     const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
       new PasswordRecoveryCommand(body.email, false, body.recaptcha),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();
   }
 
@@ -213,7 +206,6 @@ export class AuthController {
       CheckPasswordRecoveryCodeCommand,
       ResultNotification<PasswordRecoveryViewDto>
     >(new CheckPasswordRecoveryCodeCommand(body));
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();
   }
 
@@ -230,7 +222,6 @@ export class AuthController {
     const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
       new PasswordRecoveryCommand(body.email, false),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();
   }
 
@@ -251,7 +242,6 @@ export class AuthController {
     const notification = await this.commandBus.execute<NewPasswordCommand, ResultNotification<null>>(
       new NewPasswordCommand(body),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();
   }
 
@@ -273,7 +263,6 @@ export class AuthController {
     const notification = await this.commandBus.execute<LogoutCommand, ResultNotification<null>>(
       new LogoutCommand(sessionData.userId, sessionData.deviceId),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     res.clearCookie('refreshToken');
     return notification.getData();
   }
@@ -286,7 +275,6 @@ export class AuthController {
     const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
       new PasswordRecoveryCommand(body.email, true, body.recaptcha),
     );
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();
   }
 }
