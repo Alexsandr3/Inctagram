@@ -206,12 +206,12 @@ export class AuthController {
   @Post('check-recovery-code')
   @HttpCode(HTTP_Status.OK_200)
   async checkPasswordRecovery(@Body() body: PasswordRecoveryCodeInputDto): Promise<PasswordRecoveryViewDto> {
-    const notification = await this.commandBus.execute<CheckPasswordRecoveryCodeCommand, ResultNotification>(
-      new CheckPasswordRecoveryCodeCommand(body),
-    );
+    const notification = await this.commandBus.execute<
+      CheckPasswordRecoveryCodeCommand,
+      ResultNotification<PasswordRecoveryViewDto>
+    >(new CheckPasswordRecoveryCodeCommand(body));
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    const email = notification.getData();
-    return { email };
+    return notification.getData();
   }
 
   /**
