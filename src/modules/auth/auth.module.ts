@@ -22,10 +22,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordRecoveryRepository } from './infrastructure/password-recovery.repository';
 import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
 import { RecaptchaModule } from '../../providers/recaptcha/recaptcha.module';
-import { NewCreateUserUseCase } from './application/use-cases/new-create-user.use-case';
+import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 
 const useCases = [
-  NewCreateUserUseCase,
+  RegisterUserUseCase,
   ConfirmByCodeUseCase,
   LoginUseCase,
   ResendingUseCase,

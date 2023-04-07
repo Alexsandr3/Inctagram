@@ -12,15 +12,13 @@ export abstract class BaseNotificationUseCase<TCommand, TResult> {
     const notification = new ResultNotification<TResult>();
     try {
       const result = await this.executeUseCase(command);
-      console.log('Result---------', result);
       if (result) notification.addData(result);
     } catch (e) {
-      console.log('Error---------', e);
       notification.addErrorFromNotificationException(e);
     }
     console.log(notification);
     return notification;
   }
 
-  protected abstract executeUseCase(command: TCommand): Promise<TResult | void>;
+  protected abstract executeUseCase(command: TCommand): Promise<TResult>;
 }

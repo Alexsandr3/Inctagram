@@ -6,18 +6,19 @@ import { AuthService } from '../auth.service';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
 import { BaseNotificationUseCase } from './base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationCode } from '../../../../configuration/exception.filter';
 
 /**
  * @description create new user and send email for confirmation
  */
-export class NewCreateUserCommand {
+export class RegisterUserCommand {
   constructor(public readonly userInputModel: RegisterInputDto) {}
 }
 
-@CommandHandler(NewCreateUserCommand)
-export class NewCreateUserUseCase
-  extends BaseNotificationUseCase<NewCreateUserCommand, number>
-  implements ICommandHandler<NewCreateUserCommand>
+@CommandHandler(RegisterUserCommand)
+export class RegisterUserUseCase
+  extends BaseNotificationUseCase<RegisterUserCommand, void>
+  implements ICommandHandler<RegisterUserCommand>
 {
   constructor(
     private readonly authService: AuthService,
@@ -36,7 +37,8 @@ export class NewCreateUserUseCase
     const { email, password } = command.userInputModel; //prepare a notification for result
 
     const existsUser = await this.usersRepository.findUserByEmail(email); //throw new NotificationException('Code is not valid', 'code', 2);
-    if (existsUser) throw new NotificationException('User with this email is already exist', 'email', 2);
+    if (existsUser)
+      throw new NotificationException('User with this email is already exist', 'email', NotificationCode.BAD_REQUEST);
 
     const passwordHash = await this.authService.getPasswordHash(password); //generate password hash
 

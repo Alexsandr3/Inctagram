@@ -27,7 +27,7 @@ import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-c
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 import { TokensType } from '../application/types/types';
-import { NewCreateUserCommand } from '../application/use-cases/new-create-user.use-case';
+import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { CheckLoginBodyFieldsGuard } from '../../../main/guards/check-login-body-fields.guard';
 import { LoginInputDto } from './input-dto/login.input.dto';
 import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
@@ -60,8 +60,8 @@ export class AuthController {
   @Post('registration')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registration(@Body() body: RegisterInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<NewCreateUserCommand, ResultNotification<null>>(
-      new NewCreateUserCommand(body),
+    const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
+      new RegisterUserCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     return notification.getData();

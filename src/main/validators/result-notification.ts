@@ -1,6 +1,8 @@
+import { NotificationCode } from '../../configuration/exception.filter';
+
 export class ResultNotification<T = null> {
   extensions: NotificationExtension[] = []; // array of mistakes
-  code = 0; // status code {0 - success, 1 - error}
+  code = NotificationCode.OK; // status code {0 - success, 1 - error}
   data: T | null = null; // data for response
 
   static success<T>(data) {
@@ -15,9 +17,9 @@ export class ResultNotification<T = null> {
   addError(
     message: string, // message for mistake
     key: string | null = null,
-    code: number | null = null, //status code
+    code: NotificationCode | null = null, //status code
   ) {
-    this.code = code ?? 1;
+    this.code = code ?? NotificationCode.BAD_REQUEST;
     this.extensions.push(new NotificationExtension(message, key));
   }
 
@@ -34,7 +36,7 @@ export class ResultNotification<T = null> {
   }
 
   addErrorFromNotificationException(e: NotificationException) {
-    this.code = e.code ?? 1;
+    this.code = e.code ?? NotificationCode.BAD_REQUEST;
     this.extensions.push(new NotificationExtension(e.message, e.key));
   }
 }
@@ -44,5 +46,5 @@ export class NotificationExtension {
 }
 
 export class NotificationException {
-  constructor(public message: string, public key: string | null, public code: number | null) {}
+  constructor(public message: string, public key: string | null, public code: NotificationCode | NotificationCode.OK) {}
 }
