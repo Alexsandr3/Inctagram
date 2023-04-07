@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { AuthController } from './api/auth.controller';
-import { CreateUserUseCase } from './application/use-cases/create-user.use-case';
 import { ConfirmByCodeUseCase } from './application/use-cases/confirmation-by-code.use-case';
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
@@ -23,9 +22,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { PasswordRecoveryRepository } from './infrastructure/password-recovery.repository';
 import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
 import { RecaptchaModule } from '../../providers/recaptcha/recaptcha.module';
+import { NewCreateUserUseCase } from './application/use-cases/new-create-user.use-case';
 
 const useCases = [
-  CreateUserUseCase,
+  NewCreateUserUseCase,
   ConfirmByCodeUseCase,
   LoginUseCase,
   ResendingUseCase,

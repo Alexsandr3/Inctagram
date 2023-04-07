@@ -16,12 +16,9 @@ import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
 import { SessionDto } from '../../sessions/application/dto/SessionDto';
 import { SessionData } from '../../../main/decorators/session-data.decorator';
 import { UserId } from '../../../main/decorators/user.decorator';
-import { LoginInputDto } from './input-dto/login.input.dto';
 import { PasswordRecoveryCodeInputDto } from './input-dto/password-recovery-code.input.dto';
 import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check-password-recovery-code.use-case';
 import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
-import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
-import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
 import { ResendingCommand } from '../application/use-cases/resending.use-case';
 import { LoginCommand } from '../application/use-cases/login.use-case';
 import { RecoveryCommand } from '../application/use-cases/recovery.use-case';
@@ -30,6 +27,10 @@ import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-c
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 import { TokensType } from '../application/types/types';
+import { NewCreateUserCommand } from '../application/use-cases/new-create-user.use-case';
+import { CheckLoginBodyFieldsGuard } from '../../../main/guards/check-login-body-fields.guard';
+import { LoginInputDto } from './input-dto/login.input.dto';
+import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -58,12 +59,12 @@ export class AuthController {
   })
   @Post('registration')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registration(@Body() body: RegisterInputDto): Promise<boolean> {
-    const notification = await this.commandBus.execute<CreateUserCommand, ResultNotification>(
-      new CreateUserCommand(body),
+  async registration(@Body() body: RegisterInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<NewCreateUserCommand, ResultNotification<null>>(
+      new NewCreateUserCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -86,12 +87,12 @@ export class AuthController {
   })
   @Post('registration-confirmation')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registrationConfirmation(@Body() body: ConfirmationCodeInputDto) {
-    const notification = await this.commandBus.execute<ConfirmByCodeCommand, ResultNotification>(
+  async registrationConfirmation(@Body() body: ConfirmationCodeInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<ConfirmByCodeCommand, ResultNotification<null>>(
       new ConfirmByCodeCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -150,6 +151,7 @@ export class AuthController {
   })
   @Post('login')
   @UseGuards(LocalAuthGuard)
+  @UseGuards(CheckLoginBodyFieldsGuard)
   @HttpCode(HTTP_Status.OK_200)
   async login(
     @Ip() ip: string,

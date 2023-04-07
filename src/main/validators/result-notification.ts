@@ -3,6 +3,11 @@ export class ResultNotification<T = null> {
   code = 0; // status code {0 - success, 1 - error}
   data: T | null = null; // data for response
 
+  static success<T>(data) {
+    const not = new ResultNotification<T>();
+    not.addData(data);
+  }
+
   hasError() {
     return this.code !== 0;
   }
@@ -27,8 +32,17 @@ export class ResultNotification<T = null> {
   getCode() {
     return this.code;
   }
+
+  addErrorFromNotificationException(e: NotificationException) {
+    this.code = e.code ?? 1;
+    this.extensions.push(new NotificationExtension(e.message, e.key));
+  }
 }
 
 export class NotificationExtension {
   constructor(public message: string, public field: string | null) {}
+}
+
+export class NotificationException {
+  constructor(public message: string, public key: string | null, public code: number | null) {}
 }

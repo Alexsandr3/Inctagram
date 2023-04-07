@@ -22,8 +22,10 @@ export class ConfirmByCodeUseCase implements ICommandHandler<ConfirmByCodeComman
     const { confirmationCode } = command.codeInputModel;
     //prepare a notification for result
     const notification = new ResultNotification();
+
     const foundUser = await this.usersRepository.findUserByConfirmationCode(confirmationCode);
     if (!foundUser) return notification;
+
     const { emailConfirmation } = foundUser;
     if (
       emailConfirmation.isConfirmed ||
@@ -33,6 +35,7 @@ export class ConfirmByCodeUseCase implements ICommandHandler<ConfirmByCodeComman
       notification.addError('Confirmation code is invalid', 'code', 2);
       return notification;
     }
+
     foundUser.confirmUser();
     await this.usersRepository.saveUser(foundUser);
     return notification;
