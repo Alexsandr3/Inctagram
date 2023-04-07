@@ -20,5 +20,5 @@ export abstract class BaseNotificationUseCase<TCommand, TResult> {
     return notification;
   }
 
-  protected abstract executeUseCase(command: TCommand): Promise<TResult>;
+  abstract executeUseCase(command: TCommand): Promise<TResult>;
 }
