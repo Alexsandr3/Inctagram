@@ -28,10 +28,10 @@ import Joi from 'joi';
         //REFRESH_TOKEN_SECRET: Joi.string().required(),
         //EXPIRED_REFRESH: Joi.string().required(),
 
-        //SECRET_ACCESS_KEY: Joi.string(),
-        //ACCESS_KEY_ID: Joi.string(),
-        //BUCKET: Joi.string(),
-        //ENDPOINT: Joi.string(),
+        AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+        AWS_ACCESS_KEY_ID: Joi.string().required(),
+        AWS_BUCKET: Joi.string().required(),
+        AWS_ENDPOINT: Joi.string().required(),
 
         //TOKEN_NGROK: Joi.string(),
 

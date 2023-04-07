@@ -54,20 +54,20 @@ export class ApiConfigService {
     return this.configService.get('EXPIRED_REFRESH', { infer: true });
   }
 
-  get SECRET_ACCESS_KEY(): string {
-    return this.configService.get('SECRET_ACCESS_KEY', { infer: true });
+  get AWS_SECRET_ACCESS_KEY(): string {
+    return this.configService.get('awsStorage.AWS_SECRET_ACCESS_KEY', { infer: true });
   }
 
-  get ACCESS_KEY_ID(): number {
-    return this.configService.get('ACCESS_KEY_ID', { infer: true });
+  get AWS_ACCESS_KEY_ID(): string {
+    return this.configService.get('awsStorage.AWS_ACCESS_KEY_ID', { infer: true });
   }
 
-  get BUCKET(): string {
-    return this.configService.get('BUCKET', { infer: true });
+  get AWS_BUCKET(): string {
+    return this.configService.get('awsStorage.AWS_BUCKET', { infer: true });
   }
 
-  get ENDPOINT(): string {
-    return this.configService.get('ENDPOINT', { infer: true });
+  get AWS_ENDPOINT(): string {
+    return this.configService.get('awsStorage.AWS_ENDPOINT', { infer: true });
   }
 
   get TOKEN_NGROK(): string {

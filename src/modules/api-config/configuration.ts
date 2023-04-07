@@ -26,10 +26,12 @@ export const configuration = () => ({
   REFRESH_TOKEN_SECRET: process.env.REFRESH_TOKEN_SECRET,
   EXPIRED_REFRESH: process.env.EXPIRED_REFRESH,
 
-  SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
-  ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
-  BUCKET: process.env.BUCKET,
-  ENDPOINT: process.env.ENDPOINT,
+  awsStorage: {
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    AWS_BUCKET: process.env.AWS_BUCKET,
+    AWS_ENDPOINT: process.env.AWS_ENDPOINT,
+  },
 
   TOKEN_NGROK: process.env.TOKEN_NGROK,
 
