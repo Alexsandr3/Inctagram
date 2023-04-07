@@ -1,40 +1,46 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConfirmationCodeInputDto } from '../../api/input-dto/confirmation-code.input.dto';
 import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { ResultNotification } from '../../../../main/validators/result-notification';
+import { NotificationException } from '../../../../main/validators/result-notification';
+import { BaseNotificationUseCase } from './base-notification.use-case';
+import { NotificationCode } from '../../../../configuration/exception.filter';
 
 /**
  * @description confirm user by code
  */
-export class ConfirmByCodeCommand {
+export class ConfirmRegistrationCommand {
   constructor(public readonly codeInputModel: ConfirmationCodeInputDto) {}
 }
 
-@CommandHandler(ConfirmByCodeCommand)
-export class ConfirmByCodeUseCase implements ICommandHandler<ConfirmByCodeCommand> {
-  constructor(protected usersRepository: UsersRepository) {}
+@CommandHandler(ConfirmRegistrationCommand)
+export class ConfirmRegistrationUseCase
+  extends BaseNotificationUseCase<ConfirmRegistrationCommand, void>
+  implements ICommandHandler<ConfirmRegistrationCommand>
+{
+  constructor(protected usersRepository: UsersRepository) {
+    super();
+  }
 
   /**
    * @description confirm user by code
    * @param command
    */
-  async execute(command: ConfirmByCodeCommand): Promise<ResultNotification> {
+  async executeUseCase(command: ConfirmRegistrationCommand) {
     const { confirmationCode } = command.codeInputModel;
-    //prepare a notification for result
-    const notification = new ResultNotification();
+
     const foundUser = await this.usersRepository.findUserByConfirmationCode(confirmationCode);
-    if (!foundUser) return notification;
+    if (!foundUser) throw new NotificationException('User not found', null, NotificationCode.NOT_FOUND);
+
     const { emailConfirmation } = foundUser;
     if (
       emailConfirmation.isConfirmed ||
       emailConfirmation.codeExpirationDate < new Date() ||
       emailConfirmation.confirmationCode !== confirmationCode
     ) {
-      notification.addError('Confirmation code is invalid', 'code', 2);
-      return notification;
+      throw new NotificationException('Confirmation code is invalid', 'code', NotificationCode.BAD_REQUEST);
     }
+
     foundUser.confirmUser();
     await this.usersRepository.saveUser(foundUser);
-    return notification;
   }
 }

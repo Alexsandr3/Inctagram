@@ -16,20 +16,21 @@ import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
 import { SessionDto } from '../../sessions/application/dto/SessionDto';
 import { SessionData } from '../../../main/decorators/session-data.decorator';
 import { UserId } from '../../../main/decorators/user.decorator';
-import { LoginInputDto } from './input-dto/login.input.dto';
 import { PasswordRecoveryCodeInputDto } from './input-dto/password-recovery-code.input.dto';
 import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check-password-recovery-code.use-case';
 import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
-import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
-import { CreateUserCommand } from '../application/use-cases/create-user.use-case';
-import { ResendingCommand } from '../application/use-cases/resending.use-case';
+import { ResendRegistrationEmailCommand } from '../application/use-cases/resend-registration-email.use-case';
 import { LoginCommand } from '../application/use-cases/login.use-case';
-import { RecoveryCommand } from '../application/use-cases/recovery.use-case';
+import { PasswordRecoveryCommand } from '../application/use-cases/password-recovery.use-case';
 import { LogoutCommand } from '../application/use-cases/logout.use-case';
-import { ConfirmByCodeCommand } from '../application/use-cases/confirmation-by-code.use-case';
+import { ConfirmRegistrationCommand } from '../application/use-cases/confirm-registration.use-case';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 import { TokensType } from '../application/types/types';
+import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
+import { CheckLoginBodyFieldsGuard } from '../../../main/guards/check-login-body-fields.guard';
+import { LoginInputDto } from './input-dto/login.input.dto';
+import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -44,26 +45,26 @@ export class AuthController {
     summary: 'Registration in the system. Email with confirmation code will be send to passed email address',
   })
   @ApiResponse({
-    status: 204,
+    status: HTTP_Status.NO_CONTENT_204,
     description: 'An email with a verification code has been sent to the specified email address',
   })
   @ApiResponse({
-    status: 400,
+    status: HTTP_Status.BAD_REQUEST_400,
     description: 'Incorrect input data',
     type: ApiErrorResultDto,
   })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('registration')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registration(@Body() body: RegisterInputDto): Promise<boolean> {
-    const notification = await this.commandBus.execute<CreateUserCommand, ResultNotification>(
-      new CreateUserCommand(body),
+  async registration(@Body() body: RegisterInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
+      new RegisterUserCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -72,26 +73,26 @@ export class AuthController {
    */
   @ApiOperation({ summary: 'Confirm registration' })
   @ApiResponse({
-    status: 204,
+    status: HTTP_Status.NO_CONTENT_204,
     description: 'Email was verified. Account was activated',
   })
   @ApiResponse({
-    status: 400,
+    status: HTTP_Status.BAD_REQUEST_400,
     description: 'Incorrect input data',
     type: ApiErrorResultDto,
   })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('registration-confirmation')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registrationConfirmation(@Body() body: ConfirmationCodeInputDto) {
-    const notification = await this.commandBus.execute<ConfirmByCodeCommand, ResultNotification>(
-      new ConfirmByCodeCommand(body),
+  async registrationConfirmation(@Body() body: ConfirmationCodeInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<ConfirmRegistrationCommand, ResultNotification<null>>(
+      new ConfirmRegistrationCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -102,26 +103,26 @@ export class AuthController {
     summary: 'Resend confirmation registration Email if user exists',
   })
   @ApiResponse({
-    status: 204,
+    status: HTTP_Status.NO_CONTENT_204,
     description: 'An email with a verification code has been sent to the specified email address',
   })
   @ApiResponse({
-    status: 400,
+    status: HTTP_Status.BAD_REQUEST_400,
     description: 'Incorrect input data',
     type: ApiErrorResultDto,
   })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('registration-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registrationEmailResending(@Body() body: RegistrationEmailResendingInputDto) {
-    const notification = await this.commandBus.execute<ResendingCommand, ResultNotification>(
-      new ResendingCommand(body),
+  async registrationEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<ResendRegistrationEmailCommand, ResultNotification<null>>(
+      new ResendRegistrationEmailCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -134,22 +135,23 @@ export class AuthController {
    */
   @ApiOperation({ summary: 'Try login user to the system' })
   @ApiResponse({
-    status: 200,
+    status: HTTP_Status.OK_200,
     description: 'success',
     type: TokenTypeSwaggerDto,
   })
   @ApiResponse({
-    status: 400,
+    status: HTTP_Status.BAD_REQUEST_400,
     description: 'Incorrect input data',
     type: ApiErrorResultDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('login')
   @UseGuards(LocalAuthGuard)
+  @UseGuards(CheckLoginBodyFieldsGuard)
   @HttpCode(HTTP_Status.OK_200)
   async login(
     @Ip() ip: string,
@@ -161,9 +163,14 @@ export class AuthController {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
       new LoginCommand(userId, ip, deviceName),
     );
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
+
     const { accessToken, refreshToken } = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-    return { accessToken };
+
+    const newNotification = new ResultNotification<LoginSuccessViewDto>();
+    newNotification.addData({ accessToken });
+    return notification.getData();
   }
 
   /**
@@ -173,16 +180,16 @@ export class AuthController {
   @ApiOperation({
     summary: 'Password recovery via Email confirmation. Email should be sent with RecoveryCode inside',
   })
-  @ApiResponse({ status: 204, description: 'success' })
-  @ApiResponse({ status: 400, description: 'Incorrect input data by field or reCaptcha' })
+  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
+  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field or reCaptcha' })
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecovery(@Body() body: PasswordRecoveryInputDto) {
-    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
-      new RecoveryCommand(body.email, false, body.recaptcha),
+  async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
+      new PasswordRecoveryCommand(body.email, false, body.recaptcha),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -190,21 +197,24 @@ export class AuthController {
    * @param body
    */
   @ApiOperation({ summary: 'Check recovery code for valid' })
-  @ApiResponse({ status: 200, description: 'Recovery code is valid', type: PasswordRecoveryViewDto })
-  @ApiResponse({ status: 400, description: 'If the recovery code is incorrect, expired or already been applied' })
+  @ApiResponse({ status: HTTP_Status.OK_200, description: 'Recovery code is valid', type: PasswordRecoveryViewDto })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.BAD_REQUEST_400,
+    description: 'If the recovery code is incorrect, expired or already been applied',
+  })
+  @ApiResponse({
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('check-recovery-code')
   @HttpCode(HTTP_Status.OK_200)
   async checkPasswordRecovery(@Body() body: PasswordRecoveryCodeInputDto): Promise<PasswordRecoveryViewDto> {
-    const notification = await this.commandBus.execute<CheckPasswordRecoveryCodeCommand, ResultNotification>(
-      new CheckPasswordRecoveryCodeCommand(body),
-    );
+    const notification = await this.commandBus.execute<
+      CheckPasswordRecoveryCodeCommand,
+      ResultNotification<PasswordRecoveryViewDto>
+    >(new CheckPasswordRecoveryCodeCommand(body));
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    const email = notification.getData();
-    return { email };
+    return notification.getData();
   }
 
   /**
@@ -212,16 +222,16 @@ export class AuthController {
    * @param body
    */
   @ApiOperation({ summary: 'password recovery via Email resending' })
-  @ApiResponse({ status: 204, description: 'success' })
-  @ApiResponse({ status: 400, description: 'Incorrect input data by field' })
+  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
+  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field' })
   @Post('password-recovery-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<boolean> {
-    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
-      new RecoveryCommand(body.email, false),
+  async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
+      new PasswordRecoveryCommand(body.email, false),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -229,20 +239,20 @@ export class AuthController {
    * @param body
    */
   @ApiOperation({ summary: 'Confirm Password recovery' })
-  @ApiResponse({ status: 204, description: 'success' })
-  @ApiResponse({ status: 400, description: 'Incorrect input data by field' })
+  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
+  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field' })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('new-password')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async newPassword(@Body() body: NewPasswordInputDto) {
-    const notification = await this.commandBus.execute<NewPasswordCommand, ResultNotification>(
+  async newPassword(@Body() body: NewPasswordInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<NewPasswordCommand, ResultNotification<null>>(
       new NewPasswordCommand(body),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 
   /**
@@ -251,31 +261,32 @@ export class AuthController {
   @ApiOperation({
     summary: 'In cookie client must send correct refresh Token that will be revoked',
   })
-  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
   @ApiResponse({
-    status: 401,
+    status: HTTP_Status.UNAUTHORIZED_401,
     description: 'JWT refreshToken inside cookie is missing, expired or incorrect',
   })
   @Post('logout')
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async logout(@SessionData() sessionData: SessionDto, @Res({ passthrough: true }) res: Response) {
-    const notification = await this.commandBus.execute<LogoutCommand, ResultNotification>(
+  async logout(@SessionData() sessionData: SessionDto, @Res({ passthrough: true }) res: Response): Promise<null> {
+    const notification = await this.commandBus.execute<LogoutCommand, ResultNotification<null>>(
       new LogoutCommand(sessionData.userId, sessionData.deviceId),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
     res.clearCookie('refreshToken');
+    return notification.getData();
   }
 
   //need for testing recaptcha --- > remove in production
   @ApiExcludeEndpoint()
   @Post('password-recovery-test')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto) {
-    const notification = await this.commandBus.execute<RecoveryCommand, ResultNotification>(
-      new RecoveryCommand(body.email, true, body.recaptcha),
+  async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
+      new PasswordRecoveryCommand(body.email, true, body.recaptcha),
     );
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
-    return;
+    return notification.getData();
   }
 }

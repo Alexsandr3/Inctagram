@@ -25,10 +25,10 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
    * @description create new user and send email for confirmation
    * @param command
    */
-  async execute(command: CreateUserCommand): Promise<ResultNotification<User>> {
+  async execute(command: CreateUserCommand): Promise<ResultNotification> {
     const { email, password } = command.userInputModel;
     //prepare a notification for result
-    const notification = new ResultNotification<User>();
+    const notification = new ResultNotification();
     //check email for uniqueness
     const existsUser = await this.usersRepository.findUserByEmail(email);
     if (existsUser) {
@@ -42,7 +42,6 @@ export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
     //save user
     await this.usersRepository.saveUser(user);
     await this.mailService.sendUserConfirmation(email, user.emailConfirmation.confirmationCode);
-    notification.addData(user);
     return notification;
   }
 }
