@@ -45,16 +45,16 @@ export class AuthController {
     summary: 'Registration in the system. Email with confirmation code will be send to passed email address',
   })
   @ApiResponse({
-    status: 204,
+    status: HTTP_Status.NO_CONTENT_204,
     description: 'An email with a verification code has been sent to the specified email address',
   })
   @ApiResponse({
-    status: 400,
+    status: HTTP_Status.BAD_REQUEST_400,
     description: 'Incorrect input data',
     type: ApiErrorResultDto,
   })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('registration')
@@ -73,16 +73,16 @@ export class AuthController {
    */
   @ApiOperation({ summary: 'Confirm registration' })
   @ApiResponse({
-    status: 204,
+    status: HTTP_Status.NO_CONTENT_204,
     description: 'Email was verified. Account was activated',
   })
   @ApiResponse({
-    status: 400,
+    status: HTTP_Status.BAD_REQUEST_400,
     description: 'Incorrect input data',
     type: ApiErrorResultDto,
   })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('registration-confirmation')
@@ -103,16 +103,16 @@ export class AuthController {
     summary: 'Resend confirmation registration Email if user exists',
   })
   @ApiResponse({
-    status: 204,
+    status: HTTP_Status.NO_CONTENT_204,
     description: 'An email with a verification code has been sent to the specified email address',
   })
   @ApiResponse({
-    status: 400,
+    status: HTTP_Status.BAD_REQUEST_400,
     description: 'Incorrect input data',
     type: ApiErrorResultDto,
   })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('registration-email-resending')
@@ -135,18 +135,18 @@ export class AuthController {
    */
   @ApiOperation({ summary: 'Try login user to the system' })
   @ApiResponse({
-    status: 200,
+    status: HTTP_Status.OK_200,
     description: 'success',
     type: TokenTypeSwaggerDto,
   })
   @ApiResponse({
-    status: 400,
+    status: HTTP_Status.BAD_REQUEST_400,
     description: 'Incorrect input data',
     type: ApiErrorResultDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('login')
@@ -180,8 +180,8 @@ export class AuthController {
   @ApiOperation({
     summary: 'Password recovery via Email confirmation. Email should be sent with RecoveryCode inside',
   })
-  @ApiResponse({ status: 204, description: 'success' })
-  @ApiResponse({ status: 400, description: 'Incorrect input data by field or reCaptcha' })
+  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
+  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field or reCaptcha' })
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<null> {
@@ -197,10 +197,13 @@ export class AuthController {
    * @param body
    */
   @ApiOperation({ summary: 'Check recovery code for valid' })
-  @ApiResponse({ status: 200, description: 'Recovery code is valid', type: PasswordRecoveryViewDto })
-  @ApiResponse({ status: 400, description: 'If the recovery code is incorrect, expired or already been applied' })
+  @ApiResponse({ status: HTTP_Status.OK_200, description: 'Recovery code is valid', type: PasswordRecoveryViewDto })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.BAD_REQUEST_400,
+    description: 'If the recovery code is incorrect, expired or already been applied',
+  })
+  @ApiResponse({
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('check-recovery-code')
@@ -219,8 +222,8 @@ export class AuthController {
    * @param body
    */
   @ApiOperation({ summary: 'password recovery via Email resending' })
-  @ApiResponse({ status: 204, description: 'success' })
-  @ApiResponse({ status: 400, description: 'Incorrect input data by field' })
+  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
+  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field' })
   @Post('password-recovery-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<null> {
@@ -236,10 +239,10 @@ export class AuthController {
    * @param body
    */
   @ApiOperation({ summary: 'Confirm Password recovery' })
-  @ApiResponse({ status: 204, description: 'success' })
-  @ApiResponse({ status: 400, description: 'Incorrect input data by field' })
+  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
+  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field' })
   @ApiResponse({
-    status: 429,
+    status: HTTP_Status.TOO_MANY_REQUESTS_429,
     description: 'More than 5 attempts from one IP-address during 10 seconds',
   })
   @Post('new-password')
@@ -258,9 +261,9 @@ export class AuthController {
   @ApiOperation({
     summary: 'In cookie client must send correct refresh Token that will be revoked',
   })
-  @ApiResponse({ status: 204, description: 'success' })
+  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
   @ApiResponse({
-    status: 401,
+    status: HTTP_Status.UNAUTHORIZED_401,
     description: 'JWT refreshToken inside cookie is missing, expired or incorrect',
   })
   @Post('logout')

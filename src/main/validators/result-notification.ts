@@ -42,7 +42,13 @@ export class ResultNotification<T = null> {
 }
 
 export class NotificationExtension {
-  constructor(public message: string, public field: string | null) {}
+  public message: string;
+  public field: string | null;
+
+  constructor(message: string, field: string | null) {
+    this.field = field;
+    this.message = message;
+  }
 }
 
 export class NotificationException {
