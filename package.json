@@ -27,6 +27,8 @@
     "db:migrate": "npm run typeorm migration:run"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.306.0",
+    "@aws-sdk/s3-request-presigner": "^3.306.0",
     "@nestjs-modules/mailer": "^1.8.1",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^2.3.1",
