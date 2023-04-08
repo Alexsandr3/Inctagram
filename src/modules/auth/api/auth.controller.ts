@@ -1,15 +1,13 @@
 import { Body, Controller, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
-import { ApiExcludeEndpoint, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConfirmationCodeInputDto } from './input-dto/confirmation-code.input.dto';
 import { PasswordRecoveryInputDto } from './input-dto/password-recovery.input.dto';
 import { RegistrationEmailResendingInputDto } from './input-dto/registration-email-resending.input.dto';
 import { NewPasswordInputDto } from './input-dto/new-password.input.dto';
 import { NewPasswordCommand } from '../application/use-cases/new-password.use-case';
-import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
-import { TokenTypeSwaggerDto } from '../../../configuration/swagger/swaggers/token-type-swagger.dto';
 import { Response } from 'express';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
@@ -30,6 +28,16 @@ import { TokensType } from '../application/types/types';
 import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { CheckLoginBodyFieldsGuard } from '../../../main/guards/check-login-body-fields.guard';
 import { LoginInputDto } from './input-dto/login.input.dto';
+import {
+  SwaggerDecoratorsByCheckPasswordRecovery,
+  SwaggerDecoratorsByConfirmationRegistration,
+  SwaggerDecoratorsByLogin,
+  SwaggerDecoratorsByLogout,
+  SwaggerDecoratorsByNewPassword,
+  SwaggerDecoratorsByPasswordRecovery,
+  SwaggerDecoratorsByRegistration,
+  SwaggerDecoratorsByRegistrationEmailResending,
+} from './swagger.auth.decorators';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -40,25 +48,10 @@ export class AuthController {
    * @description Registration in the system
    * @param body
    */
-  @ApiOperation({
-    summary: 'Registration in the system. Email with confirmation code will be send to passed email address',
-  })
-  @ApiResponse({
-    status: HTTP_Status.NO_CONTENT_204,
-    description: 'An email with a verification code has been sent to the specified email address',
-  })
-  @ApiResponse({
-    status: HTTP_Status.BAD_REQUEST_400,
-    description: 'Incorrect input data',
-    type: ApiErrorResultDto,
-  })
-  @ApiResponse({
-    status: HTTP_Status.TOO_MANY_REQUESTS_429,
-    description: 'More than 5 attempts from one IP-address during 10 seconds',
-  })
+  @SwaggerDecoratorsByRegistration()
   @Post('registration')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async registration(@Body() body: RegisterInputDto): Promise<null> {
+  async applyDecoratorsByRegistration(@Body() body: RegisterInputDto): Promise<null> {
     const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
       new RegisterUserCommand(body),
     );
@@ -70,20 +63,7 @@ export class AuthController {
    * @description Confirm registration via email
    * @param body
    */
-  @ApiOperation({ summary: 'Confirm registration' })
-  @ApiResponse({
-    status: HTTP_Status.NO_CONTENT_204,
-    description: 'Email was verified. Account was activated',
-  })
-  @ApiResponse({
-    status: HTTP_Status.BAD_REQUEST_400,
-    description: 'Incorrect input data',
-    type: ApiErrorResultDto,
-  })
-  @ApiResponse({
-    status: HTTP_Status.TOO_MANY_REQUESTS_429,
-    description: 'More than 5 attempts from one IP-address during 10 seconds',
-  })
+  @SwaggerDecoratorsByConfirmationRegistration()
   @Post('registration-confirmation')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registrationConfirmation(@Body() body: ConfirmationCodeInputDto): Promise<null> {
@@ -97,22 +77,7 @@ export class AuthController {
    * @description Resend confirmation registration Email if user exists
    * @param body
    */
-  @ApiOperation({
-    summary: 'Resend confirmation registration Email if user exists',
-  })
-  @ApiResponse({
-    status: HTTP_Status.NO_CONTENT_204,
-    description: 'An email with a verification code has been sent to the specified email address',
-  })
-  @ApiResponse({
-    status: HTTP_Status.BAD_REQUEST_400,
-    description: 'Incorrect input data',
-    type: ApiErrorResultDto,
-  })
-  @ApiResponse({
-    status: HTTP_Status.TOO_MANY_REQUESTS_429,
-    description: 'More than 5 attempts from one IP-address during 10 seconds',
-  })
+  @SwaggerDecoratorsByRegistrationEmailResending()
   @Post('registration-email-resending')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registrationEmailResending(@Body() body: RegistrationEmailResendingInputDto): Promise<null> {
@@ -130,22 +95,7 @@ export class AuthController {
    * @param userId
    * @param body
    */
-  @ApiOperation({ summary: 'Try login user to the system' })
-  @ApiResponse({
-    status: HTTP_Status.OK_200,
-    description: 'success',
-    type: TokenTypeSwaggerDto,
-  })
-  @ApiResponse({
-    status: HTTP_Status.BAD_REQUEST_400,
-    description: 'Incorrect input data',
-    type: ApiErrorResultDto,
-  })
-  @ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' })
-  @ApiResponse({
-    status: HTTP_Status.TOO_MANY_REQUESTS_429,
-    description: 'More than 5 attempts from one IP-address during 10 seconds',
-  })
+  @SwaggerDecoratorsByLogin()
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @UseGuards(CheckLoginBodyFieldsGuard)
@@ -160,10 +110,8 @@ export class AuthController {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
       new LoginCommand(userId, ip, deviceName),
     );
-
     const { accessToken, refreshToken } = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-
     return { accessToken };
   }
 
@@ -171,11 +119,7 @@ export class AuthController {
    * @description Recovery password via email
    * @param body
    */
-  @ApiOperation({
-    summary: 'Password recovery via Email confirmation. Email should be sent with RecoveryCode inside',
-  })
-  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
-  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field or reCaptcha' })
+  @SwaggerDecoratorsByPasswordRecovery()
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<null> {
@@ -189,16 +133,7 @@ export class AuthController {
    * @description Check recovery code for valid
    * @param body
    */
-  @ApiOperation({ summary: 'Check recovery code for valid' })
-  @ApiResponse({ status: HTTP_Status.OK_200, description: 'Recovery code is valid', type: PasswordRecoveryViewDto })
-  @ApiResponse({
-    status: HTTP_Status.BAD_REQUEST_400,
-    description: 'If the recovery code is incorrect, expired or already been applied',
-  })
-  @ApiResponse({
-    status: HTTP_Status.TOO_MANY_REQUESTS_429,
-    description: 'More than 5 attempts from one IP-address during 10 seconds',
-  })
+  @SwaggerDecoratorsByCheckPasswordRecovery()
   @Post('check-recovery-code')
   @HttpCode(HTTP_Status.OK_200)
   async checkPasswordRecovery(@Body() body: PasswordRecoveryCodeInputDto): Promise<PasswordRecoveryViewDto> {
@@ -213,13 +148,7 @@ export class AuthController {
    * @description Confirm password recovery via email
    * @param body
    */
-  @ApiOperation({ summary: 'Confirm Password recovery' })
-  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
-  @ApiResponse({ status: HTTP_Status.BAD_REQUEST_400, description: 'Incorrect input data by field' })
-  @ApiResponse({
-    status: HTTP_Status.TOO_MANY_REQUESTS_429,
-    description: 'More than 5 attempts from one IP-address during 10 seconds',
-  })
+  @SwaggerDecoratorsByNewPassword()
   @Post('new-password')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async newPassword(@Body() body: NewPasswordInputDto): Promise<null> {
@@ -232,14 +161,7 @@ export class AuthController {
   /**
    * @description Logout user from the system
    */
-  @ApiOperation({
-    summary: 'In cookie client must send correct refresh Token that will be revoked',
-  })
-  @ApiResponse({ status: HTTP_Status.NO_CONTENT_204, description: 'success' })
-  @ApiResponse({
-    status: HTTP_Status.UNAUTHORIZED_401,
-    description: 'JWT refreshToken inside cookie is missing, expired or incorrect',
-  })
+  @SwaggerDecoratorsByLogout()
   @Post('logout')
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HTTP_Status.NO_CONTENT_204)

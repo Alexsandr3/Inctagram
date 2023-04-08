@@ -28,14 +28,6 @@ import LogsMiddleware from './providers/logger/logs.middleware';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(LogsMiddleware)
-      .exclude(
-        '/api/swagger-ui-bundle.js',
-        'api/swagger-ui-init.js',
-        'api/swagger-ui.css',
-        'api/swagger-ui-standalone-preset.js',
-      )
-      .forRoutes('*');
+    consumer.apply(LogsMiddleware).forRoutes('*');
   }
 }
