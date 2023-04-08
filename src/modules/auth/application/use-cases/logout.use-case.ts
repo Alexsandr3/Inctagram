@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository.service';
+import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationCode } from '../../../../configuration/exception.filter';

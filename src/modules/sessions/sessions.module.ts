@@ -1,4 +1,4 @@
-import { SessionsRepository } from './infrastructure/sessions-repository.service';
+import { SessionsRepository } from './infrastructure/sessions-repository';
 import { Session } from './domain/session.entity';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
