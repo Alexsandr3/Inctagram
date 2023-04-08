@@ -3,7 +3,7 @@ import { TokensType } from '../types/types';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GenerateNewTokensDto } from '../types/GenerateNewTokensDto';
 import { SessionExtendedDto } from '../../../sessions/application/dto/SessionExtendedDto';
-import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
+import { ISessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 
 /**
@@ -18,7 +18,7 @@ export class GenerateNewTokensUseCase
   extends BaseNotificationUseCase<UpdateTokensCommand, TokensType>
   implements ICommandHandler<UpdateTokensCommand>
 {
-  constructor(protected apiJwtService: ApiJwtService, protected sessionsRepository: SessionsRepository) {
+  constructor(protected apiJwtService: ApiJwtService, protected sessionsRepository: ISessionsRepository) {
     super();
   }
 

@@ -3,8 +3,16 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 
+export abstract class IUsersRepository {
+  abstract findUserByEmail(email: string): Promise<User | null>;
+  abstract findUserByNameOrEmail(userName: string, email: string): Promise<User | null>;
+  abstract findUserByConfirmationCode(confirmationCode: string): Promise<User | null>;
+  abstract saveUser(user: User): Promise<void>;
+  abstract deleteUser(userId: number): Promise<void>;
+}
+
 @Injectable()
-export class UsersRepository {
+export class UsersRepository implements IUsersRepository {
   constructor(@InjectRepository(User) private readonly usersRepositoryT: Repository<User>) {}
 
   async findUserByEmail(email: string): Promise<User | null> {

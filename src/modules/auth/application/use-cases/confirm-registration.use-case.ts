@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ConfirmationCodeInputDto } from '../../api/input-dto/confirmation-code.input.dto';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationCode } from '../../../../configuration/exception.filter';
@@ -17,7 +17,7 @@ export class ConfirmRegistrationUseCase
   extends BaseNotificationUseCase<ConfirmRegistrationCommand, void>
   implements ICommandHandler<ConfirmRegistrationCommand>
 {
-  constructor(protected usersRepository: UsersRepository) {
+  constructor(protected usersRepository: IUsersRepository) {
     super();
   }
 

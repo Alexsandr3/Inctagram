@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
-import { PasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
+import { IUsersRepository } from '../../../users/infrastructure/users.repository';
+import { IPasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
 import { PasswordRecovery } from '../../domain/password-recovery.entity';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { RecaptchaAdapter } from '../../../../providers/recaptcha/recaptcha.adapter';
@@ -25,8 +25,8 @@ export class PasswordRecoveryUseCase
   implements ICommandHandler<PasswordRecoveryCommand>
 {
   constructor(
-    protected usersRepository: UsersRepository,
-    protected passwordRepository: PasswordRecoveryRepository,
+    protected usersRepository: IUsersRepository,
+    protected passwordRepository: IPasswordRecoveryRepository,
     private readonly mailService: MailManager,
     private readonly recaptchaAdapter: RecaptchaAdapter,
   ) {

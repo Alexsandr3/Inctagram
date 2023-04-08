@@ -3,8 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
+export abstract class IPasswordRecoveryRepository {
+  abstract findPassRecovery(recoveryCode: string): Promise<PasswordRecovery | null>;
+  abstract savePassRecovery(passRecovery: PasswordRecovery): Promise<void>;
+  abstract deletePassRecovery(recoveryCode: string): Promise<void>;
+}
+
 @Injectable()
-export class PasswordRecoveryRepository {
+export class PasswordRecoveryRepository implements IPasswordRecoveryRepository {
   constructor(
     @InjectRepository(PasswordRecovery) private readonly passwordRecoveryRepositoryT: Repository<PasswordRecovery>,
   ) {}

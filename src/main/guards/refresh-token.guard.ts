@@ -1,11 +1,11 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 import { ApiJwtService } from '../../modules/api-jwt/api-jwt.service';
-import { SessionsRepository } from '../../modules/sessions/infrastructure/sessions-repository';
+import { ISessionsRepository } from '../../modules/sessions/infrastructure/sessions-repository';
 
 @Injectable()
 export class RefreshTokenGuard implements CanActivate {
-  constructor(protected apiJwtService: ApiJwtService, protected securityRepository: SessionsRepository) {}
+  constructor(protected apiJwtService: ApiJwtService, protected securityRepository: ISessionsRepository) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req: Request = context.switchToHttp().getRequest();

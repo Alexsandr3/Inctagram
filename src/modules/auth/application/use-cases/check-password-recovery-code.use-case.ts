@@ -1,6 +1,6 @@
 import { PasswordRecoveryCodeInputDto } from '../../api/input-dto/password-recovery-code.input.dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { PasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
+import { IPasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationCode } from '../../../../configuration/exception.filter';
@@ -19,7 +19,7 @@ export class CheckPasswordRecoveryCodeUseCase
   extends BaseNotificationUseCase<CheckPasswordRecoveryCodeCommand, ucResult>
   implements ICommandHandler<CheckPasswordRecoveryCodeCommand>
 {
-  constructor(protected passwordRepository: PasswordRecoveryRepository) {
+  constructor(protected passwordRepository: IPasswordRecoveryRepository) {
     super();
   }
 

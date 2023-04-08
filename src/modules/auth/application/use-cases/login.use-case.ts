@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ApiJwtService } from '../../../api-jwt/api-jwt.service';
-import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
+import { ISessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
 import { Session } from '../../../sessions/domain/session.entity';
 import { TokensType } from '../types/types';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
@@ -17,7 +17,7 @@ export class LoginUseCase
   extends BaseNotificationUseCase<LoginCommand, TokensType>
   implements ICommandHandler<LoginCommand>
 {
-  constructor(protected apiJwtService: ApiJwtService, protected sessionsRepository: SessionsRepository) {
+  constructor(protected apiJwtService: ApiJwtService, protected sessionsRepository: ISessionsRepository) {
     super();
   }
 

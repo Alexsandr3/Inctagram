@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegistrationEmailResendingInputDto } from '../../api/input-dto/registration-email-resending.input.dto';
-import { UsersRepository } from '../../../users/infrastructure/users.repository';
+import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
@@ -18,7 +18,7 @@ export class ResendRegistrationEmailUseCase
   extends BaseNotificationUseCase<ResendRegistrationEmailCommand, void>
   implements ICommandHandler<ResendRegistrationEmailCommand>
 {
-  constructor(protected usersRepository: UsersRepository, private readonly mailService: MailManager) {
+  constructor(protected usersRepository: IUsersRepository, private readonly mailService: MailManager) {
     super();
   }
 

@@ -3,8 +3,15 @@ import { Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
+export abstract class ISessionsRepository {
+  abstract findSessionByDeviceId(deviceId: number): Promise<Session | null>;
+  abstract saveSession(session: Session): Promise<void>;
+  abstract deleteSessionByDeviceId(deviceId: number): Promise<void>;
+  abstract newDeviceId(): Promise<Session>;
+}
+
 @Injectable()
-export class SessionsRepository {
+export class SessionsRepository implements ISessionsRepository {
   constructor(@InjectRepository(Session) private readonly sessionsRepositoryT: Repository<Session>) {}
 
   async findSessionByDeviceId(deviceId: number): Promise<Session | null> {
