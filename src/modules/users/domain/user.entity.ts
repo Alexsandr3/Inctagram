@@ -7,7 +7,9 @@ import { EmailConfirmation } from './user.email-confirmation.entity';
 export class User {
   @PrimaryGeneratedColumn('increment')
   id: number;
-  @Column()
+  @Column({ unique: true })
+  userName: string;
+  @Column({ unique: true })
   email: string;
   @Column()
   passwordHash: string;
@@ -16,7 +18,8 @@ export class User {
   @Column()
   createdAt: Date;
 
-  constructor(email: string, passwordHash: string) {
+  constructor(userName: string, email: string, passwordHash: string) {
+    this.userName = userName;
     this.email = email;
     this.passwordHash = passwordHash;
     this.emailConfirmation = new EmailConfirmation();

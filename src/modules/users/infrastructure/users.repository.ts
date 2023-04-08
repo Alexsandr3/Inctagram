@@ -12,6 +12,14 @@ export class UsersRepository {
     return foundUser ?? null;
   }
 
+  async findUserByNameOrEmail(userName: string, email: string): Promise<User | null> {
+    const foundUser = await this.usersRepositoryT.findOne({
+      where: [{ userName: ILike(userName) }, { email: ILike(email) }],
+    });
+
+    return foundUser ?? null;
+  }
+
   async findUserByConfirmationCode(confirmationCode: string): Promise<User | null> {
     const foundUser = await this.usersRepositoryT.findOne({
       where: { emailConfirmation: { confirmationCode: confirmationCode } },
