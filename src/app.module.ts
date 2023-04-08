@@ -6,10 +6,10 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ApiJwtModule } from './modules/api-jwt/api-jwt.module';
 import { SessionsModule } from './modules/sessions/sessions.module';
-import { DatabaseModule } from './providers/database/database.module';
 import { TestingModule } from './providers/testing/testing.module';
 import { LoggerModule } from './providers/logger/logger.module';
 import LogsMiddleware from './providers/logger/logs.middleware';
+import { PrismaModule } from './providers/prisma/prisma.module';
 
 @Module({
   imports: [
@@ -19,9 +19,10 @@ import LogsMiddleware from './providers/logger/logs.middleware';
     UsersModule,
     ApiJwtModule,
     SessionsModule,
-    DatabaseModule,
+    // DatabaseModule,
     TestingModule, //need for testing !!!
     LoggerModule,
+    PrismaModule,
   ],
   controllers: [AppController],
   providers: [],
