@@ -34,15 +34,18 @@ export class RegisterUserUseCase
    */
 
   async executeUseCase(command: RegisterUserCommand) {
-    const { email, password } = command.userInputModel; //prepare a notification for result
+    const { userName, email, password } = command.userInputModel; //prepare a notification for result
 
-    const existsUser = await this.usersRepository.findUserByEmail(email); //throw new NotificationException('Code is not valid', 'code', 2);
-    if (existsUser)
+    const foundUser = await this.usersRepository.findUserByNameOrEmail(userName, email); //throw new NotificationException('Code is not valid', 'code', 2);
+    if (foundUser) {
+      if (foundUser.userName.toLowerCase() === userName.toLowerCase())
+        throw new NotificationException('User with this name is already exist', 'name', NotificationCode.BAD_REQUEST);
       throw new NotificationException('User with this email is already exist', 'email', NotificationCode.BAD_REQUEST);
+    }
 
     const passwordHash = await this.authService.getPasswordHash(password); //generate password hash
 
-    const user = new User(email, passwordHash); //create user
+    const user = new User(userName, email, passwordHash); //create user
 
     await this.usersRepository.saveUser(user); //save user
     await this.mailService.sendUserConfirmation(email, user.emailConfirmation.confirmationCode);
