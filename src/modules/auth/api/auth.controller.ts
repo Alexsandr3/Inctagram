@@ -37,6 +37,7 @@ import {
   SwaggerDecoratorsByPasswordRecovery,
   SwaggerDecoratorsByRegistration,
   SwaggerDecoratorsByRegistrationEmailResending,
+  SwaggerDecoratorsByUpdateTokens,
 } from './swagger.auth.decorators';
 import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
 
@@ -174,20 +175,10 @@ export class AuthController {
     return notification.getData();
   }
 
-  //need for testing recaptcha --- > remove in production
-  @ApiExcludeEndpoint()
-  @Post('password-recovery-test')
-  @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
-      new PasswordRecoveryCommand(body.email, true, body.recaptcha),
-    );
-    return notification.getData();
-  }
-
+  @SwaggerDecoratorsByUpdateTokens()
   @Post('update-tokens')
   @UseGuards(RefreshTokenGuard)
-  @HttpCode(200)
+  @HttpCode(HTTP_Status.OK_200)
   async updateTokens(
     @SessionData() sessionData: SessionDto,
     @Ip() ip: string,
@@ -202,5 +193,16 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 
     return { accessToken };
+  }
+
+  //need for testing recaptcha --- > remove in production
+  @ApiExcludeEndpoint()
+  @Post('password-recovery-test')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
+      new PasswordRecoveryCommand(body.email, true, body.recaptcha),
+    );
+    return notification.getData();
   }
 }

@@ -129,3 +129,20 @@ export function SwaggerDecoratorsByLogout(): MethodDecorator {
     }),
   );
 }
+export function SwaggerDecoratorsByUpdateTokens(): MethodDecorator {
+  return applyDecorators(
+    ApiOperation({
+      summary:
+        'Generate new pair of access and refresh tokens (in cookie client must send correct refreshToken that will be revoked after refreshing) Device LastActiveDate should be overrode by issued Date of new refresh token',
+    }),
+    ApiResponse({
+      status: HTTP_Status.OK_200,
+      description: 'success',
+      type: TokenTypeSwaggerDto,
+    }),
+    ApiResponse({
+      status: HTTP_Status.UNAUTHORIZED_401,
+      description: 'If the JWT refreshToken inside cookie is missing, expired or incorrect',
+    }),
+  );
+}
