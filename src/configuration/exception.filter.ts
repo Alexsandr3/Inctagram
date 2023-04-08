@@ -13,7 +13,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const errorResult = new ApiErrorResultDto();
     errorResult.statusCode = status;
     errorResult.messages = status === 400 ? mapErrorsToNotification(responseBody.message) : [];
-    errorResult.error = status === 400 ? 'Bad request' : exception.message;
+    errorResult.error = status === 400 ? 'Bad Request' : exception.message;
     return response.status(status).json(errorResult);
   }
 }

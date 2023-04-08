@@ -4,6 +4,13 @@ import { Transform } from 'class-transformer';
 
 export class RegisterInputDto {
   /**
+   * userName: name for create/registration User
+   */
+  @Length(1, 30)
+  @IsString()
+  @ApiProperty({ pattern: '^[a-zA-Z0-9_-]*$', example: 'string' })
+  userName: string;
+  /**
    * password: password for create/registration User
    */
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))

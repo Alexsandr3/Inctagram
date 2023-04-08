@@ -78,9 +78,12 @@ export class AuthHelper {
     // send request for send email
     const response = await request(this.app.getHttpServer())
       .post(authEndpoints.login())
+      .set(`User-Agent`, `for test`)
       .send(command)
       .expect(expectedCode);
-
+    if (expectedCode === HTTP_Status.OK_200) {
+      return response;
+    }
     return response.body;
   }
 
@@ -157,7 +160,6 @@ export class AuthHelper {
   }
 
   async logout(
-    command: NewPasswordInputDto,
     config: {
       expectedBody?: any;
       expectedCode?: number;
@@ -168,7 +170,7 @@ export class AuthHelper {
     // send request for send email
     const response = await request(this.app.getHttpServer())
       .post(authEndpoints.logout())
-      .send(command)
+      .set('Cookie', `refreshToken=${config.expectedBody}`)
       .expect(expectedCode);
 
     return response.body;

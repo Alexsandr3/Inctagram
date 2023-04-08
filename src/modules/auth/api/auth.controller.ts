@@ -50,8 +50,7 @@ export class AuthController {
    */
   @SwaggerDecoratorsByRegistration()
   @Post('registration')
-
-  // @HttpCode(HTTP_Status.NO_CONTENT_204)
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
   async applyDecoratorsByRegistration(@Body() body: RegisterInputDto): Promise<null> {
     const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
       new RegisterUserCommand(body),
@@ -111,10 +110,8 @@ export class AuthController {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
       new LoginCommand(userId, ip, deviceName),
     );
-
     const { accessToken, refreshToken } = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
-
     return { accessToken };
   }
 
@@ -151,7 +148,6 @@ export class AuthController {
    * @description Confirm password recovery via email
    * @param body
    */
-
   @SwaggerDecoratorsByNewPassword()
   @Post('new-password')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
@@ -165,7 +161,6 @@ export class AuthController {
   /**
    * @description Logout user from the system
    */
-
   @SwaggerDecoratorsByLogout()
   @Post('logout')
   @UseGuards(RefreshTokenGuard)
