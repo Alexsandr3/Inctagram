@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { get } from 'http';
 import { createWriteStream } from 'fs';
-import { ApiConfigService } from '../../modules/api-config/api.config.service';
+import { ApiConfigService } from '../../../modules/api-config/api.config.service';
 
 export const swaggerStatic = (app: INestApplication) => {
   // for -----------------------------> swagger
@@ -21,15 +21,10 @@ export const swaggerStatic = (app: INestApplication) => {
       // console.log(`Swagger UI init file written to: '/swagger-static/swagger-ui-init.js'`);
     });
 
-    get(
-      `${serverUrl}/api/swagger-ui-standalone-preset.js`,
-      function (response) {
-        response.pipe(
-          createWriteStream('swagger-static/swagger-ui-standalone-preset.js'),
-        );
-        // console.log(`Swagger UI standalone preset file written to: '/swagger-static/swagger-ui-standalone-preset.js'`);
-      },
-    );
+    get(`${serverUrl}/api/swagger-ui-standalone-preset.js`, function (response) {
+      response.pipe(createWriteStream('swagger-static/swagger-ui-standalone-preset.js'));
+      // console.log(`Swagger UI standalone preset file written to: '/swagger-static/swagger-ui-standalone-preset.js'`);
+    });
 
     get(`${serverUrl}/api/swagger-ui.css`, function (response) {
       response.pipe(createWriteStream('swagger-static/swagger-ui.css'));
