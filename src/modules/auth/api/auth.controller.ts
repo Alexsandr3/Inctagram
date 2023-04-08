@@ -30,6 +30,7 @@ import { TokensType } from '../application/types/types';
 import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { CheckLoginBodyFieldsGuard } from '../../../main/guards/check-login-body-fields.guard';
 import { LoginInputDto } from './input-dto/login.input.dto';
+import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -260,5 +261,24 @@ export class AuthController {
       new PasswordRecoveryCommand(body.email, true, body.recaptcha),
     );
     return notification.getData();
+  }
+
+  @Post('update-tokens')
+  @UseGuards(RefreshTokenGuard)
+  @HttpCode(200)
+  async updateTokens(
+    @SessionData() sessionData: SessionDto,
+    @Ip() ip: string,
+    @Headers('user-agent') deviceName = 'unknown',
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<LoginSuccessViewDto> {
+    const notification = await this.commandBus.execute<UpdateTokensCommand, ResultNotification<TokensType>>(
+      new UpdateTokensCommand({ oldSessionData: sessionData, ip, deviceName }),
+    );
+
+    const { accessToken, refreshToken } = notification.getData();
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+
+    return { accessToken };
   }
 }
