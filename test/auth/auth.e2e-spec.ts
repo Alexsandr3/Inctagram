@@ -5,6 +5,7 @@ import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dt
 import { MailManager } from '../../src/providers/mailer/application/mail-manager.service';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 
+jest.setTimeout(120000);
 describe('Clients-admin e2e', () => {
   let app: INestApplication;
   let authHelper: AuthHelper;
@@ -161,6 +162,12 @@ describe('Clients-admin e2e', () => {
   });
   //auth/logout
   it('19 - / (POST) - should return 401 if user not unauthorized', async () => {});
+  //auth/refresh-token
+  it('20 - / (POST) - should return 401 if user not unauthorized', async () => {
+    const response: ApiErrorResultDto = await authHelper.refreshToken({ expectedCode: 401 });
+    expect(response.messages).toHaveLength(0);
+    expect(response.error).toBe('Unauthorized');
+  });
 
   // Registration correct data
   let correctEmail: string = 'test@test.ts';
@@ -269,5 +276,22 @@ describe('Clients-admin e2e', () => {
     const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('email');
+  });
+
+  //Refresh token
+  it('43 - / (POST) - should return 200 if refreshToken correct', async () => {
+    const response = await authHelper.refreshToken({ expectedCode: 200, expectedBody: refreshToken });
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.headers['set-cookie']).toBeDefined();
+    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
+    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
+    expect(response.headers['set-cookie'][0]).toContain('Path=/');
+    expect(response.headers['set-cookie'][0]).toContain('Secure');
+  });
+  it('44 - / (POST) - should return 401 if refreshToken expired', async () => {
+    jest.useFakeTimers();
+    jest.advanceTimersByTime(10000);
+    const response = await authHelper.refreshToken({ expectedCode: 401, expectedBody: refreshToken });
+    expect(response.error).toBe('Unauthorized');
   });
 });

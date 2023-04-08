@@ -6,6 +6,9 @@ import { SessionExtendedDto } from '../../../sessions/application/dto/SessionExt
 import { SessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 
+/**
+ * @description Refresh command
+ */
 export class UpdateTokensCommand {
   constructor(public dto: GenerateNewTokensDto) {}
 }
@@ -19,6 +22,10 @@ export class GenerateNewTokensUseCase
     super();
   }
 
+  /**
+   * Refresh tokens
+   * @param command
+   */
   async executeUseCase(command: UpdateTokensCommand): Promise<TokensType> {
     const { deviceName, oldSessionData, ip } = command.dto;
 

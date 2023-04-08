@@ -175,4 +175,24 @@ export class AuthHelper {
 
     return response.body;
   }
+
+  async refreshToken(
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<any> {
+    // default expected code is 200 or code mistake from config
+    const expectedCode = config.expectedCode ?? HTTP_Status.OK_200;
+    // send request for send email
+    const response = await request(this.app.getHttpServer())
+      .post(authEndpoints.updateTokens())
+      .set('Cookie', `refreshToken=${config.expectedBody}`)
+      .expect(expectedCode);
+
+    if (expectedCode === HTTP_Status.OK_200) {
+      return response;
+    }
+    return response.body;
+  }
 }

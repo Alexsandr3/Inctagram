@@ -10,6 +10,7 @@ export const authEndpoints = {
   passwordRecoveryEmailResending: () => `${baseUrlAuth}/password-recovery-email-resending`,
   newPassword: () => `${baseUrlAuth}/new-password`,
   logout: () => `${baseUrlAuth}/logout`,
+  updateTokens: () => `${baseUrlAuth}/update-tokens`,
 };
 
 //Регистрация и аутентификация пользователей:

@@ -4,7 +4,6 @@ import { ConfirmRegistrationUseCase } from './application/use-cases/confirm-regi
 import { LoginUseCase } from './application/use-cases/login.use-case';
 import { LogoutUseCase } from './application/use-cases/logout.use-case';
 import { NewPasswordUseCase } from './application/use-cases/new-password.use-case';
-import { RefreshUseCase } from './application/use-cases/refresh.use-case';
 import { PasswordRecoveryUseCase } from './application/use-cases/password-recovery.use-case';
 import { ResendRegistrationEmailUseCase } from './application/use-cases/resend-registration-email.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -23,6 +22,7 @@ import { PasswordRecoveryRepository } from './infrastructure/password-recovery.r
 import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
 import { RecaptchaModule } from '../../providers/recaptcha/recaptcha.module';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
+import { GenerateNewTokensUseCase } from './application/use-cases/update-tokens.use-case';
 
 const useCases = [
   RegisterUserUseCase,
@@ -31,7 +31,7 @@ const useCases = [
   ResendRegistrationEmailUseCase,
   NewPasswordUseCase,
   PasswordRecoveryUseCase,
-  RefreshUseCase,
+  GenerateNewTokensUseCase,
   LogoutUseCase,
   CheckPasswordRecoveryCodeUseCase,
 ];
