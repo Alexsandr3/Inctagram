@@ -1,0 +1,55 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+// npm run migrate --name=add-avatar-field
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PRISMA_DATABASE_URL")
+}
+
+model User {
+  id                Int                @id @default(autoincrement())
+  userName          String             @unique
+  email             String             @unique // @map("email" varchar(255) COLLATE "C")
+  passwordHash      String
+  createdAt         DateTime           @default(now()) @db.Timestamptz(3) //, map: "created_at::timestamptz"
+  emailConfirmation EmailConfirmation?
+  Session           Session[]
+
+  @@map("User")
+}
+
+model EmailConfirmation {
+  userId             Int       @unique
+  isConfirmed        Boolean   @default(false)
+  confirmationCode   String? // является необязательным (nullable)
+  codeExpirationDate DateTime? @db.Timestamptz(3) // является необязательным (nullable)
+  user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("EmailConfirmation")
+}
+
+model Session {
+  deviceId   Int     @id @default(autoincrement())
+  userId     Int?
+  exp        Int?
+  ip         String?
+  deviceName String?
+  iat        Int?
+  user       User?   @relation(fields: [userId], references: [id])
+
+  @@map("Session")
+}
+
+model PasswordRecovery {
+  id             Int      @id @default(autoincrement())
+  recoveryCode   String   @unique
+  expirationDate DateTime @db.Timestamptz(3)
+  email          String   @unique
+
+  @@map("PasswordRecovery")
+}
