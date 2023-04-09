@@ -1,21 +1,21 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
-import { User } from './user.entity';
+import { UserEntity } from './user.entity';
 
 @Entity('UsersEmailConfirmation')
 export class EmailConfirmation {
+  @PrimaryColumn()
+  userId: number;
   @Column()
   isConfirmed: boolean;
   @Column({ nullable: true })
   confirmationCode: string;
   @Column({ nullable: true })
   codeExpirationDate: Date;
-  @OneToOne(() => User, u => u.emailConfirmation, { onDelete: 'CASCADE' })
+  @OneToOne(() => UserEntity, u => u.emailConfirmation, { onDelete: 'CASCADE' })
   @JoinColumn()
-  user: User;
-  @PrimaryColumn()
-  userId: number;
+  user: UserEntity;
 
   constructor() {
     this.isConfirmed = false;

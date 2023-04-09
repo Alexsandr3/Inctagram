@@ -34,7 +34,7 @@ export class ResendRegistrationEmailUseCase
       throw new NotificationException("Email isn't valid or already confirmed", 'email', NotificationCode.BAD_REQUEST);
 
     foundUser.updateEmailConfirmation();
-    await this.usersRepository.saveUser(foundUser);
+    await this.usersRepository.updateUser(foundUser);
 
     await this.mailService.sendUserConfirmation(email, foundUser.emailConfirmation.confirmationCode);
   }

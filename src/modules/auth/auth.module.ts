@@ -16,9 +16,11 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './application/auth.service';
 import { UsersModule } from '../users/users.module';
-import { PasswordRecovery } from './domain/password-recovery.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { IPasswordRecoveryRepository, PasswordRecoveryRepository } from './infrastructure/password-recovery.repository';
+import { PasswordRecoveryEntity } from './domain/password-recovery.entity';
+import {
+  IPasswordRecoveryRepository,
+  PrismaPasswordRecoveryRepository,
+} from './infrastructure/password-recovery.repository';
 import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
 import { RecaptchaModule } from '../../providers/recaptcha/recaptcha.module';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
@@ -37,11 +39,11 @@ const useCases = [
 ];
 
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];
-const entities = [PasswordRecovery];
+const entities = [PasswordRecoveryEntity];
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature(entities),
+    // TypeOrmModule.forFeature(entities),
     CqrsModule,
     ApiConfigModule,
     ApiJwtModule,
@@ -55,9 +57,8 @@ const entities = [PasswordRecovery];
     AuthService,
     {
       provide: IPasswordRecoveryRepository,
-      useClass: PasswordRecoveryRepository,
+      useClass: PrismaPasswordRecoveryRepository,
     },
-    PasswordRecoveryRepository,
     ...useCases,
     ...strategies,
   ],

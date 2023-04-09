@@ -49,7 +49,7 @@ export class NewPasswordUseCase
     const passwordHash = await this.authService.getPasswordHash(newPassword);
 
     foundUser.updatePassword(passwordHash);
-    await this.usersRepository.saveUser(foundUser);
+    await this.usersRepository.updateUser(foundUser);
     await this.passwordRepository.deletePassRecovery(recoveryCode);
   }
 }

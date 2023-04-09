@@ -1,21 +1,33 @@
 import { add } from 'date-fns';
 import { randomUUID } from 'crypto';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('PasswordRecovery')
-export class PasswordRecovery {
-  @PrimaryGeneratedColumn('increment')
+// @Entity('PasswordRecovery')
+export class PasswordRecoveryEntity {
+  // @PrimaryGeneratedColumn('increment')
   id: number;
-  @Column()
+  // @Column()
   recoveryCode: string;
-  @Column()
+  // @Column()
   expirationDate: Date;
-  @Column()
+  // @Column()
   email: string;
 
-  constructor(email: string) {
-    this.recoveryCode = randomUUID();
-    this.expirationDate = add(new Date(), { hours: 24 });
-    this.email = email;
+  constructor() {}
+
+  static preparation(passRecovery: any): PasswordRecoveryEntity {
+    const passRecoveryEntity = new PasswordRecoveryEntity();
+    passRecoveryEntity.id = passRecovery.id;
+    passRecoveryEntity.email = passRecovery.email;
+    passRecoveryEntity.recoveryCode = passRecovery.recoveryCode;
+    passRecoveryEntity.expirationDate = passRecovery.expirationDate;
+    return passRecoveryEntity;
+  }
+
+  static initCreate(email: string) {
+    const passRecoveryEntity = new PasswordRecoveryEntity();
+    passRecoveryEntity.email = email;
+    passRecoveryEntity.recoveryCode = randomUUID();
+    passRecoveryEntity.expirationDate = add(new Date(), { hours: 24 });
+    return passRecoveryEntity;
   }
 }

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ApiJwtService } from '../../../api-jwt/api-jwt.service';
 import { ISessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
-import { Session } from '../../../sessions/domain/session.entity';
+import { SessionEntity } from '../../../sessions/domain/session.entity';
 import { TokensType } from '../types/types';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 
@@ -33,7 +33,7 @@ export class LoginUseCase
     const tokens = await this.apiJwtService.createJWT(userId, session.deviceId);
     const refreshTokenData = await this.apiJwtService.getRefreshTokenData(tokens.refreshToken);
 
-    session = new Session({ ...refreshTokenData, ip, deviceName });
+    session = SessionEntity.initCreate({ ...refreshTokenData, ip, deviceName });
     await this.sessionsRepository.saveSession(session);
 
     return tokens;

@@ -3,17 +3,20 @@ import { AppModule } from '../../src/app.module';
 import { appConfig } from '../../src/configuration/app.config';
 import { DataSource } from 'typeorm';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
+import { PrismaClient } from '@prisma/client';
 
-// async function truncateDBTables(prisma: PrismaClient): Promise<void> {
-//   const models = Object.keys(prisma)
-//     .filter(key => prisma[key].hasOwnProperty('model'))
-//     .map(key => prisma[key].model);
-//   for (const model of models) {
-//     await prisma.$executeRaw(
-//       `TRUNCATE TABLE "${model.databaseName}"."${model.name}" CASCADE;`,
-//     );
-//   }
-// }
+async function truncateDBTablesPrisma(prisma: PrismaClient): Promise<void> {
+  const models = Object.keys(prisma)
+    .filter(item => {
+      return !(item.startsWith('_') || item.endsWith('$extends'));
+    })
+    .map(str => {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    });
+  for (const model of models) {
+    await prisma.$queryRawUnsafe(`TRUNCATE TABLE "${model}" CASCADE;`);
+  }
+}
 
 export async function truncateDBTables(connection: DataSource): Promise<void> {
   const entities = connection.entityMetadatas;
@@ -22,6 +25,8 @@ export async function truncateDBTables(connection: DataSource): Promise<void> {
     await repository.query(`TRUNCATE TABLE "${entity.tableName}" CASCADE;`);
   }
 }
+
+const prisma = new PrismaClient();
 
 export const getAppForE2ETesting = async (
   mailerOn: boolean,
@@ -37,6 +42,9 @@ export const getAppForE2ETesting = async (
   appConfig(app);
   await app.init();
   const connection = appCompile.get(DataSource); //If you need to use Prisma, you need to  exchange  PrismaClient instead of DataSource
-  await truncateDBTables(connection); // очищаем таблицы перед каждым запуском тестов
+  await truncateDBTables(connection);
+  await truncateDBTablesPrisma(prisma).finally(async () => {
+    await prisma.$disconnect();
+  }); // очищаем таблицы перед каждым запуском тестов
   return app;
 };

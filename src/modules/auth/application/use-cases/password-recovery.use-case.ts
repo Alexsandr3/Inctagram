@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { IPasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
-import { PasswordRecovery } from '../../domain/password-recovery.entity';
+import { PasswordRecoveryEntity } from '../../domain/password-recovery.entity';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { RecaptchaAdapter } from '../../../../providers/recaptcha/recaptcha.adapter';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
@@ -51,7 +51,7 @@ export class PasswordRecoveryUseCase
     const isUserExist = await this.usersRepository.findUserByEmail(email);
     if (!isUserExist) return;
 
-    const passwordRecovery = new PasswordRecovery(email);
+    const passwordRecovery = PasswordRecoveryEntity.initCreate(email);
     await this.passwordRepository.savePassRecovery(passwordRecovery);
 
     await this.mailService.sendPasswordRecoveryMessage(email, passwordRecovery.recoveryCode);

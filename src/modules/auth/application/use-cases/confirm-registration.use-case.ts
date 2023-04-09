@@ -41,6 +41,6 @@ export class ConfirmRegistrationUseCase
     }
 
     foundUser.confirmUser();
-    await this.usersRepository.saveUser(foundUser);
+    await this.usersRepository.updateUser(foundUser);
   }
 }

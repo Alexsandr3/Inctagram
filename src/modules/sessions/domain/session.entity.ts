@@ -1,36 +1,58 @@
 import { SessionExtendedDto } from '../application/dto/SessionExtendedDto';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { User } from '../../users/domain/user.entity';
+import { UserEntity } from '../../users/domain/user.entity';
 
-@Entity('Sessions')
-export class Session {
-  @PrimaryGeneratedColumn('increment')
+// @Entity('Sessions')
+export class SessionEntity {
+  // @PrimaryGeneratedColumn('increment')
   deviceId: number;
-  @Column()
+  // @Column()
   userId: number;
-  @Column()
+  // @Column()
   exp: number;
-  @Column()
+  // @Column()
   ip: string;
-  @Column()
+  // @Column()
   deviceName: string;
-  @Column()
+  // @Column()
   iat: number;
-  @ManyToOne(() => User)
-  user: User;
+  // @ManyToOne(() => UserEntity)
+  user: UserEntity;
 
-  constructor({ ...dto }: SessionExtendedDto) {
-    this.userId = dto.userId;
-    this.exp = dto.exp;
-    this.ip = dto.ip;
-    this.deviceName = dto.deviceName;
-    this.iat = dto.iat;
-  }
+  constructor() {}
 
   updateSessionData(dto: SessionExtendedDto) {
     this.ip = dto.ip;
     this.deviceName = dto.deviceName;
     this.exp = dto.exp;
     this.iat = dto.iat;
+  }
+
+  static preparation(session: any): SessionEntity {
+    const sessionEntity = new SessionEntity();
+    sessionEntity.deviceId = session.deviceId;
+    sessionEntity.userId = session.userId;
+    sessionEntity.exp = session.exp;
+    sessionEntity.ip = session.ip;
+    sessionEntity.deviceName = session.deviceName;
+    sessionEntity.iat = session.iat;
+    return sessionEntity;
+  }
+
+  static initCreate(param: {
+    ip: string;
+    exp: number;
+    deviceId: number;
+    userId: number;
+    iat: number;
+    deviceName: string;
+  }) {
+    const session = new SessionEntity();
+    session.ip = param.ip;
+    session.exp = param.exp;
+    session.deviceId = param.deviceId;
+    session.userId = param.userId;
+    session.iat = param.iat;
+    session.deviceName = param.deviceName;
+    return session;
   }
 }

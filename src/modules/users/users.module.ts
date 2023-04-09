@@ -1,19 +1,20 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './api/users.controller';
-import { IUsersRepository, UsersRepository } from './infrastructure/users.repository';
-import { User } from './domain/user.entity';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { IUsersRepository, PrismaUsersRepository } from './infrastructure/users.repository';
+import { UserEntity } from './domain/user.entity';
 import { EmailConfirmation } from './domain/user.email-confirmation.entity';
 
-const entities = [User, EmailConfirmation];
+const entities = [UserEntity, EmailConfirmation];
 
 @Module({
-  imports: [TypeOrmModule.forFeature(entities)],
+  imports: [
+    // TypeOrmModule.forFeature(entities)
+  ],
   controllers: [UsersController],
   providers: [
     {
       provide: IUsersRepository,
-      useClass: UsersRepository,
+      useClass: PrismaUsersRepository,
     },
   ],
   exports: [IUsersRepository],
