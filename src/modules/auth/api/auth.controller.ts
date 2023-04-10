@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
@@ -33,6 +33,7 @@ import {
   SwaggerDecoratorsByConfirmationRegistration,
   SwaggerDecoratorsByLogin,
   SwaggerDecoratorsByLogout,
+  SwaggerDecoratorsByMe,
   SwaggerDecoratorsByNewPassword,
   SwaggerDecoratorsByPasswordRecovery,
   SwaggerDecoratorsByRegistration,
@@ -40,11 +41,14 @@ import {
   SwaggerDecoratorsByUpdateTokens,
 } from './swagger.auth.decorators';
 import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { MeViewDto } from './view-dto/me.view.dto';
+import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(private readonly commandBus: CommandBus, private usersQueryRepository: IUsersQueryRepository) {}
 
   /**
    * @description Registration in the system
@@ -204,5 +208,13 @@ export class AuthController {
       new PasswordRecoveryCommand(body.email, true, body.recaptcha),
     );
     return notification.getData();
+  }
+
+  @SwaggerDecoratorsByMe()
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getMyInfo(@UserId() userId: number): Promise<MeViewDto> {
+    const user = await this.usersQueryRepository.findUserById(userId);
+    return new MeViewDto(user);
   }
 }

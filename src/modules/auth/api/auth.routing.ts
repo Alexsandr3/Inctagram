@@ -11,6 +11,7 @@ export const authEndpoints = {
   newPassword: () => `${baseUrlAuth}/new-password`,
   logout: () => `${baseUrlAuth}/logout`,
   updateTokens: () => `${baseUrlAuth}/update-tokens`,
+  me: () => `${baseUrlAuth}/me`,
 };
 
 //Регистрация и аутентификация пользователей:
