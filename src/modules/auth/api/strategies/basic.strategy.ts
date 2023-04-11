@@ -10,8 +10,6 @@ export class BasicStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string) {
-    console.log(username, password);
-
     if (username !== this.apiConfigService.SA_LOGIN || password !== this.apiConfigService.SA_PASSWORD)
       throw new UnauthorizedException();
     return true;

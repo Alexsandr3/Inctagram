@@ -1,20 +1,32 @@
 import { Module } from '@nestjs/common';
 import { UsersController } from './api/users.controller';
 import { IUsersRepository, PrismaUsersRepository } from './infrastructure/users.repository';
-import { UserEntity } from './domain/user.entity';
-import { EmailConfirmation } from './domain/user.email-confirmation.entity';
+import { UploadImageAvatarUseCase } from './aplication/use-cases/upload-image-avatar.use-case';
+import { AwsModule } from '../../providers/aws/aws.module';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CreateProfileUseCase } from './aplication/use-cases/create-profile.use-case';
+import { IProfilesRepository, PrismaProfilesRepository } from './infrastructure/profiles.repository';
 
-const entities = [UserEntity, EmailConfirmation];
+// const entities = [UserEntity, EmailConfirmation];
+
+const useCases = [UploadImageAvatarUseCase, CreateProfileUseCase];
 
 @Module({
   imports: [
+    AwsModule,
+    CqrsModule,
     // TypeOrmModule.forFeature(entities)
   ],
   controllers: [UsersController],
   providers: [
+    ...useCases,
     {
       provide: IUsersRepository,
       useClass: PrismaUsersRepository,
+    },
+    {
+      provide: IProfilesRepository,
+      useClass: PrismaProfilesRepository,
     },
   ],
   exports: [IUsersRepository],

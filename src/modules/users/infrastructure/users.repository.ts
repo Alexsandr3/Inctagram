@@ -9,6 +9,8 @@ export abstract class IUsersRepository {
   abstract saveUser(user: UserEntity);
   abstract deleteUser(userId: number);
   abstract updateUser(user: UserEntity);
+
+  abstract findById(userId: number): Promise<UserEntity | null>;
 }
 
 @Injectable()
@@ -138,6 +140,31 @@ export class PrismaUsersRepository implements IUsersRepository {
         id: userId,
       },
     });
+  }
+  async findById(userId: number): Promise<UserEntity | null> {
+    const foundUser = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        userName: true,
+        email: true,
+        passwordHash: true,
+        createdAt: true,
+        emailConfirmation: {
+          select: {
+            isConfirmed: true,
+            confirmationCode: true,
+            codeExpirationDate: true,
+          },
+        },
+      },
+    });
+    if (foundUser) {
+      return UserEntity.preparationUser(foundUser);
+    }
+    return null;
   }
 }
 

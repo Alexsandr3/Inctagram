@@ -16,6 +16,7 @@ export const appConfig = (app: INestApplication) => {
     origin: [
       'http://localhost:3000',
       'http://localhost:3001',
+      'http://localhost:5003',
       'http://localhost:63342',
       'https://inctagram-vercel.vercel.app',
     ],

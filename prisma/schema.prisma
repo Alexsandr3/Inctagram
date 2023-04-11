@@ -19,6 +19,7 @@ model User {
   createdAt         DateTime           @default(now()) @db.Timestamptz(3) //, map: "created_at::timestamptz"
   emailConfirmation EmailConfirmation?
   Session           Session[]
+  profile           Profile?
 
   @@map("User")
 }
@@ -52,4 +53,49 @@ model PasswordRecovery {
   email          String   @unique
 
   @@map("PasswordRecovery")
+}
+
+model Profile {
+  userId      Int      @unique
+  userName    String   @unique
+  firstName   String?
+  lastName    String?
+  city        String?
+  dateOfBirth DateTime?
+  aboutMe     String?
+  createdAt   DateTime @default(now()) @db.Timestamptz(3)
+  udpatedAt   DateTime @default(now()) @db.Timestamptz(3)
+  images      Image[]
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("Profile")
+}
+
+enum TypeSizeImage {
+  THUMBNAIL
+  SMALL
+  MEDIUM
+  LARGE
+  HUGE_HD
+}
+
+enum TypeAffiliationImage {
+  AVATAR
+  POST
+}
+
+model Image {
+  id          Int                  @id @default(autoincrement())
+  profileId   Int                  @unique
+  affiliation TypeAffiliationImage
+  typeSize    TypeSizeImage
+  url         String
+  width       Int
+  height      Int
+  fileSize    Int
+  createdAt   DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime             @default(now()) @db.Timestamptz(3)
+  profile     Profile?             @relation(fields: [profileId], references: [userId])
+
+  @@map("Image")
 }

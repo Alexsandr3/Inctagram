@@ -1,12 +1,8 @@
-export const baseUrl = '/sa/users';
+export const baseUrlUser = '/users';
 
-export const endpoints = {
-  findUsers: () => baseUrl + '/',
-  createUser: () => baseUrl + '/',
-  deleteUser: id => baseUrl + `/${id}`,
+export const usersEndpoints = {
+  createProfile: () => `${baseUrlUser}/profile/create`,
+  uploadPhotoAvatar: () => `${baseUrlUser}/profile/avatar`,
 };
 
 //Поиск, создание и удаление пользователей СуперАдмином:
-// GET /api/sa/users - найти всех пользователей
-// POST /api/sa/users - создать пользователя
-// DELETE /api/auth/login - удалить пользователя

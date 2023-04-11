@@ -13,7 +13,6 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
 import { SessionDto } from '../../sessions/application/dto/SessionDto';
 import { SessionData } from '../../../main/decorators/session-data.decorator';
-import { UserId } from '../../../main/decorators/user.decorator';
 import { PasswordRecoveryCodeInputDto } from './input-dto/password-recovery-code.input.dto';
 import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check-password-recovery-code.use-case';
 import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
@@ -40,6 +39,7 @@ import {
   SwaggerDecoratorsByUpdateTokens,
 } from './swagger.auth.decorators';
 import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
+import { CurrentUserId } from '../../../main/decorators/user.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -106,7 +106,7 @@ export class AuthController {
     @Ip() ip: string,
     @Headers('user-agent') deviceName = 'unknown',
     @Res({ passthrough: true }) res: Response,
-    @UserId() userId: number,
+    @CurrentUserId() userId: number,
     @Body() body: LoginInputDto, //need for swagger
   ): Promise<LoginSuccessViewDto> {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
