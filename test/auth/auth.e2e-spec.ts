@@ -6,7 +6,7 @@ import { MailManager } from '../../src/providers/mailer/application/mail-manager
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 
 jest.setTimeout(120000);
-describe('Clients-admin e2e', () => {
+describe('Authorisation -  e2e', () => {
   let app: INestApplication;
   let authHelper: AuthHelper;
   // let mailManager: MailManager;

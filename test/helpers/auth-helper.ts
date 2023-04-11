@@ -9,6 +9,8 @@ import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import { PasswordRecoveryInputDto } from '../../src/modules/auth/api/input-dto/password-recovery.input.dto';
 import { PasswordRecoveryCodeInputDto } from '../../src/modules/auth/api/input-dto/password-recovery-code.input.dto';
 import { NewPasswordInputDto } from '../../src/modules/auth/api/input-dto/new-password.input.dto';
+import { MailManager } from '../../src/providers/mailer/application/mail-manager.service';
+import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 
 export class AuthHelper {
   constructor(private readonly app: INestApplication) {}
@@ -194,5 +196,40 @@ export class AuthHelper {
       return response;
     }
     return response.body;
+  }
+
+  async createUser(
+    command: RegisterInputDto,
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<any> {
+    const mailManager = this.app.get<MailManager>(MailManager);
+    const emailAdapter = this.app.get<EmailAdapter>(EmailAdapter);
+    //mock sendEmail
+    jest.spyOn(emailAdapter, 'sendEmail');
+    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmation');
+    //registration user
+    await this.registrationUser(command, { expectedCode: 204 });
+    //check sendEmailConfirmationMessage
+    let confirmationCode: string;
+    confirmationCode = sendEmailConfirmationMessage.mock.lastCall[1];
+    expect(emailAdapter.sendEmail).toBeCalled();
+    //confirm registration user
+    const command2 = { confirmationCode: confirmationCode };
+    await this.registrationConfirmation(command2, { expectedCode: 204 });
+    //Login correct data
+    let refreshToken: string;
+    const command3 = { password: command.password, email: command.email };
+    const response = await this.login(command3, { expectedCode: 200 });
+    refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.headers['set-cookie']).toBeDefined();
+    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
+    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
+    expect(response.headers['set-cookie'][0]).toContain('Path=/');
+    expect(response.headers['set-cookie'][0]).toContain('Secure');
+    return response.body.accessToken;
   }
 }

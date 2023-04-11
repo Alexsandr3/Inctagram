@@ -1,26 +1,49 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { HTTP_Status } from '../../src/main/enums/http-status.enum';
-import { endpoints } from '../../src/modules/users/api/users.routing';
+import { usersEndpoints } from '../../src/modules/users/api/users.routing';
+import fs from 'fs';
 
 export class UsersHelper {
   constructor(private readonly app: INestApplication) {}
 
-  async findUsers() {
-    const result = await request(this.app.getHttpServer()).get(endpoints.findUsers()).expect(HTTP_Status.OK_200);
-    return result.body;
+  async createProfile(
+    command: any, //CreateProfileInputDto,
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<any> {
+    // default expected code is 201 or code mistake from config
+    const expectedCode = config.expectedCode ?? HttpStatus.CREATED;
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .post(usersEndpoints.createProfile())
+      .auth(config.expectedBody, { type: 'bearer' })
+      .send(command)
+      .expect(expectedCode);
+
+    return response.body;
   }
 
-  async createUser() {
-    const result = await request(this.app.getHttpServer())
-      .post(endpoints.createUser())
-      .send({})
-      .expect(HTTP_Status.CREATED_201);
-    return result.body;
-  }
+  async uploadPhotoAvatar(
+    nameFile: string,
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<any> {
+    // default expected code is 201 or code mistake from config
+    const expectedCode = config.expectedCode ?? HttpStatus.CREATED;
+    // create file
+    const file = fs.createReadStream(__dirname + '/../' + nameFile);
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .post(usersEndpoints.uploadPhotoAvatar())
+      .auth(config.expectedBody, { type: 'bearer' })
+      .set('content-type', 'multipart/form-data')
+      .attach('file', file, nameFile)
+      .expect(expectedCode);
 
-  async deleteUser(id: string) {
-    const result = await request(this.app.getHttpServer()).delete(endpoints.deleteUser(id)).expect(HTTP_Status.OK_200);
-    return result.body;
+    return response.body;
   }
 }
