@@ -6,18 +6,13 @@ import { AwsModule } from '../../providers/aws/aws.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { CreateProfileUseCase } from './aplication/use-cases/create-profile.use-case';
 import { IProfilesRepository, PrismaProfilesRepository } from './infrastructure/profiles.repository';
-import { IUsersQueryRepository, PrismaUsersQueryRepository } from "./infrastructure/users.query-repository";
+import { IUsersQueryRepository, PrismaUsersQueryRepository } from './infrastructure/users.query-repository';
+import { UpdateProfileUseCase } from './aplication/use-cases/update-profile.use-case';
 
-// const entities = [UserEntity, EmailConfirmation];
-
-const useCases = [UploadImageAvatarUseCase, CreateProfileUseCase];
+const useCases = [UploadImageAvatarUseCase, CreateProfileUseCase, UpdateProfileUseCase];
 
 @Module({
-  imports: [
-    AwsModule,
-    CqrsModule,
-    // TypeOrmModule.forFeature(entities)
-  ],
+  imports: [AwsModule, CqrsModule],
   controllers: [UsersController],
   providers: [
     ...useCases,

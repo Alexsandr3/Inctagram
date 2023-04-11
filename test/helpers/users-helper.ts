@@ -25,6 +25,25 @@ export class UsersHelper {
     return response.body;
   }
 
+  async updateProfile(
+    command: any, //CreateProfileInputDto,
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<any> {
+    // default expected code is 204 or code mistake from config
+    const expectedCode = config.expectedCode ?? HttpStatus.NO_CONTENT;
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .put(usersEndpoints.updateProfile())
+      .auth(config.expectedBody, { type: 'bearer' })
+      .send(command)
+      .expect(expectedCode);
+
+    return response.body;
+  }
+
   async uploadPhotoAvatar(
     nameFile: string,
     config: {

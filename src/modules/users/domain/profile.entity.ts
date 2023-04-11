@@ -1,4 +1,3 @@
-import { Profile } from '@prisma/client';
 import { ImageEntity } from './image.entity';
 import { BaseDateEntity } from './base-date.entity';
 
@@ -27,16 +26,11 @@ export class ProfileEntity extends BaseDateEntity {
   ) {
     const instance = new ProfileEntity();
     instance.userId = userId;
-    if (userName) instance.userName = userName;
-    if (firstName) instance.firstName = firstName;
-    if (lastName) instance.lastName = lastName;
-    if (city) instance.city = city;
-    if (dateOfBirth) instance.dateOfBirth = dateOfBirth;
-    if (aboutMe) instance.aboutMe = aboutMe;
+    instance.setValues(userName, firstName, lastName, city, dateOfBirth, aboutMe);
     return instance;
   }
 
-  static preparationProfile(profile: Profile): ProfileEntity {
+  static preparationProfile(profile: any): ProfileEntity {
     const instance = new ProfileEntity();
     instance.userId = profile.userId;
     instance.userName = profile.userName;
@@ -50,5 +44,26 @@ export class ProfileEntity extends BaseDateEntity {
 
   checkOwner(userId: number) {
     return this.userId === userId;
+  }
+
+  private setValues(
+    userName: string,
+    firstName: string,
+    lastName: string,
+    city: string,
+    dateOfBirth: Date,
+    aboutMe: string,
+  ) {
+    if (userName) this.userName = userName;
+    if (firstName) this.firstName = firstName;
+    if (lastName) this.lastName = lastName;
+    if (city) this.city = city;
+    if (dateOfBirth) this.dateOfBirth = dateOfBirth;
+    if (aboutMe) this.aboutMe = aboutMe;
+  }
+
+  update(userName: string, firstName: string, lastName: string, city: string, dateOfBirth: Date, aboutMe: string) {
+    this.setValues(userName, firstName, lastName, city, dateOfBirth, aboutMe);
+    return this;
   }
 }

@@ -1,10 +1,11 @@
-import { Body, Controller, HttpCode, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, HttpCode, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidationImagesPipe } from '../../../main/validators/validation-images.pipe';
 import { optionsImageAvatar } from '../default-options-images';
 import {
   SwaggerDecoratorsByCreateProfile,
   SwaggerDecoratorsByFormData,
+  SwaggerDecoratorsByUpdateProfile,
   SwaggerDecoratorsByUploadPhotoAvatar,
 } from '../swagger.users.decorators';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
@@ -17,6 +18,7 @@ import { CreateProfileCommand } from '../aplication/use-cases/create-profile.use
 import { CreateProfileInputDto } from './inpu-dto/create-profile.input.dto';
 import { ProfileViewDto } from './view-models/profile-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
+import { UpdateProfileCommand } from '../aplication/use-cases/update-profile.use-case';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -25,11 +27,21 @@ export class UsersController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @SwaggerDecoratorsByCreateProfile()
-  @Post('/profile/create')
+  @Post('/profile')
   @HttpCode(HTTP_Status.CREATED_201)
   async createProfile(@CurrentUserId() userId: number, @Body() body: CreateProfileInputDto): Promise<ProfileViewDto> {
     const notification = await this.commandBus.execute<CreateProfileCommand, ResultNotification<ProfileViewDto>>(
       new CreateProfileCommand(userId, body),
+    );
+    return notification.getData();
+  }
+
+  @SwaggerDecoratorsByUpdateProfile()
+  @Put('/profile')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async updateProfile(@CurrentUserId() userId: number, @Body() body: CreateProfileInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<CreateProfileCommand, ResultNotification<null>>(
+      new UpdateProfileCommand(userId, body),
     );
     return notification.getData();
   }

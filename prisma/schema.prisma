@@ -64,7 +64,7 @@ model Profile {
   dateOfBirth DateTime?
   aboutMe     String?
   createdAt   DateTime @default(now()) @db.Timestamptz(3)
-  udpatedAt   DateTime @default(now()) @db.Timestamptz(3)
+  udpatedAt   DateTime @updatedAt
   images      Image[]
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -94,7 +94,7 @@ model Image {
   height      Int
   fileSize    Int
   createdAt   DateTime             @default(now()) @db.Timestamptz(3)
-  updatedAt   DateTime             @default(now()) @db.Timestamptz(3)
+  updatedAt   DateTime             @updatedAt
   profile     Profile?             @relation(fields: [profileId], references: [userId])
 
   @@map("Image")

@@ -1,4 +1,5 @@
 import { BaseDateEntity } from './base-date.entity';
+import { optionsImageAvatar } from '../default-options-images';
 
 enum TypeSizeImage {
   THUMBNAIL = 'THUMBNAIL',
@@ -33,8 +34,8 @@ export class ImageEntity extends BaseDateEntity {
     instance.affiliation = TypeAffiliationImage.AVATAR;
     instance.typeSize = TypeSizeImage.LARGE;
     instance.url = urlImageAvatar.key;
-    instance.width = 0;
-    instance.height = 0;
+    instance.width = optionsImageAvatar.defaultWidth;
+    instance.height = optionsImageAvatar.defaultHeight;
     instance.fileSize = photo.length;
     return instance;
   }

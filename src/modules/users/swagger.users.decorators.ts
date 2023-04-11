@@ -10,7 +10,7 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
     ApiTags('upload images'),
     ApiOperation({
       summary:
-        'Upload providers square image for Avatar profile (.png or jpg (jpeg) file (max size is 160KB, width must be 332, height must be 340))',
+        'Upload providers square image for Avatar profile (.png or jpg (jpeg) file (max size is 160KB, width must be 192, height must be 192))',
     }),
     ApiResponse({
       status: HTTP_Status.CREATED_201,
@@ -38,6 +38,26 @@ export function SwaggerDecoratorsByCreateProfile(): MethodDecorator {
       status: HTTP_Status.CREATED_201,
       description: 'Created profile information object',
       type: ProfileViewDto,
+    }),
+    ApiResponse({
+      status: HTTP_Status.BAD_REQUEST_400,
+      description: 'The inputModel has incorrect values',
+      type: ApiErrorResultDto,
+    }),
+    ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
+    ApiResponse({
+      status: HTTP_Status.NOT_FOUND_404,
+      description: 'User not found',
+    }),
+  );
+}
+export function SwaggerDecoratorsByUpdateProfile(): MethodDecorator {
+  return applyDecorators(
+    ApiTags('profile'),
+    ApiOperation({ summary: 'Update profile for user' }),
+    ApiResponse({
+      status: HTTP_Status.NO_CONTENT_204,
+      description: 'Updated profile information object',
     }),
     ApiResponse({
       status: HTTP_Status.BAD_REQUEST_400,

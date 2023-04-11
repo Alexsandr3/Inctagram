@@ -34,11 +34,35 @@ export class PrismaProfilesRepository implements IProfilesRepository {
       where: {
         userId,
       },
+      select: {
+        userId: true,
+        userName: true,
+        firstName: true,
+        lastName: true,
+        city: true,
+        dateOfBirth: true,
+        aboutMe: true,
+      },
     });
     if (profile) return ProfileEntity.preparationProfile(profile);
     return null;
   }
-  async updateProfile(profile: ProfileEntity): Promise<void> {}
+  async updateProfile(profile: ProfileEntity): Promise<void> {
+    const { userId, userName, firstName, lastName, city, dateOfBirth, aboutMe } = profile;
+    await this.prisma.profile.update({
+      where: {
+        userId,
+      },
+      data: {
+        userName,
+        firstName,
+        lastName,
+        city,
+        dateOfBirth,
+        aboutMe,
+      },
+    });
+  }
   async deleteProfile(profile: ProfileEntity): Promise<void> {}
   async saveImageProfile(instanceImage: ImageEntity): Promise<void> {
     await this.prisma.image.create({

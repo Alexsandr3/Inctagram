@@ -153,6 +153,18 @@ describe('Create-profile -  e2e', () => {
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
     });
   });
+  it('24 - / (PUT) - should return 204 if all data is correct', async () => {
+    const command = {
+      userName: 'NightKing',
+      firstName: 'Nick',
+      lastName: ' ',
+      city: 'Los Angeles',
+      dateOfBirth: '10.23.2024',
+      aboutMe: 'e'.repeat(200),
+    };
+    const responseBody = await usersHelper.updateProfile(command, { expectedBody: accessToken2, expectedCode: 204 });
+    expect(responseBody).toEqual({});
+  });
 
   //Upload image profile
   it('29 - / (POST) - should return 400 if data image incorrect', async () => {
@@ -179,7 +191,7 @@ describe('Create-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('file');
   });
-  it('32 - / (POST) - should return 201 if all data is correct', async () => {
+  it('32 - / (POST) - should return 201 if all data is correct for upload image', async () => {
     let nameFile = '/images/332x340_45kb.jpg';
     const responseBody: UserImagesViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken,
