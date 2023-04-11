@@ -34,7 +34,6 @@ export class UpdateProfileUseCase
       throw new NotificationException(`Profile already exists`, 'profile', NotificationCode.BAD_REQUEST);
     //create profile
     const updateProfile = await foundProfile.update(userName, firstName, lastName, city, dateOfBirth, aboutMe);
-    console.log(updateProfile);
     //save profile
     await this.profileRepository.updateProfile(updateProfile);
   }
