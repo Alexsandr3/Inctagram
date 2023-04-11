@@ -1,21 +1,18 @@
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
 import { EmailConfirmation } from './user.email-confirmation.entity';
+import { SessionEntity } from '../../sessions/domain/session.entity';
+import { ProfileEntity } from './profile.entity';
 
-// @Entity('Users')
 export class UserEntity {
-  // @PrimaryGeneratedColumn('increment')
   id: number;
-  // @Column({ unique: true })
   userName: string;
-  // @Column({ unique: true })
   email: string;
-  // @Column()
   passwordHash: string;
-  // @OneToOne(() => EmailConfirmation, e => e.user, { cascade: true, eager: true })
-  emailConfirmation: EmailConfirmation;
-  // @Column()
   createdAt: Date;
+  emailConfirmation: EmailConfirmation;
+  session: SessionEntity[];
+  profile: ProfileEntity;
 
   constructor() {}
 
@@ -50,5 +47,9 @@ export class UserEntity {
 
   public updatePassword(passwordHash: string) {
     this.passwordHash = passwordHash;
+  }
+
+  isUserNameUnique(userName: string) {
+    return this.userName === userName;
   }
 }

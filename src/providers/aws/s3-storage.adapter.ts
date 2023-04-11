@@ -33,7 +33,7 @@ export class S3StorageAdapter {
    * @param key
    * @param mimetype
    */
-  async saveFile(userId: string, photo: Buffer, key: string, mimetype: string) {
+  async saveFile(userId: number, photo: Buffer, key: string, mimetype: string) {
     const bucketParams = {
       Bucket: this.bucket,
       // Specify the name of the new object. For example, 'index.html'.

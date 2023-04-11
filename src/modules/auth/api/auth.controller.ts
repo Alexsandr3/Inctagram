@@ -13,7 +13,6 @@ import { LocalAuthGuard } from './guards/local-auth.guard';
 import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
 import { SessionDto } from '../../sessions/application/dto/SessionDto';
 import { SessionData } from '../../../main/decorators/session-data.decorator';
-import { UserId } from '../../../main/decorators/user.decorator';
 import { PasswordRecoveryCodeInputDto } from './input-dto/password-recovery-code.input.dto';
 import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check-password-recovery-code.use-case';
 import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
@@ -41,6 +40,7 @@ import {
   SwaggerDecoratorsByUpdateTokens,
 } from './swagger.auth.decorators';
 import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
+import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MeViewDto } from './view-dto/me.view.dto';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';
@@ -110,7 +110,7 @@ export class AuthController {
     @Ip() ip: string,
     @Headers('user-agent') deviceName = 'unknown',
     @Res({ passthrough: true }) res: Response,
-    @UserId() userId: number,
+    @CurrentUserId() userId: number,
     @Body() body: LoginInputDto, //need for swagger
   ): Promise<LoginSuccessViewDto> {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
@@ -213,7 +213,7 @@ export class AuthController {
   @SwaggerDecoratorsByMe()
   @Get('me')
   @UseGuards(JwtAuthGuard)
-  async getMyInfo(@UserId() userId: number): Promise<MeViewDto> {
+  async getMyInfo(@CurrentUserId() userId: number): Promise<MeViewDto> {
     const user = await this.usersQueryRepository.findUserById(userId);
     return new MeViewDto(user);
   }
