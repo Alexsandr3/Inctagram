@@ -24,19 +24,19 @@ describe('Authorisation -  e2e', () => {
 
   //auth/registration
   it('01 - / (POST) - should return 400 if email is incorrect', async () => {
-    const command = { password: '12345678', email: 'Doe', userName: 'Doe' };
+    const command = { password: '12345678', email: 'Doe', userName: 'DoeName' };
     const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('email');
   });
   it('02 - / (POST) - should return 400 if password is incorrect', async () => {
-    const command = { password: 'qwert', email: 'fortesting@jive.com', userName: 'Doe' };
+    const command = { password: 'qwert', email: 'fortesting@jive.com', userName: 'DoeName' };
     const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('password');
   });
   it('03 - / (POST) - should return 400 if email and password is incorrect', async () => {
-    const command = { password: 'qwert', email: 'Doe', userName: 'Doe' };
+    const command = { password: 'qwert', email: 'Doe', userName: 'DoeName' };
     const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(2);
     expect(response.messages[1].field).toBe('password');
@@ -48,25 +48,37 @@ describe('Authorisation -  e2e', () => {
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('userName');
   });
+  it('03_2 - / (POST) - should return 400 if userName is incorrect', async () => {
+    const command = { password: 'qwerty', email: 'fortesting@jive.com', userName: 'Doe' };
+    const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
+    expect(response.messages).toHaveLength(1);
+    expect(response.messages[0].field).toBe('userName');
+  });
+  it('03_3 - / (POST) - should return 400 if userName is incorrect', async () => {
+    const command = { password: 'qwerty', email: 'fortesting@jive.com', userName: 'D'.repeat(31) };
+    const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
+    expect(response.messages).toHaveLength(1);
+    expect(response.messages[0].field).toBe('userName');
+  });
   it('04 - / (POST) - should return 400 if email is empty', async () => {
-    const command = { password: '', email: 'fortesting@jive.com', userName: 'Doe' };
+    const command = { password: '', email: 'fortesting@jive.com', userName: 'DoeName' };
     const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('password');
   });
   it('05 - / (POST) - should return 400 if password is empty', async () => {
-    const command = { password: '1234567', email: '', userName: 'Doe' };
+    const command = { password: '1234567', email: '', userName: 'DoeName' };
     const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('email');
   });
   it('06 - / (POST) - should return 400 if email or userName not unique', async () => {
-    const command = { password: '12345678', email: 'correct@eamil.co', userName: 'Doe' };
+    const command = { password: '12345678', email: 'correct@eamil.co', userName: 'DoeName' };
     await authHelper.registrationUser(command, { expectedCode: 204 });
     const response2: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
     expect(response2.messages).toHaveLength(1);
     expect(response2.messages[0].field).toBe('name');
-    const command3 = { password: '12345678', email: 'correct@eamil.co', userName: 'Cat' };
+    const command3 = { password: '12345678', email: 'correct@eamil.co', userName: 'CatName' };
     const response3: ApiErrorResultDto = await authHelper.registrationUser(command3, { expectedCode: 400 });
     expect(response3.messages).toHaveLength(1);
     expect(response3.messages[0].field).toBe('email');

@@ -9,7 +9,7 @@ export class RegisterInputDto {
 
   @ApiProperty({ pattern: '^[a-zA-Z0-9_-]*$', example: 'string' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @Length(1, 30)
+  @Length(6, 30)
   @IsString()
   @Matches('^[a-zA-Z0-9_-]*$')
   userName: string;
