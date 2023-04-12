@@ -1,10 +1,24 @@
-import { Body, Controller, HttpCode, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ValidationImagesPipe } from '../../../main/validators/validation-images.pipe';
 import { optionsImageAvatar } from '../default-options-images';
 import {
   SwaggerDecoratorsByCreateProfile,
   SwaggerDecoratorsByFormData,
+  SwaggerDecoratorsByGetProfile,
   SwaggerDecoratorsByUpdateProfile,
   SwaggerDecoratorsByUploadPhotoAvatar,
 } from '../swagger.users.decorators';
@@ -19,12 +33,13 @@ import { CreateProfileInputDto } from './inpu-dto/create-profile.input.dto';
 import { ProfileViewDto } from './view-models/profile-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { UpdateProfileCommand } from '../aplication/use-cases/update-profile.use-case';
+import { IProfilesRepository } from '../infrastructure/profiles.repository';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(private readonly commandBus: CommandBus, private readonly profileRepo: IProfilesRepository) {}
 
   @SwaggerDecoratorsByCreateProfile()
   @Post('/profile')
@@ -44,6 +59,15 @@ export class UsersController {
       new UpdateProfileCommand(userId, body),
     );
     return notification.getData();
+  }
+
+  @SwaggerDecoratorsByGetProfile()
+  @Get(`/profile/:id`)
+  @HttpCode(HTTP_Status.OK_200)
+  async getProfile(@Param('id', ParseIntPipe) userId: number): Promise<ProfileViewDto> {
+    const profile = await this.profileRepo.findById(userId);
+    if (!profile) throw new NotFoundException([{ message: 'Profile not found', field: 'profile' }]);
+    return ProfileViewDto.createView(profile);
   }
 
   /**

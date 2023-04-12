@@ -146,20 +146,18 @@ export function SwaggerDecoratorsByMe(): MethodDecorator {
 export function SwaggerDecoratorsByUpdateTokens(): MethodDecorator {
   return applyDecorators(
     ApiOperation({
-      summary: 'Registration in the system. Email with confirmation code will be send to passed email address',
+      summary:
+        " 'Generate new pair of access and refresh tokens (in cookie client must send correct refresh Token that will be revoked after refreshing) Device LastActiveDate should\\n' +\n" +
+        "'be overrode by issued Date of new refresh token',",
     }),
     ApiResponse({
-      status: 204,
-      description: 'An email with a verification code has been sent to the specified email address',
+      status: 200,
+      description: 'success',
+      type: TokenTypeSwaggerDto,
     }),
     ApiResponse({
-      status: 400,
-      description: 'Incorrect input data',
-      type: ApiErrorResultDto,
-    }),
-    ApiResponse({
-      status: 429,
-      description: 'More than 5 attempts from one IP-address during 10 seconds',
+      status: 401,
+      description: 'JWT refreshToken inside cookie is missing, expired or incorrect',
     }),
   );
 }

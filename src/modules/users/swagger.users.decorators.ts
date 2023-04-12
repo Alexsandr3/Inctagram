@@ -18,7 +18,8 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
     }),
     ApiResponse({
       status: HTTP_Status.CREATED_201,
-      description: 'Uploaded image information object',
+      description:
+        'Uploaded image information object. Return array with Must contain medium photo size (192x192) and thumbnail photo size (45x45)',
       type: UserImagesViewModel,
     }),
     ApiResponse({
@@ -51,6 +52,27 @@ export function SwaggerDecoratorsByCreateProfile(): MethodDecorator {
       status: HTTP_Status.BAD_REQUEST_400,
       description: 'The inputModel has incorrect values',
       type: ApiErrorResultDto,
+    }),
+    ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
+    ApiResponse({
+      status: HTTP_Status.NOT_FOUND_404,
+      description: 'User not found',
+    }),
+  );
+}
+
+/**
+ * @description Swagger decorators for get profile
+ * @constructor
+ */
+export function SwaggerDecoratorsByGetProfile(): MethodDecorator {
+  return applyDecorators(
+    ApiTags('profile'),
+    ApiOperation({ summary: 'Get profile for user by id from query params' }),
+    ApiResponse({
+      status: HTTP_Status.OK_200,
+      description: 'Get profile information object',
+      type: ProfileViewDto,
     }),
     ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
     ApiResponse({
