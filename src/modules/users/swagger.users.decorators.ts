@@ -5,12 +5,16 @@ import { HTTP_Status } from '../../main/enums/http-status.enum';
 import { ProfileViewDto } from './api/view-models/profile-view.dto';
 import { UserImagesViewModel } from './api/view-models/user-images-view.dto';
 
+/**
+ * @description Swagger decorators for upload image avatar
+ * @constructor
+ */
 export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
   return applyDecorators(
     ApiTags('upload images'),
     ApiOperation({
       summary:
-        'Upload providers square image for Avatar profile (.png or jpg (jpeg) file (max size is 160KB, width must be 192, height must be 192))',
+        'Upload providers square image for Avatar profile (.png or jpg (jpeg) file (max size is 1,576KB, width must be 1280, height must be 720))',
     }),
     ApiResponse({
       status: HTTP_Status.CREATED_201,
@@ -30,6 +34,10 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
   );
 }
 
+/**
+ * @description Swagger decorators for create profile
+ * @constructor
+ */
 export function SwaggerDecoratorsByCreateProfile(): MethodDecorator {
   return applyDecorators(
     ApiTags('profile'),
@@ -51,6 +59,11 @@ export function SwaggerDecoratorsByCreateProfile(): MethodDecorator {
     }),
   );
 }
+
+/**
+ * @description Swagger decorators for update profile
+ * @constructor
+ */
 export function SwaggerDecoratorsByUpdateProfile(): MethodDecorator {
   return applyDecorators(
     ApiTags('profile'),
@@ -72,6 +85,10 @@ export function SwaggerDecoratorsByUpdateProfile(): MethodDecorator {
   );
 }
 
+/**
+ * @description Swagger decorators for form data
+ * @constructor
+ */
 export function SwaggerDecoratorsByFormData(): MethodDecorator {
   return applyDecorators(
     ApiConsumes('multipart/form-data'),

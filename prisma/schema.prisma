@@ -72,9 +72,9 @@ model Profile {
 }
 
 enum TypeSizeImage {
-  THUMBNAIL
+  THUMBNAIL  //45x45
   SMALL
-  MEDIUM
+  MEDIUM //192x192
   LARGE
   HUGE_HD
 }
@@ -86,7 +86,7 @@ enum TypeAffiliationImage {
 
 model Image {
   id          Int                  @id @default(autoincrement())
-  profileId   Int                  @unique
+  profileId   Int
   affiliation TypeAffiliationImage
   typeSize    TypeSizeImage
   url         String

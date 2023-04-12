@@ -168,7 +168,7 @@ describe('Create-profile -  e2e', () => {
 
   //Upload image profile
   it('29 - / (POST) - should return 400 if data image incorrect', async () => {
-    let nameFile = '/images/331x340.png';
+    let nameFile = '/images/1271х847_357kb.jpeg';
     const responseBody: ApiErrorResultDto = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken,
       expectedCode: 400,
@@ -191,8 +191,16 @@ describe('Create-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('file');
   });
-  it('32 - / (POST) - should return 201 if all data is correct for upload image', async () => {
-    let nameFile = '/images/332x340_45kb.jpg';
+  it('32 - / (POST) - should return 400 if data image incorrect', async () => {
+    let nameFile = '/images/667x1000_345kb.jpeg';
+    const responseBody: ApiErrorResultDto = await usersHelper.uploadPhotoAvatar(nameFile, {
+      expectedBody: accessToken,
+      expectedCode: 400,
+    });
+    expect(responseBody.messages[0].field).toBe('file');
+  });
+  it('33 - / (POST) - should return 201 if all data is correct for upload image', async () => {
+    let nameFile = '/images/1000x667_304kb.jpeg';
     const responseBody: UserImagesViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken,
       expectedCode: 201,
@@ -205,17 +213,29 @@ describe('Create-profile -  e2e', () => {
           height: expect.any(Number),
           fileSize: expect.any(Number),
         },
+        {
+          url: expect.any(String),
+          width: expect.any(Number),
+          height: expect.any(Number),
+          fileSize: expect.any(Number),
+        },
       ],
     });
   });
-  it('33 - / (POST) - should return 201 if all data is correct', async () => {
-    let nameFile = '/images/332x340_143,5kb.png';
+  it('34 - / (POST) - should return 201 if all data is correct', async () => {
+    let nameFile = '/images/859x720_338kb.jpeg';
     const responseBody: UserImagesViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken2,
       expectedCode: 201,
     });
     expect(responseBody).toEqual({
       avatar: [
+        {
+          url: expect.any(String),
+          width: expect.any(Number),
+          height: expect.any(Number),
+          fileSize: expect.any(Number),
+        },
         {
           url: expect.any(String),
           width: expect.any(Number),

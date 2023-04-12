@@ -1,9 +1,9 @@
 /**
- * @description Blog images view model
+ * @description User images view model
  */
 export class UserImagesViewModel {
   /**
-   * @param main -> Must contain original photo size (156x156) and small photo size (48x48)
+   * @param main -> Must contain medium photo size (192x192) and thumbnail photo size (45x45)
    */
   avatar: PhotoSizeModel[];
 

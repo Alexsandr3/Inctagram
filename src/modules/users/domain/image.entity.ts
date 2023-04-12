@@ -1,6 +1,29 @@
 import { BaseDateEntity } from './base-date.entity';
 
-enum TypeSizeImage {
+export const sizeImageAvatar = {
+  HUGE_HD: {
+    defaultWidth: 1280,
+    defaultHeight: 720,
+  },
+  LARGE: {
+    defaultWidth: 640,
+    defaultHeight: 360,
+  },
+  MEDIUM: {
+    defaultWidth: 192,
+    defaultHeight: 192,
+  },
+  SMALL: {
+    defaultWidth: 160,
+    defaultHeight: 90,
+  },
+  THUMBNAIL: {
+    defaultWidth: 45,
+    defaultHeight: 45,
+  },
+};
+
+export enum TypeSizeImage {
   THUMBNAIL = 'THUMBNAIL',
   SMALL = 'SMALL',
   MEDIUM = 'MEDIUM',
@@ -8,7 +31,7 @@ enum TypeSizeImage {
   HUGE_HD = 'HUGE_HD',
 }
 
-enum TypeAffiliationImage {
+export enum TypeAffiliationImage {
   AVATAR = 'AVATAR',
   POST = 'POST',
 }
@@ -16,8 +39,8 @@ enum TypeAffiliationImage {
 export class ImageEntity extends BaseDateEntity {
   id: number;
   profileId: number;
-  affiliation: TypeAffiliationImage.AVATAR | null;
-  typeSize: TypeSizeImage.LARGE | null;
+  affiliation: TypeAffiliationImage | null;
+  typeSize: TypeSizeImage | null;
   url: string;
   width: number;
   height: number;
@@ -27,15 +50,44 @@ export class ImageEntity extends BaseDateEntity {
     super();
   }
 
-  static initCreate(userId: number, urlImageAvatar: { key: string; fieldId: string }, photo: Buffer) {
+  static initCreateImageEntity(
+    userId: number,
+    urlImageAvatar: { key: string; fieldId: string },
+    photo: Buffer,
+    typeSize: TypeSizeImage,
+    defaultWidth: number,
+    defaultHeight: number,
+  ) {
     const instance = new ImageEntity();
     instance.profileId = userId;
     instance.affiliation = TypeAffiliationImage.AVATAR;
-    instance.typeSize = TypeSizeImage.LARGE;
+    instance.typeSize = typeSize;
     instance.url = urlImageAvatar.key;
-    instance.width = 192;
-    instance.height = 192;
+    instance.width = defaultWidth;
+    instance.height = defaultHeight;
     instance.fileSize = photo.length;
     return instance;
+  }
+
+  static initCreateMediumSize(userId: number, urlImageAvatar: { key: string; fieldId: string }, photo: Buffer) {
+    return this.initCreateImageEntity(
+      userId,
+      urlImageAvatar,
+      photo,
+      TypeSizeImage.MEDIUM,
+      sizeImageAvatar.MEDIUM.defaultWidth,
+      sizeImageAvatar.MEDIUM.defaultHeight,
+    );
+  }
+
+  static initCreateThumbnailSize(userId: number, urlImageAvatar: { key: string; fieldId: string }, photo: Buffer) {
+    return this.initCreateImageEntity(
+      userId,
+      urlImageAvatar,
+      photo,
+      TypeSizeImage.THUMBNAIL,
+      sizeImageAvatar.THUMBNAIL.defaultWidth,
+      sizeImageAvatar.THUMBNAIL.defaultHeight,
+    );
   }
 }

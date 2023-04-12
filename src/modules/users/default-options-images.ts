@@ -4,7 +4,7 @@ import { ImageValidationOptions } from '../../main/validators/validation-images.
  * Default options for images blog main
  */
 export const optionsImageAvatar: ImageValidationOptions = {
-  defaultSize: 160000,
+  defaultSize: 1572864, //1,5MB
   contentTypes: ['image/png', 'image/jpg', 'image/jpeg'],
   defaultWidth: 1280,
   defaultHeight: 720,

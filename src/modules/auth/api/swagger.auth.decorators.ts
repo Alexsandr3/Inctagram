@@ -1,4 +1,4 @@
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
@@ -140,6 +140,7 @@ export function SwaggerDecoratorsByMe(): MethodDecorator {
       status: HTTP_Status.UNAUTHORIZED_401,
       description: 'JWT refreshToken inside cookie is missing, expired or incorrect',
     }),
+    ApiBearerAuth(),
   );
 }
 export function SwaggerDecoratorsByUpdateTokens(): MethodDecorator {
