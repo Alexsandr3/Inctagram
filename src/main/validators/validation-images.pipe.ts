@@ -30,7 +30,7 @@ export class ValidationImagesPipe<T extends ImageValidationOptions>
     }
     //checking "width" and "height
     const metadata: Metadata = await sharp(image.buffer).metadata();
-    if (metadata.width !== defaultWidth || metadata.height !== defaultHeight) {
+    if (metadata.width > defaultWidth || metadata.height > defaultHeight) {
       throw new BadRequestException([
         { message: `The file format is incorrect, please upload the correct file`, field: 'file' },
       ]);

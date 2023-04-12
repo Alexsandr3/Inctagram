@@ -6,6 +6,6 @@ import { ImageValidationOptions } from '../../main/validators/validation-images.
 export const optionsImageAvatar: ImageValidationOptions = {
   defaultSize: 160000,
   contentTypes: ['image/png', 'image/jpg', 'image/jpeg'],
-  defaultWidth: 332,
-  defaultHeight: 340,
+  defaultWidth: 1280,
+  defaultHeight: 720,
 };

@@ -6,6 +6,7 @@ import { NotificationException } from '../../../../main/validators/result-notifi
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { ImageEntity } from '../../domain/image.entity';
 import { PhotoSizeModel, UserImagesViewModel } from '../../api/view-models/user-images-view.dto';
+import { reSizeImage } from '../../../../main/helpers/re-size.image';
 
 export class UploadImageAvatarCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}
@@ -33,13 +34,16 @@ export class UploadImageAvatarUseCase
     if (!profile.checkOwner(userId))
       throw new NotificationException(`You are not the owner of the profile`, 'profile', NotificationCode.FORBIDDEN);
     const key = `users/${userId}/avatar/${mimetype}`;
+    //changing size image
+    const middlePhoto = await reSizeImage(photo, 192, 192);
+    //delete old image
     if (profile.images) {
       await this.storageS3.deleteFile(key);
     }
     //save on s3 storage
-    const urlImageAvatar = await this.storageS3.saveFile(userId, photo, key, mimetype);
+    const urlImageAvatar = await this.storageS3.saveFile(userId, middlePhoto, key, mimetype);
     //creating instance providers image
-    const instanceImage = ImageEntity.initCreate(userId, urlImageAvatar, photo);
+    const instanceImage = ImageEntity.initCreate(userId, urlImageAvatar, middlePhoto);
     //save image profile
     await this.profilesRepo.saveImageProfile(instanceImage);
     const photoSize = new PhotoSizeModel(
