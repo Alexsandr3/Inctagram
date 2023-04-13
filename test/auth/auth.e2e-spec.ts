@@ -125,7 +125,7 @@ describe('Authorisation -  e2e', () => {
   it('12 - / (POST) - should return 401 if user not unauthorized', async () => {
     const command = { password: '12345678', email: 'Doe@doede.he' };
     const response: ApiErrorResultDto = await authHelper.login(command, { expectedCode: 401 });
-    expect(response.messages).toHaveLength(0);
+    expect(response.messages).toHaveLength(1);
     expect(response.error).toBe('Unauthorized');
   });
   //auth/password-recovery
@@ -177,7 +177,7 @@ describe('Authorisation -  e2e', () => {
   //auth/refresh-token
   it('20 - / (POST) - should return 401 if user not unauthorized', async () => {
     const response: ApiErrorResultDto = await authHelper.refreshToken({ expectedCode: 401 });
-    expect(response.messages).toHaveLength(0);
+    expect(response.messages).toHaveLength(1);
     expect(response.error).toBe('Unauthorized');
   });
 

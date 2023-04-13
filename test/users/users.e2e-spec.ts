@@ -192,7 +192,7 @@ describe('Create-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('file');
   });
-  it.skip('30 - / (POST) - should return 400 if data image incorrect', async () => {
+  it('30 - / (POST) - should return 400 if data image incorrect', async () => {
     let nameFile = '/images/email.html';
     const responseBody: ApiErrorResultDto = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken,
@@ -200,7 +200,7 @@ describe('Create-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('file');
   });
-  it.skip('31 - / (POST) - should return 400 if data image incorrect', async () => {
+  it('31 - / (POST) - should return 400 if data image incorrect', async () => {
     let nameFile = '/images/img-1028x312.txt';
     const responseBody: ApiErrorResultDto = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken,
@@ -216,7 +216,7 @@ describe('Create-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('file');
   });
-  it.skip('33 - / (POST) - should return 201 if all data is correct for upload image', async () => {
+  it('33 - / (POST) - should return 201 if all data is correct for upload image', async () => {
     let nameFile = '/images/1000x667_304kb.jpeg';
     const responseBody: UserImagesViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken,
@@ -239,7 +239,7 @@ describe('Create-profile -  e2e', () => {
       ],
     });
   });
-  it.skip('34 - / (POST) - should return 201 if all data is correct', async () => {
+  it('34 - / (POST) - should return 201 if all data is correct', async () => {
     let nameFile = '/images/859x720_338kb.jpeg';
     const responseBody: UserImagesViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken2,
