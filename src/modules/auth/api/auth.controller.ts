@@ -215,6 +215,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   async getMyInfo(@CurrentUserId() userId: number): Promise<MeViewDto> {
     const user = await this.usersQueryRepository.findUserById(userId);
+    if (!user) return;
     return new MeViewDto(user);
   }
 }

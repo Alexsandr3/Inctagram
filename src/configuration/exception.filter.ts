@@ -10,9 +10,15 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const status = exception.getStatus();
     const responseBody: any = exception.getResponse();
+
     const errorResult = new ApiErrorResultDto();
     errorResult.statusCode = status;
-    errorResult.messages = status === 400 || 404 ? mapErrorsToNotification(responseBody.message) : [];
+    if (status === 401) {
+      errorResult.messages = [{ message: 'Authorization error', field: 'authorization' }];
+      errorResult.error = 'Unauthorized';
+      return response.status(status).json(errorResult);
+    }
+    errorResult.messages = status === 400 ? mapErrorsToNotification(responseBody.message) : [];
     errorResult.error = status === 400 ? 'Bad Request' : exception.message;
     return response.status(status).json(errorResult);
   }
@@ -55,3 +61,20 @@ export function mapErrorsToNotification(errors: any[]) {
   errors.forEach((item: any) => errorResponse.push({ message: item.message, field: item.field }));
   return errorResponse;
 }
+
+/* const errors = {
+  400: {
+    messages: mapErrorsToNotification(responseBody.message),
+    error: 'Bad Request',
+  },
+  401: {
+    messages: [{ message: 'Unauthorized', field: 'not today' }],
+    error: 'Unauthorized',
+  },
+};
+const errorResult = new ApiErrorResultDto();
+errorResult.statusCode = status;
+errorResult.messages = errors[status]?.messages || [];
+errorResult.error = errors[status]?.error || exception.message;
+
+console.log('errorResult', errorResult);*/
