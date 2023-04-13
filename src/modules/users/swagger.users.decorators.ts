@@ -13,8 +13,7 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
   return applyDecorators(
     ApiTags('upload images'),
     ApiOperation({
-      summary:
-        'Upload providers square image for Avatar profile (.png or jpg (jpeg) file (max size is 1,576KB, width must be 1280, height must be 720))',
+      summary: 'Upload providers square image for Avatar profile (.png or jpg (jpeg) file',
     }),
     ApiResponse({
       status: HTTP_Status.CREATED_201,

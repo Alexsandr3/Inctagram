@@ -14,7 +14,7 @@ export interface ImageValidationOptions {
 /**
  * @description This pipe is used to validate images
  */
-export class ValidationImagesPipe<T extends ImageValidationOptions>
+export class ValidationParamsImagePipe<T extends ImageValidationOptions>
   implements PipeTransform<Express.Multer.File, Promise<Express.Multer.File>>
 {
   constructor(private readonly options: T) {}
