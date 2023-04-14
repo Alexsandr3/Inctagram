@@ -199,6 +199,15 @@ export class AuthController {
     return { accessToken };
   }
 
+  @SwaggerDecoratorsByMe()
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  async getMyInfo(@CurrentUserId() userId: number): Promise<MeViewDto> {
+    const user = await this.usersQueryRepository.findUserById(userId);
+    if (!user) return;
+    return new MeViewDto(user);
+  }
+
   //need for testing recaptcha --- > remove in production
   @ApiExcludeEndpoint()
   @Post('password-recovery-test')
@@ -208,14 +217,5 @@ export class AuthController {
       new PasswordRecoveryCommand(body.email, true, body.recaptcha),
     );
     return notification.getData();
-  }
-
-  @SwaggerDecoratorsByMe()
-  @Get('me')
-  @UseGuards(JwtAuthGuard)
-  async getMyInfo(@CurrentUserId() userId: number): Promise<MeViewDto> {
-    const user = await this.usersQueryRepository.findUserById(userId);
-    if (!user) return;
-    return new MeViewDto(user);
   }
 }

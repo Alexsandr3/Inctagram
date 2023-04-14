@@ -16,15 +16,14 @@ import { SessionsModule } from '../sessions/sessions.module';
 import { PassportModule } from '@nestjs/passport';
 import { AuthService } from './application/auth.service';
 import { UsersModule } from '../users/users.module';
-import { PasswordRecoveryEntity } from './domain/password-recovery.entity';
 import {
   IPasswordRecoveryRepository,
   PrismaPasswordRecoveryRepository,
 } from './infrastructure/password-recovery.repository';
 import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
-import { RecaptchaModule } from '../../providers/recaptcha/recaptcha.module';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 import { GenerateNewTokensUseCase } from './application/use-cases/update-tokens.use-case';
+import { RecaptchaModule } from '../../providers/recaptcha/recaptcha.module';
 
 const useCases = [
   RegisterUserUseCase,
@@ -39,19 +38,9 @@ const useCases = [
 ];
 
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];
-const entities = [PasswordRecoveryEntity];
 
 @Module({
-  imports: [
-    // TypeOrmModule.forFeature(entities),
-    CqrsModule,
-    ApiConfigModule,
-    ApiJwtModule,
-    SessionsModule,
-    PassportModule,
-    UsersModule,
-    RecaptchaModule,
-  ],
+  imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule, RecaptchaModule],
   controllers: [AuthController],
   providers: [
     AuthService,

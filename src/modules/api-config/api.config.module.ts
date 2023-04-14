@@ -33,6 +33,10 @@ import Joi from 'joi';
         AWS_BUCKET: Joi.string().required(),
         AWS_ENDPOINT: Joi.string().required(),
 
+        GOOGLE_CLIENT_ID: Joi.string().required(),
+        GOOGLE_CLIENT_SECRET: Joi.string().required(),
+        GOOGLE_CALLBACK_URL: Joi.string().required(),
+
         //TOKEN_NGROK: Joi.string(),
 
         //TOKEN_TELEGRAM: Joi.string(),
