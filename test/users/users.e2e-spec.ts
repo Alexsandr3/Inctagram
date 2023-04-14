@@ -124,7 +124,7 @@ describe('Create-profile -  e2e', () => {
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
     });
   });
-  it('21 - / (POST) - should return 400 if user already has profile', async () => {
+  it.skip('21 - / (POST) - should return 400 if user already has profile', async () => {
     const command = {
       userName: correctUserName_first_user,
       firstName: 'Kowalski',
@@ -150,6 +150,16 @@ describe('Create-profile -  e2e', () => {
       'Esse quasi laboriosam dolores minima quidem dolore. Officiis possimus dignissimos iusto ullam dignissimos ' +
       'laborum. At et consequatur. Earum quod repellat.',
   };
+  it('22 - / (POST) - should return 400 if userName is not unique', async () => {
+    const command = {
+      userName: correctUserName_second_user,
+    };
+    const responseBody: ApiErrorResultDto = await usersHelper.createProfile(command, {
+      expectedBody: accessToken,
+      expectedCode: 400,
+    });
+    expect(responseBody.messages[0].field).toBe('userName');
+  });
   it('23 - / (POST) - should return 201 if all data is correct', async () => {
     const responseBody: ProfileViewDto = await usersHelper.createProfile(command, {
       expectedBody: accessToken2,

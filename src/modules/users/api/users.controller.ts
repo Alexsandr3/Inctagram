@@ -27,6 +27,8 @@ import { CommandBus } from '@nestjs/cqrs';
 import { UploadImageAvatarCommand } from '../aplication/use-cases/upload-image-avatar.use-case';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
 import { CreateProfileCommand } from '../aplication/use-cases/create-profile.use-case';
+import { ResultNotification } from '../../../main/validators/result-notification';
+
 import { CreateProfileInputDto } from './inpu-dto/create-profile.input.dto';
 import { ProfileViewDto } from './view-models/profile-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
@@ -40,14 +42,14 @@ import { ValidationTypeImagePipe } from '../../../main/validators/validation-typ
 @ApiBearerAuth()
 @Controller('users')
 export class UsersController {
-  constructor(private readonly commandBus: CommandBus, private readonly profileRepo: IProfilesRepository) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @SwaggerDecoratorsByCreateProfile()
   @Post('/profile')
   @HttpCode(HTTP_Status.CREATED_201)
   async createProfile(@CurrentUserId() userId: number, @Body() body: CreateProfileInputDto): Promise<ProfileViewDto> {
-    const notification = await this.commandBus.execute<CreateProfileCommand, ResultNotification<ProfileViewDto>>(
-      new CreateProfileCommand(userId, body),
+    const notification = await this.commandBus.execute<UpdateProfileCommand, ResultNotification<ProfileViewDto>>(
+      new UpdateProfileCommand(userId, body),
     );
     return notification.getData();
   }
@@ -56,7 +58,7 @@ export class UsersController {
   @Put('/profile')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async updateProfile(@CurrentUserId() userId: number, @Body() body: CreateProfileInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<CreateProfileCommand, ResultNotification<null>>(
+    const notification = await this.commandBus.execute<UpdateProfileCommand, ResultNotification<null>>(
       new UpdateProfileCommand(userId, body),
     );
     return notification.getData();

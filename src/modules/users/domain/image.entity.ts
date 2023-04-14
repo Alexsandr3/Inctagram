@@ -23,7 +23,12 @@ export const sizeImageAvatar = {
   },
 };
 
-export enum TypeSizeImage {
+export enum ImageType {
+  AVATAR = 'AVATAR',
+  POST = 'POST',
+}
+
+export enum ImageSizeType {
   THUMBNAIL = 'THUMBNAIL',
   SMALL = 'SMALL',
   MEDIUM = 'MEDIUM',
@@ -31,16 +36,11 @@ export enum TypeSizeImage {
   HUGE_HD = 'HUGE_HD',
 }
 
-export enum TypeAffiliationImage {
-  AVATAR = 'AVATAR',
-  POST = 'POST',
-}
-
 export class ImageEntity extends BaseDateEntity {
   id: number;
   profileId: number;
-  affiliation: TypeAffiliationImage | null;
-  typeSize: TypeSizeImage | null;
+  imageType: ImageType;
+  sizeType: ImageSizeType;
   url: string;
   width: number;
   height: number;
@@ -54,14 +54,14 @@ export class ImageEntity extends BaseDateEntity {
     userId: number,
     urlImageAvatar: { key: string; fieldId: string },
     photo: Buffer,
-    typeSize: TypeSizeImage,
+    sizeType: ImageSizeType,
     defaultWidth: number,
     defaultHeight: number,
   ) {
     const instance = new ImageEntity();
     instance.profileId = userId;
-    instance.affiliation = TypeAffiliationImage.AVATAR;
-    instance.typeSize = typeSize;
+    instance.imageType = ImageType.AVATAR;
+    instance.sizeType = sizeType;
     instance.url = urlImageAvatar.key;
     instance.width = defaultWidth;
     instance.height = defaultHeight;
@@ -74,7 +74,7 @@ export class ImageEntity extends BaseDateEntity {
       userId,
       urlImageAvatar,
       photo,
-      TypeSizeImage.MEDIUM,
+      ImageSizeType.MEDIUM,
       sizeImageAvatar.MEDIUM.defaultWidth,
       sizeImageAvatar.MEDIUM.defaultHeight,
     );
@@ -85,7 +85,7 @@ export class ImageEntity extends BaseDateEntity {
       userId,
       urlImageAvatar,
       photo,
-      TypeSizeImage.THUMBNAIL,
+      ImageSizeType.THUMBNAIL,
       sizeImageAvatar.THUMBNAIL.defaultWidth,
       sizeImageAvatar.THUMBNAIL.defaultHeight,
     );

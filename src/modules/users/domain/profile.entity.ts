@@ -1,69 +1,38 @@
 import { ImageEntity } from './image.entity';
 import { BaseDateEntity } from './base-date.entity';
+import { CreateProfileInputDto } from '../api/inpu-dto/create-profile.input.dto';
+import { Type } from 'class-transformer';
 
 export class ProfileEntity extends BaseDateEntity {
   userId: number;
-  userName: string;
   firstName: string;
   lastName: string;
   city: string;
   dateOfBirth: Date;
   aboutMe: string;
+  @Type(() => ImageEntity)
   images: ImageEntity[];
 
   constructor() {
     super();
   }
 
-  static initCreate(
-    userId: number,
-    userName: string,
-    firstName: string,
-    lastName: string,
-    city: string,
-    dateOfBirth: Date,
-    aboutMe: string,
-  ) {
+  static initCreate(userId: number) {
     const instance = new ProfileEntity();
     instance.userId = userId;
-    instance.setValues(userName, firstName, lastName, city, dateOfBirth, aboutMe);
+    instance.images = [];
     return instance;
   }
 
-  static preparationProfile(profile: any): ProfileEntity {
-    const instance = new ProfileEntity();
-    instance.userId = profile.userId;
-    instance.userName = profile.userName;
-    instance.firstName = profile.firstName;
-    instance.lastName = profile.lastName;
-    instance.city = profile.city;
-    instance.dateOfBirth = profile.dateOfBirth;
-    instance.aboutMe = profile.aboutMe;
-    return instance;
+  private setValues(dto: CreateProfileInputDto) {
+    if (dto.firstName) this.firstName = dto.firstName;
+    if (dto.lastName) this.lastName = dto.lastName;
+    if (dto.city) this.city = dto.city;
+    if (dto.dateOfBirth) this.dateOfBirth = dto.dateOfBirth;
+    if (dto.aboutMe) this.aboutMe = dto.aboutMe;
   }
 
-  checkOwner(userId: number) {
-    return this.userId === userId;
-  }
-
-  private setValues(
-    userName: string,
-    firstName: string,
-    lastName: string,
-    city: string,
-    dateOfBirth: Date,
-    aboutMe: string,
-  ) {
-    if (userName) this.userName = userName;
-    if (firstName) this.firstName = firstName;
-    if (lastName) this.lastName = lastName;
-    if (city) this.city = city;
-    if (dateOfBirth) this.dateOfBirth = dateOfBirth;
-    if (aboutMe) this.aboutMe = aboutMe;
-  }
-
-  update(userName: string, firstName: string, lastName: string, city: string, dateOfBirth: Date, aboutMe: string) {
-    this.setValues(userName, firstName, lastName, city, dateOfBirth, aboutMe);
-    return this;
+  public update(dto: CreateProfileInputDto) {
+    this.setValues(dto);
   }
 }

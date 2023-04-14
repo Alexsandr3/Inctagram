@@ -10,10 +10,10 @@ export class ProfileViewDto {
   aboutMe: string | null;
   constructor() {}
 
-  static createView(profile: ProfileEntity): ProfileViewDto {
+  static createView(profile: ProfileEntity, userName: string): ProfileViewDto {
     const profileView = new ProfileViewDto();
     profileView.id = profile.userId;
-    profileView.userName = profile.userName;
+    profileView.userName = userName;
     profileView.firstName = profile.firstName;
     profileView.lastName = profile.lastName;
     profileView.city = profile.city;

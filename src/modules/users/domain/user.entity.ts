@@ -1,39 +1,37 @@
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
-import { EmailConfirmation } from './user.email-confirmation.entity';
-import { SessionEntity } from '../../sessions/domain/session.entity';
+import { EmailConfirmationEntity } from './user.email-confirmation.entity';
 import { ProfileEntity } from './profile.entity';
+import { BaseDateEntity } from './base-date.entity';
+import { CreateProfileInputDto } from '../api/inpu-dto/create-profile.input.dto';
+import { Type } from 'class-transformer';
 
-export class UserEntity {
+export class UserEntity extends BaseDateEntity {
   id: number;
   userName: string;
   email: string;
   passwordHash: string;
-  createdAt: Date;
-  emailConfirmation: EmailConfirmation;
-  session: SessionEntity[];
+  @Type(() => EmailConfirmationEntity)
+  emailConfirmation: EmailConfirmationEntity;
+  @Type(() => ProfileEntity)
   profile: ProfileEntity;
 
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   static initCreateUser(userName: string, email: string, passwordHash: string) {
     const instanceUser = new UserEntity();
     instanceUser.userName = userName;
     instanceUser.email = email;
     instanceUser.passwordHash = passwordHash;
-    instanceUser.emailConfirmation = new EmailConfirmation();
-    instanceUser.createdAt = new Date();
+    instanceUser.emailConfirmation = new EmailConfirmationEntity();
+    instanceUser.profile = null;
     return instanceUser;
   }
-  static preparationUser(user: any) {
-    const instanceUser = new UserEntity();
-    instanceUser.id = user.id;
-    instanceUser.userName = user.userName;
-    instanceUser.email = user.email;
-    instanceUser.passwordHash = user.passwordHash;
-    instanceUser.emailConfirmation = user.emailConfirmation;
-    instanceUser.createdAt = user.createdAt;
-    return instanceUser;
+
+  public isOwner(userId: number): boolean {
+    return this.id === userId;
   }
 
   public confirmUser() {
@@ -48,8 +46,15 @@ export class UserEntity {
   public updatePassword(passwordHash: string) {
     this.passwordHash = passwordHash;
   }
+  //
+  // public createProfile(dto: CreateProfileInputDto) {
+  //   this.profile = ProfileEntity.initCreate(this.id, dto);
+  //   this.userName = dto.userName;
+  // }
 
-  isUserNameUnique(userName: string) {
-    return this.userName === userName;
+  public updateProfile(dto: CreateProfileInputDto) {
+    if (!this.profile) this.profile = ProfileEntity.initCreate(this.id);
+    this.profile.update(dto);
+    this.userName = dto.userName;
   }
 }

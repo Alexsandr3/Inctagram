@@ -16,10 +16,11 @@ model User {
   userName          String             @unique
   email             String             @unique // @map("email" varchar(255) COLLATE "C")
   passwordHash      String
-  createdAt         DateTime           @default(now()) @db.Timestamptz(3) //, map: "created_at::timestamptz"
+  createdAt         DateTime           @default(now()) //, map: "created_at::timestamptz"
+  updatedAt         DateTime           @updatedAt
   emailConfirmation EmailConfirmation?
-  Session           Session[]
   profile           Profile?
+  Session           Session[]
 
   @@map("User")
 }
@@ -28,7 +29,7 @@ model EmailConfirmation {
   userId             Int       @unique
   isConfirmed        Boolean   @default(false)
   confirmationCode   String? // является необязательным (nullable)
-  codeExpirationDate DateTime? @db.Timestamptz(3) // является необязательным (nullable)
+  codeExpirationDate DateTime? // является необязательным (nullable)
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("EmailConfirmation")
@@ -49,29 +50,28 @@ model Session {
 model PasswordRecovery {
   id             Int      @id @default(autoincrement())
   recoveryCode   String   @unique
-  expirationDate DateTime @db.Timestamptz(3)
+  expirationDate DateTime
   email          String   @unique
 
   @@map("PasswordRecovery")
 }
 
 model Profile {
-  userId      Int      @unique
-  userName    String   @unique
+  userId      Int       @unique
   firstName   String?
   lastName    String?
   city        String?
   dateOfBirth DateTime?
   aboutMe     String?
-  createdAt   DateTime @default(now()) @db.Timestamptz(3)
-  udpatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   images      Image[]
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("Profile")
 }
 
-enum TypeSizeImage {
+enum ImageSizeType {
   THUMBNAIL  //45x45
   SMALL
   MEDIUM //192x192
@@ -79,7 +79,7 @@ enum TypeSizeImage {
   HUGE_HD
 }
 
-enum TypeAffiliationImage {
+enum ImageType {
   AVATAR
   POST
 }
@@ -87,13 +87,13 @@ enum TypeAffiliationImage {
 model Image {
   id          Int                  @id @default(autoincrement())
   profileId   Int
-  affiliation TypeAffiliationImage
-  typeSize    TypeSizeImage
+  imageType ImageType
+  sizeType    ImageSizeType
   url         String
   width       Int
   height      Int
   fileSize    Int
-  createdAt   DateTime             @default(now()) @db.Timestamptz(3)
+  createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt
   profile     Profile?             @relation(fields: [profileId], references: [userId])
 

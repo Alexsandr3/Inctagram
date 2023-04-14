@@ -44,6 +44,7 @@ export class S3StorageAdapter {
       ContentType: mimetype, //'image/png',
     };
     const command = new PutObjectCommand(bucketParams);
+
     try {
       const uploadResult: PutObjectCommandOutput = await this.s3Client.send(command);
       return {
@@ -64,8 +65,10 @@ export class S3StorageAdapter {
       Bucket: this.bucket,
       Key: key,
     };
+    const command = new DeleteObjectCommand(delete_bucket_params);
+
     try {
-      const data = await this.s3Client.send(new DeleteObjectCommand(delete_bucket_params));
+      const data = await this.s3Client.send(command);
       console.log('Success. Object deleted.------------', data);
       return data; // For unit tests.
     } catch (err) {
