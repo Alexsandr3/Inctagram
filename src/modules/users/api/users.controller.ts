@@ -12,7 +12,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { typeImageAvatar } from '../default-options-images';
+import { typeImageAvatar } from '../default-options-for-validate-images';
 import {
   SwaggerDecoratorsByCreateProfile,
   SwaggerDecoratorsByFormData,
@@ -70,7 +70,6 @@ export class UsersController {
     notification.addErrorFromNotificationException(
       new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
     );
-    console.log('user in get---------', user);
     if (!user) throw new CheckerNotificationErrors('Error', notification);
     return ProfileViewDto.createView(user.profile, user.userName);
   }

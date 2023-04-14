@@ -1,13 +1,13 @@
 /**
- * @description User images view model
+ * @description Profile avatar view model
  */
-export class UserImagesViewModel {
+export class ProfileAvatarViewModel {
   /**
    * @param main -> Must contain medium photo size (192x192) and thumbnail photo size (45x45)
    */
-  avatar: PhotoSizeModel[];
+  avatar: PhotoSizeViewModel[];
 
-  constructor(avatar: PhotoSizeModel[]) {
+  constructor(...avatar: PhotoSizeViewModel[]) {
     this.avatar = avatar;
   }
 }
@@ -15,7 +15,7 @@ export class UserImagesViewModel {
 /**
  * @description Photo size model
  */
-export class PhotoSizeModel {
+export class PhotoSizeViewModel {
   public url: string;
   /**
    * In pixels

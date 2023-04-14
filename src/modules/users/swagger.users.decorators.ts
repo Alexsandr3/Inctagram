@@ -3,7 +3,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiErrorResultDto } from '../../main/validators/api-error-result.dto';
 import { HTTP_Status } from '../../main/enums/http-status.enum';
 import { ProfileViewDto } from './api/view-models/profile-view.dto';
-import { UserImagesViewModel } from './api/view-models/user-images-view.dto';
+import { ProfileAvatarViewModel } from './api/view-models/user-images-view.dto';
 
 /**
  * @description Swagger decorators for upload image avatar
@@ -19,7 +19,7 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
       status: HTTP_Status.CREATED_201,
       description:
         'Uploaded image information object. Return array with Must contain medium photo size (192x192) and thumbnail photo size (45x45)',
-      type: UserImagesViewModel,
+      type: ProfileAvatarViewModel,
     }),
     ApiResponse({
       status: HTTP_Status.BAD_REQUEST_400,

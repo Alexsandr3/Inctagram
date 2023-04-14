@@ -1,27 +1,5 @@
 import { BaseDateEntity } from './base-date.entity';
-
-export const sizeImageAvatar = {
-  HUGE_HD: {
-    defaultWidth: 1280,
-    defaultHeight: 720,
-  },
-  LARGE: {
-    defaultWidth: 640,
-    defaultHeight: 360,
-  },
-  MEDIUM: {
-    defaultWidth: 192,
-    defaultHeight: 192,
-  },
-  SMALL: {
-    defaultWidth: 160,
-    defaultHeight: 90,
-  },
-  THUMBNAIL: {
-    defaultWidth: 45,
-    defaultHeight: 45,
-  },
-};
+import { ImageSizeConfig } from '../../images-editor/image-size-config.type';
 
 export enum ImageType {
   AVATAR = 'AVATAR',
@@ -52,42 +30,19 @@ export class ImageEntity extends BaseDateEntity {
 
   static initCreateImageEntity(
     userId: number,
+    size: string,
+    type: ImageType,
     urlImageAvatar: { key: string; fieldId: string },
     photo: Buffer,
-    sizeType: ImageSizeType,
-    defaultWidth: number,
-    defaultHeight: number,
   ) {
     const instance = new ImageEntity();
     instance.profileId = userId;
-    instance.imageType = ImageType.AVATAR;
-    instance.sizeType = sizeType;
+    instance.imageType = type;
+    instance.sizeType = size as ImageSizeType;
     instance.url = urlImageAvatar.key;
-    instance.width = defaultWidth;
-    instance.height = defaultHeight;
+    instance.width = ImageSizeConfig[size].defaultWidth;
+    instance.height = ImageSizeConfig[size].defaultHeight;
     instance.fileSize = photo.length;
     return instance;
-  }
-
-  static initCreateMediumSize(userId: number, urlImageAvatar: { key: string; fieldId: string }, photo: Buffer) {
-    return this.initCreateImageEntity(
-      userId,
-      urlImageAvatar,
-      photo,
-      ImageSizeType.MEDIUM,
-      sizeImageAvatar.MEDIUM.defaultWidth,
-      sizeImageAvatar.MEDIUM.defaultHeight,
-    );
-  }
-
-  static initCreateThumbnailSize(userId: number, urlImageAvatar: { key: string; fieldId: string }, photo: Buffer) {
-    return this.initCreateImageEntity(
-      userId,
-      urlImageAvatar,
-      photo,
-      ImageSizeType.THUMBNAIL,
-      sizeImageAvatar.THUMBNAIL.defaultWidth,
-      sizeImageAvatar.THUMBNAIL.defaultHeight,
-    );
   }
 }
