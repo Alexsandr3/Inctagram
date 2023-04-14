@@ -4,6 +4,7 @@ import { AuthHelper } from '../helpers/auth-helper';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
 import { MailManager } from '../../src/providers/mailer/application/mail-manager.service';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
+import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 
 jest.setTimeout(120000);
 describe('Authorisation -  e2e', () => {
@@ -184,13 +185,14 @@ describe('Authorisation -  e2e', () => {
   // Registration correct data
   let correctEmail: string = 'test@test.ts';
   let correctPassword: string = '12345678';
+  let userName: string = 'raccoon';
   let confirmationCode: string;
   it('30 - / (POST) - should return 204 if email and password is correct', async () => {
     const mailManager = app.get<MailManager>(MailManager);
     const emailAdapter = app.get<EmailAdapter>(EmailAdapter);
     jest.spyOn(emailAdapter, 'sendEmail');
     const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmation');
-    const command = { password: correctPassword, email: correctEmail, userName: 'raccoon' };
+    const command = { password: correctPassword, email: correctEmail, userName };
     await authHelper.registrationUser(command, { expectedCode: 204 });
     confirmationCode = sendEmailConfirmationMessage.mock.lastCall[1];
     expect(emailAdapter.sendEmail).toBeCalled();
@@ -202,17 +204,31 @@ describe('Authorisation -  e2e', () => {
   });
   //Login correct data
   let refreshToken: string;
+  let accessToken: string;
   it('32 - / (POST) - should return 200 if password and email correct', async () => {
     const command = { password: correctPassword, email: correctEmail };
     const response = await authHelper.login(command, { expectedCode: 200 });
     refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+
     expect(response.body.accessToken).toBeDefined();
+    expect(response.body).toEqual({ accessToken: expect.any(String) });
+    accessToken = response.body.accessToken;
     expect(response.headers['set-cookie']).toBeDefined();
     expect(response.headers['set-cookie'][0]).toContain('refreshToken');
     expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
     expect(response.headers['set-cookie'][0]).toContain('Path=/');
     expect(response.headers['set-cookie'][0]).toContain('Secure');
   });
+
+  //Get myInfo
+  it('32.1 - / (GET) - should return 200 and info about logged user', async () => {
+    const myInfo = await authHelper.me(accessToken);
+    expect(myInfo).toEqual({ userId: expect.any(Number), userName, email: correctEmail });
+  });
+  it('32.2 - / (GET) - should return 401 if user not authorized', async () => {
+    await authHelper.me('bad accessToken', HTTP_Status.UNAUTHORIZED_401);
+  });
+
   //Logout correct data
   it('33 - / (POST) - should return 401 if refreshToken not valid', async () => {
     const invalidToken =
