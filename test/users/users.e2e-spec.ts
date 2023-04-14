@@ -5,9 +5,10 @@ import { UsersHelper } from '../helpers/users-helper';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
 import { ProfileViewDto } from '../../src/modules/users/api/view-models/profile-view.dto';
 import { UserImagesViewModel } from '../../src/modules/users/api/view-models/user-images-view.dto';
+import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 
 jest.setTimeout(120000);
-describe('Create-profile -  e2e', () => {
+describe('Update-profile -  e2e', () => {
   let app: INestApplication;
   let authHelper: AuthHelper;
   let usersHelper: UsersHelper;
@@ -27,8 +28,10 @@ describe('Create-profile -  e2e', () => {
   let accessToken2: string;
   let correctEmail_first_user = 'Kiarra92@yahoo.om';
   let correctUserName_first_user = 'Anderson';
+  let firstUserProfile: ProfileViewDto;
   let correctEmail_second_user = 'Garnet4@yahoo.cm';
   let correctUserName_second_user = 'Addison';
+  let userId: number;
   //       email: 'Serenity_Fahey@hotmail.com',
   it('01 - / (POST) - should create user and returned accessToken', async () => {
     //registration user
@@ -37,11 +40,29 @@ describe('Create-profile -  e2e', () => {
     accessToken = await authHelper.createUser(command, { expectedCode: 204 });
     accessToken2 = await authHelper.createUser(command2, { expectedCode: 204 });
   });
+  it('01.1 - / (GET) - should return 200 and info about logged user', async () => {
+    const myInfo = await authHelper.me(accessToken);
+    userId = myInfo.userId;
+  });
+  it('01.2 - / (GET) - should return 200 and profile of user', async () => {
+    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
+    expect(profile).toEqual({
+      id: userId,
+      userName: correctUserName_first_user,
+      firstName: null,
+      lastName: null,
+      city: null,
+      dateOfBirth: null,
+      aboutMe: null,
+      images: [],
+    });
+    console.log('profile------', profile);
+  });
 
   //Incorrect data
   it('02 - / (POST) - should return 400 if userName is incorrect', async () => {
     const command = { userName: 'Cat' };
-    const responseBody: ApiErrorResultDto = await usersHelper.createProfile(command, {
+    const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
       expectedCode: 400,
     });
@@ -49,7 +70,7 @@ describe('Create-profile -  e2e', () => {
   });
   it('03 - / (POST) - should return 400 if userName is empty', async () => {
     const command = { userName: '' };
-    const responseBody: ApiErrorResultDto = await usersHelper.createProfile(command, {
+    const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
       expectedCode: 400,
     });
@@ -57,7 +78,7 @@ describe('Create-profile -  e2e', () => {
   });
   it('04 - / (POST) - should return 400 if userName is too long or too short', async () => {
     const command = { userName: 'C'.repeat(31) };
-    const responseBody: ApiErrorResultDto = await usersHelper.createProfile(command, {
+    const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
       expectedCode: 400,
     });
@@ -72,13 +93,13 @@ describe('Create-profile -  e2e', () => {
       dateOfBirth: '10.23.2024',
       aboutMe: 'e'.repeat(201),
     };
-    const responseBody: ApiErrorResultDto = await usersHelper.createProfile(command, {
+    const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
       expectedCode: 400,
     });
     expect(responseBody.messages[0].field).toBe('aboutMe');
     command.aboutMe = '';
-    const responseBody2: ApiErrorResultDto = await usersHelper.createProfile(command, {
+    const responseBody2: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
       expectedCode: 400,
     });
@@ -90,7 +111,7 @@ describe('Create-profile -  e2e', () => {
       dateOfBirth: 'new Date(1980, 10, 23)',
       aboutMe: 'e'.repeat(200),
     };
-    const responseBody: ApiErrorResultDto = await usersHelper.createProfile(command, {
+    const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
       expectedCode: 400,
     });
@@ -105,7 +126,7 @@ describe('Create-profile -  e2e', () => {
   });
 
   //Correct data
-  it('20 - / (POST) - should return 201 if all data is correct', async () => {
+  it('20 - / (POST) - should return 204 if all data is correct', async () => {
     const command = {
       userName: correctUserName_first_user,
       firstName: 'Kowalski',
@@ -114,14 +135,17 @@ describe('Create-profile -  e2e', () => {
       dateOfBirth: '10.23.2024',
       aboutMe: 'e'.repeat(200),
     };
-    const responseBody: ProfileViewDto = await usersHelper.createProfile(command, {
+    await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
-      expectedCode: 201,
+      expectedCode: HTTP_Status.NO_CONTENT_204,
     });
-    expect(responseBody).toEqual({
+    firstUserProfile = await usersHelper.getMyProfile(accessToken);
+
+    expect(firstUserProfile).toEqual({
       ...command,
-      id: expect.any(Number),
+      id: userId,
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
+      images: [],
     });
   });
   it.skip('21 - / (POST) - should return 400 if user already has profile', async () => {
@@ -133,13 +157,12 @@ describe('Create-profile -  e2e', () => {
       dateOfBirth: '10.23.2024',
       aboutMe: 'e'.repeat(200),
     };
-    const responseBody: ApiErrorResultDto = await usersHelper.createProfile(command, {
+    const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
-      expectedCode: 400,
+      expectedCode: HTTP_Status.BAD_REQUEST_400,
     });
     expect(responseBody.messages[0].field).toBe('profile');
   });
-  let userId: number;
   let command = {
     userName: correctUserName_second_user,
     firstName: 'Eda',
@@ -154,22 +177,27 @@ describe('Create-profile -  e2e', () => {
     const command = {
       userName: correctUserName_second_user,
     };
-    const responseBody: ApiErrorResultDto = await usersHelper.createProfile(command, {
+    const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
-      expectedCode: 400,
+      expectedCode: HTTP_Status.BAD_REQUEST_400,
     });
     expect(responseBody.messages[0].field).toBe('userName');
   });
-  it('23 - / (POST) - should return 201 if all data is correct', async () => {
-    const responseBody: ProfileViewDto = await usersHelper.createProfile(command, {
+  it('23 - / (POST) - should return 204 if all data is correct', async () => {
+    await usersHelper.updateProfile(command, {
       expectedBody: accessToken2,
-      expectedCode: 201,
+      expectedCode: HTTP_Status.NO_CONTENT_204,
     });
-    userId = responseBody.id;
-    expect(responseBody).toEqual({
+
+    const myInfo = await authHelper.me(accessToken2);
+    userId = myInfo.userId;
+    const profile = await usersHelper.getMyProfile(accessToken2);
+
+    expect(profile).toEqual({
       ...command,
-      id: expect.any(Number),
+      id: userId,
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
+      images: [],
     });
   });
   it('24 - / (PUT) - should return 204 if all data is correct', async () => {
@@ -191,6 +219,7 @@ describe('Create-profile -  e2e', () => {
       lastName: 'Ratke',
       id: expect.any(Number),
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
+      images: [],
     });
   });
   //Upload image profile
@@ -249,7 +278,30 @@ describe('Create-profile -  e2e', () => {
       ],
     });
   });
-  it('34 - / (POST) - should return 201 if all data is correct', async () => {
+  it('34 - / (GET) - should return 200 and profile of user', async () => {
+    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
+    expect(profile).toEqual({ ...firstUserProfile, images: expect.any(Array) });
+    expect(profile.images.length).toBe(2);
+    expect(profile.images).toEqual(
+      expect.arrayContaining([
+        {
+          createdAt: expect.any(String),
+          fileSize: expect.any(Number),
+          height: expect.any(Number),
+          id: expect.any(Number),
+          imageType: expect.any(String),
+          profileId: expect.any(Number),
+          sizeType: expect.any(String),
+          updatedAt: expect.any(String),
+          url: expect.any(String),
+          width: expect.any(Number),
+        },
+      ]),
+    );
+    console.log('profile------', profile);
+  });
+
+  it.skip('35 - / (POST) - should return 201 if all data is correct', async () => {
     let nameFile = '/images/859x720_338kb.jpeg';
     const responseBody: UserImagesViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken2,

@@ -14,7 +14,6 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { typeImageAvatar } from '../default-options-images';
 import {
-  SwaggerDecoratorsByCreateProfile,
   SwaggerDecoratorsByFormData,
   SwaggerDecoratorsByGetProfile,
   SwaggerDecoratorsByUpdateProfile,
@@ -26,7 +25,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { UploadImageAvatarCommand } from '../aplication/use-cases/upload-image-avatar.use-case';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
-import { CreateProfileInputDto } from './inpu-dto/create-profile.input.dto';
+import { UpdateProfileInputDto } from './inpu-dto/update-profile.input.dto';
 import { ProfileViewDto } from './view-models/profile-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { UpdateProfileCommand } from '../aplication/use-cases/update-profile.use-case';
@@ -41,20 +40,10 @@ import { IUsersRepository } from '../infrastructure/users.repository';
 export class UsersController {
   constructor(private readonly commandBus: CommandBus, private readonly usersRepository: IUsersRepository) {}
 
-  @SwaggerDecoratorsByCreateProfile()
-  @Post('/profile')
-  @HttpCode(HTTP_Status.CREATED_201)
-  async createProfile(@CurrentUserId() userId: number, @Body() body: CreateProfileInputDto): Promise<ProfileViewDto> {
-    const notification = await this.commandBus.execute<UpdateProfileCommand, ResultNotification<ProfileViewDto>>(
-      new UpdateProfileCommand(userId, body),
-    );
-    return notification.getData();
-  }
-
   @SwaggerDecoratorsByUpdateProfile()
   @Put('/profile')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async updateProfile(@CurrentUserId() userId: number, @Body() body: CreateProfileInputDto): Promise<null> {
+  async updateProfile(@CurrentUserId() userId: number, @Body() body: UpdateProfileInputDto): Promise<null> {
     const notification = await this.commandBus.execute<UpdateProfileCommand, ResultNotification<null>>(
       new UpdateProfileCommand(userId, body),
     );
@@ -70,9 +59,24 @@ export class UsersController {
     notification.addErrorFromNotificationException(
       new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
     );
-    console.log('user in get---------', user);
     if (!user) throw new CheckerNotificationErrors('Error', notification);
     return ProfileViewDto.createView(user.profile, user.userName);
+  }
+
+  @SwaggerDecoratorsByGetProfile()
+  @Get(`/profile`)
+  @HttpCode(HTTP_Status.OK_200)
+  async getMyProfile(@CurrentUserId() userId: number): Promise<ProfileViewDto> {
+    const user = await this.usersRepository.findById(userId);
+    const notification = new ResultNotification<ProfileViewDto>();
+    notification.addErrorFromNotificationException(
+      new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
+    );
+    console.log('111111profile in get---------', user.profile);
+    if (!user) throw new CheckerNotificationErrors('Error', notification);
+    const profile = ProfileViewDto.createView(user.profile, user.userName);
+    console.log('222222profile in get---------', profile);
+    return profile;
   }
 
   /**

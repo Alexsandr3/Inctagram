@@ -35,32 +35,6 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
 }
 
 /**
- * @description Swagger decorators for create profile
- * @constructor
- */
-export function SwaggerDecoratorsByCreateProfile(): MethodDecorator {
-  return applyDecorators(
-    ApiTags('profile'),
-    ApiOperation({ summary: 'Create profile for user' }),
-    ApiResponse({
-      status: HTTP_Status.CREATED_201,
-      description: 'Created profile information object',
-      type: ProfileViewDto,
-    }),
-    ApiResponse({
-      status: HTTP_Status.BAD_REQUEST_400,
-      description: 'The inputModel has incorrect values',
-      type: ApiErrorResultDto,
-    }),
-    ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
-    ApiResponse({
-      status: HTTP_Status.NOT_FOUND_404,
-      description: 'User not found',
-    }),
-  );
-}
-
-/**
  * @description Swagger decorators for get profile
  * @constructor
  */

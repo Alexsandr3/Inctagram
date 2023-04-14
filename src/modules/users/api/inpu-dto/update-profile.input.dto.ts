@@ -2,7 +2,7 @@ import { IsDate, IsOptional, IsString, Length, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
-export class CreateProfileInputDto {
+export class UpdateProfileInputDto {
   @ApiProperty({ pattern: '^[a-zA-Z0-9_-]*$', example: 'string' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Length(6, 30)
