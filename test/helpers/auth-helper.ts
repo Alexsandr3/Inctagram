@@ -125,24 +125,6 @@ export class AuthHelper {
     return response.body;
   }
 
-  async passwordRecoveryEmailResending(
-    command: RegistrationEmailResendingInputDto,
-    config: {
-      expectedBody?: any;
-      expectedCode?: number;
-    } = {},
-  ): Promise<any> {
-    // default expected code is 200 or code mistake from config
-    const expectedCode = config.expectedCode ?? HTTP_Status.NO_CONTENT_204;
-    // send request for send email
-    const response = await request(this.app.getHttpServer())
-      .post(authEndpoints.passwordRecoveryEmailResending())
-      .send(command)
-      .expect(expectedCode);
-
-    return response.body;
-  }
-
   async newPassword(
     command: NewPasswordInputDto,
     config: {

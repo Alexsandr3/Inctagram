@@ -1,7 +1,12 @@
 import { BaseDateEntity } from './base-date.entity';
 import { optionsImageAvatar } from '../default-options-images';
 
-enum TypeSizeImage {
+enum ImageType {
+  AVATAR = 'AVATAR',
+  POST = 'POST',
+}
+
+enum ImageSizeType {
   THUMBNAIL = 'THUMBNAIL',
   SMALL = 'SMALL',
   MEDIUM = 'MEDIUM',
@@ -9,16 +14,11 @@ enum TypeSizeImage {
   HUGE_HD = 'HUGE_HD',
 }
 
-enum TypeAffiliationImage {
-  AVATAR = 'AVATAR',
-  POST = 'POST',
-}
-
 export class ImageEntity extends BaseDateEntity {
   id: number;
   profileId: number;
-  affiliation: TypeAffiliationImage.AVATAR | null;
-  typeSize: TypeSizeImage.LARGE | null;
+  imageType: ImageType;
+  sizeType: ImageSizeType;
   url: string;
   width: number;
   height: number;
@@ -31,8 +31,8 @@ export class ImageEntity extends BaseDateEntity {
   static initCreate(userId: number, urlImageAvatar: { key: string; fieldId: string }, photo: Buffer) {
     const instance = new ImageEntity();
     instance.profileId = userId;
-    instance.affiliation = TypeAffiliationImage.AVATAR;
-    instance.typeSize = TypeSizeImage.LARGE;
+    instance.imageType = ImageType.AVATAR;
+    instance.sizeType = ImageSizeType.LARGE;
     instance.url = urlImageAvatar.key;
     instance.width = optionsImageAvatar.defaultWidth;
     instance.height = optionsImageAvatar.defaultHeight;

@@ -1,21 +1,45 @@
 import { UserEntity } from '../domain/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { plainToInstance } from 'class-transformer';
+import { ImageEntity } from '../domain/image.entity';
 
 export abstract class IUsersRepository {
+  abstract findById(userId: number): Promise<UserEntity | null>;
+  abstract findUserByUserName(userName: string): Promise<UserEntity | null>;
   abstract findUserByEmail(email: string): Promise<UserEntity | null>;
   abstract findUserByNameOrEmail(userName: string, email: string): Promise<UserEntity | null>;
   abstract findUserByConfirmationCode(confirmationCode: string): Promise<UserEntity | null>;
   abstract saveUser(user: UserEntity);
-  abstract deleteUser(userId: number);
   abstract updateUser(user: UserEntity);
-
-  abstract findById(userId: number): Promise<UserEntity | null>;
+  abstract deleteUser(userId: number);
+  abstract saveImageProfile(instanceImage: ImageEntity): Promise<void>;
 }
 
 @Injectable()
 export class PrismaUsersRepository implements IUsersRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  async findById(userId: number): Promise<UserEntity | null> {
+    const foundUser = await this.prisma.user.findFirst({
+      where: {
+        id: userId,
+      },
+      include: { emailConfirmation: true, profile: { include: { images: true } } },
+    });
+    return plainToInstance(UserEntity, foundUser);
+  }
+
+  async findUserByUserName(userName: string): Promise<UserEntity | null> {
+    const foundUser = await this.prisma.user.findFirst({
+      where: {
+        userName: { contains: userName, mode: 'insensitive' },
+      },
+
+      include: { emailConfirmation: true, profile: { include: { images: true } } },
+    });
+    return plainToInstance(UserEntity, foundUser);
+  }
 
   async findUserByEmail(email: string): Promise<UserEntity | null> {
     const foundUser = await this.prisma.user.findFirst({
@@ -25,25 +49,9 @@ export class PrismaUsersRepository implements IUsersRepository {
           mode: 'insensitive', // установка нечувствительности к регистру для сравнения
         },
       },
-      select: {
-        id: true,
-        userName: true,
-        email: true,
-        passwordHash: true,
-        createdAt: true,
-        emailConfirmation: {
-          select: {
-            isConfirmed: true,
-            confirmationCode: true,
-            codeExpirationDate: true,
-          },
-        },
-      },
+      include: { emailConfirmation: true, profile: { include: { images: true } } },
     });
-    if (foundUser) {
-      return UserEntity.preparationUser(foundUser);
-    }
-    return null;
+    return plainToInstance(UserEntity, foundUser);
   }
   async findUserByNameOrEmail(userName: string, email: string): Promise<UserEntity | null> {
     const foundUser = await this.prisma.user.findFirst({
@@ -53,68 +61,58 @@ export class PrismaUsersRepository implements IUsersRepository {
           { email: { contains: email, mode: 'insensitive' } },
         ],
       },
-      select: {
-        id: true,
-        userName: true,
-        email: true,
-        passwordHash: true,
-        createdAt: true,
-        emailConfirmation: {
-          select: {
-            isConfirmed: true,
-            confirmationCode: true,
-            codeExpirationDate: true,
-          },
-        },
-      },
+      include: { emailConfirmation: true, profile: { include: { images: true } } },
     });
-    if (foundUser) {
-      return UserEntity.preparationUser(foundUser);
-    }
-    return null;
+    return plainToInstance(UserEntity, foundUser);
   }
+
   async findUserByConfirmationCode(confirmationCode: string): Promise<UserEntity | null> {
     const foundUser = await this.prisma.user.findFirst({
       where: {
         emailConfirmation: { confirmationCode: confirmationCode },
       },
-      select: {
-        id: true,
-        userName: true,
-        email: true,
-        passwordHash: true,
-        createdAt: true,
-        emailConfirmation: {
-          select: {
-            isConfirmed: true,
-            confirmationCode: true,
-            codeExpirationDate: true,
-          },
-        },
-      },
+      include: { emailConfirmation: true, profile: { include: { images: true } } },
     });
-    if (foundUser) {
-      return UserEntity.preparationUser(foundUser);
-    }
-    return null;
+    return plainToInstance(UserEntity, foundUser);
   }
+
   async saveUser(user: UserEntity): Promise<void> {
     await this.prisma.user.create({
       data: {
-        userName: user.userName,
-        email: user.email,
-        passwordHash: user.passwordHash,
+        ...user,
         emailConfirmation: {
-          create: {
-            isConfirmed: user.emailConfirmation.isConfirmed,
-            confirmationCode: user.emailConfirmation.confirmationCode,
-            codeExpirationDate: user.emailConfirmation.codeExpirationDate,
-          },
+          create: user.emailConfirmation,
         },
+        profile: undefined, //{ create: { ...user.profile, images: { create: user.profile.images } } },
       },
     });
   }
+
   async updateUser(user: UserEntity): Promise<void> {
+    let updProfile = {};
+    if (user.profile) {
+      updProfile = {
+        upsert: {
+          create: {
+            firstName: user.profile.firstName,
+            lastName: user.profile.lastName,
+            city: user.profile.city,
+            dateOfBirth: user.profile.dateOfBirth,
+            aboutMe: user.profile.aboutMe,
+            //images: { disconnect: true },
+          },
+          update: {
+            firstName: user.profile.firstName,
+            lastName: user.profile.lastName,
+            city: user.profile.city,
+            dateOfBirth: user.profile.dateOfBirth,
+            aboutMe: user.profile.aboutMe,
+            //images: { disconnect: true },
+          },
+        },
+      };
+    }
+
     await this.prisma.user.update({
       where: {
         id: user.id,
@@ -123,7 +121,6 @@ export class PrismaUsersRepository implements IUsersRepository {
         userName: user.userName,
         email: user.email,
         passwordHash: user.passwordHash,
-        createdAt: user.createdAt,
         emailConfirmation: {
           update: {
             isConfirmed: user.emailConfirmation.isConfirmed,
@@ -131,9 +128,11 @@ export class PrismaUsersRepository implements IUsersRepository {
             codeExpirationDate: user.emailConfirmation.codeExpirationDate,
           },
         },
+        profile: updProfile,
       },
     });
   }
+
   async deleteUser(userId: number): Promise<void> {
     await this.prisma.user.delete({
       where: {
@@ -141,30 +140,21 @@ export class PrismaUsersRepository implements IUsersRepository {
       },
     });
   }
-  async findById(userId: number): Promise<UserEntity | null> {
-    const foundUser = await this.prisma.user.findFirst({
-      where: {
-        id: userId,
-      },
-      select: {
-        id: true,
-        userName: true,
-        email: true,
-        passwordHash: true,
-        createdAt: true,
-        emailConfirmation: {
-          select: {
-            isConfirmed: true,
-            confirmationCode: true,
-            codeExpirationDate: true,
-          },
-        },
+
+  async saveImageProfile(instanceImage: ImageEntity): Promise<void> {
+    await this.prisma.image.create({
+      data: {
+        profileId: instanceImage.profileId,
+        imageType: instanceImage.imageType,
+        sizeType: instanceImage.sizeType,
+        url: instanceImage.url,
+        width: instanceImage.width,
+        height: instanceImage.height,
+        fileSize: instanceImage.fileSize,
+        createdAt: instanceImage.createdAt,
+        updatedAt: instanceImage.updatedAt,
       },
     });
-    if (foundUser) {
-      return UserEntity.preparationUser(foundUser);
-    }
-    return null;
   }
 }
 

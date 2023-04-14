@@ -43,10 +43,12 @@ export class RegisterUserUseCase
       const field = foundUser.userName.toLowerCase() === userName.toLowerCase() ? 'name' : 'email';
       throw new NotificationException(`User with this ${field} is already exist`, field, NotificationCode.BAD_REQUEST);
     }
+
     //generate password hash
     const passwordHash = await this.authService.getPasswordHash(password);
     //create user
     const user = UserEntity.initCreateUser(userName, email, passwordHash);
+
     await this.usersRepository.saveUser(user); //save user
     await this.mailService.sendUserConfirmation(email, user.emailConfirmation.confirmationCode);
   }
