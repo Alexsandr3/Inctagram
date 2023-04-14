@@ -2,31 +2,14 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { usersEndpoints } from '../../src/modules/users/api/users.routing';
 import fs from 'fs';
+import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { ProfileViewDto } from '../../src/modules/users/api/view-models/profile-view.dto';
 
 export class UsersHelper {
   constructor(private readonly app: INestApplication) {}
 
-  async createProfile(
-    command: any, //CreateProfileInputDto,
-    config: {
-      expectedBody?: any;
-      expectedCode?: number;
-    } = {},
-  ): Promise<any> {
-    // default expected code is 201 or code mistake from config
-    const expectedCode = config.expectedCode ?? HttpStatus.CREATED;
-    // send request for create user
-    const response = await request(this.app.getHttpServer())
-      .post(usersEndpoints.createProfile())
-      .auth(config.expectedBody, { type: 'bearer' })
-      .send(command)
-      .expect(expectedCode);
-
-    return response.body;
-  }
-
   async updateProfile(
-    command: any, //CreateProfileInputDto,
+    command: any, //UpdateProfileInputDto,
     config: {
       expectedBody?: any;
       expectedCode?: number;
@@ -80,6 +63,15 @@ export class UsersHelper {
       .get(usersEndpoints.getProfile(userId))
       .auth(config.expectedBody, { type: 'bearer' })
       .expect(expectedCode);
+
+    return response.body;
+  }
+
+  async getMyProfile(accessToken: string): Promise<ProfileViewDto> {
+    const response = await request(this.app.getHttpServer())
+      .get(usersEndpoints.getMyProfile())
+      .auth(accessToken, { type: 'bearer' })
+      .expect(HTTP_Status.OK_200);
 
     return response.body;
   }

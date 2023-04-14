@@ -1,13 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { CreateProfileInputDto } from '../../api/inpu-dto/create-profile.input.dto';
+import { UpdateProfileInputDto } from '../../api/inpu-dto/update-profile.input.dto';
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { ProfileViewDto } from '../../api/view-models/profile-view.dto';
 
 export class UpdateProfileCommand {
-  constructor(public readonly userId: number, public readonly body: CreateProfileInputDto) {}
+  constructor(public readonly userId: number, public readonly body: UpdateProfileInputDto) {}
 }
 
 @CommandHandler(UpdateProfileCommand)

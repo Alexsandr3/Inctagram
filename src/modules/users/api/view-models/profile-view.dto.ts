@@ -1,4 +1,5 @@
 import { ProfileEntity } from '../../domain/profile.entity';
+import { ImageEntity } from '../../domain/image.entity';
 
 export class ProfileViewDto {
   id: number;
@@ -8,6 +9,7 @@ export class ProfileViewDto {
   city: string | null;
   dateOfBirth: Date | null;
   aboutMe: string | null;
+  images: ImageEntity[];
   constructor() {}
 
   static createView(profile: ProfileEntity, userName: string): ProfileViewDto {
@@ -19,6 +21,7 @@ export class ProfileViewDto {
     profileView.city = profile.city;
     profileView.dateOfBirth = profile.dateOfBirth;
     profileView.aboutMe = profile.aboutMe;
+    profileView.images = profile.images;
     return profileView;
   }
 }

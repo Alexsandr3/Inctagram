@@ -83,7 +83,9 @@ export class PrismaUsersRepository implements IUsersRepository {
         emailConfirmation: {
           create: user.emailConfirmation,
         },
-        profile: undefined, //{ create: { ...user.profile, images: { create: user.profile.images } } },
+        profile: {
+          create: {},
+        }, //{ create: { ...user.profile, images: { create: user.profile.images } } },
       },
     });
   }

@@ -12,4 +12,8 @@ export class EmailConfirmationEntity {
     this.confirmationCode = randomUUID();
     this.codeExpirationDate = add(new Date(), { hours: 1 });
   }
+
+  static initCreate(): EmailConfirmationEntity {
+    return new EmailConfirmationEntity();
+  }
 }

@@ -1,6 +1,6 @@
 import { ImageEntity } from './image.entity';
 import { BaseDateEntity } from './base-date.entity';
-import { CreateProfileInputDto } from '../api/inpu-dto/create-profile.input.dto';
+import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
 
 export class ProfileEntity extends BaseDateEntity {
@@ -24,7 +24,7 @@ export class ProfileEntity extends BaseDateEntity {
     return instance;
   }
 
-  private setValues(dto: CreateProfileInputDto) {
+  private setValues(dto: UpdateProfileInputDto) {
     if (dto.firstName) this.firstName = dto.firstName;
     if (dto.lastName) this.lastName = dto.lastName;
     if (dto.city) this.city = dto.city;
@@ -32,7 +32,7 @@ export class ProfileEntity extends BaseDateEntity {
     if (dto.aboutMe) this.aboutMe = dto.aboutMe;
   }
 
-  public update(dto: CreateProfileInputDto) {
+  public update(dto: UpdateProfileInputDto) {
     this.setValues(dto);
   }
 }
