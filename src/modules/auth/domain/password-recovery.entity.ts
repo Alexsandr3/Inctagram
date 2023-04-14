@@ -1,15 +1,10 @@
 import { add } from 'date-fns';
 import { randomUUID } from 'crypto';
 
-// @Entity('PasswordRecovery')
 export class PasswordRecoveryEntity {
-  // @PrimaryGeneratedColumn('increment')
   id: number;
-  // @Column()
   recoveryCode: string;
-  // @Column()
   expirationDate: Date;
-  // @Column()
   email: string;
 
   constructor() {}

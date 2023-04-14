@@ -1,21 +1,13 @@
 import { SessionExtendedDto } from '../application/dto/SessionExtendedDto';
 import { UserEntity } from '../../users/domain/user.entity';
 
-// @Entity('Sessions')
 export class SessionEntity {
-  // @PrimaryGeneratedColumn('increment')
   deviceId: number;
-  // @Column()
   userId: number;
-  // @Column()
   exp: number;
-  // @Column()
   ip: string;
-  // @Column()
   deviceName: string;
-  // @Column()
   iat: number;
-  // @ManyToOne(() => UserEntity)
   user: UserEntity;
 
   constructor() {}

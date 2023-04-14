@@ -48,25 +48,3 @@ export class PrismaPasswordRecoveryRepository implements IPasswordRecoveryReposi
     });
   }
 }
-
-/*@Injectable()
-export class PasswordRecoveryRepository implements IPasswordRecoveryRepository {
-  constructor(
-    @InjectRepository(PasswordRecoveryEntity)
-    private readonly passwordRecoveryRepositoryT: Repository<PasswordRecoveryEntity>,
-  ) {}
-
-  async findPassRecovery(recoveryCode: string): Promise<PasswordRecoveryEntity | null> {
-    return await this.passwordRecoveryRepositoryT.findOne({
-      where: { recoveryCode: recoveryCode },
-    });
-  }
-
-  async savePassRecovery(passRecovery: PasswordRecoveryEntity) {
-    await this.passwordRecoveryRepositoryT.save(passRecovery);
-  }
-
-  async deletePassRecovery(recoveryCode: string) {
-    await this.passwordRecoveryRepositoryT.delete({ recoveryCode: recoveryCode });
-  }
-}*/

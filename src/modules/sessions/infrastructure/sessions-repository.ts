@@ -71,26 +71,3 @@ export class PrismaSessionsRepository implements ISessionsRepository {
     });
   }
 }
-
-/*
-@Injectable()
-export class SessionsRepository implements ISessionsRepository {
-  constructor(@InjectRepository(SessionEntity) private readonly sessionsRepositoryT: Repository<SessionEntity>) {}
-
-  async findSessionByDeviceId(deviceId: number): Promise<SessionEntity | null> {
-    const session = await this.sessionsRepositoryT.findOne({ where: { deviceId: deviceId } });
-    return session ?? null;
-  }
-
-  async saveSession(session: SessionEntity): Promise<void> {
-    await this.sessionsRepositoryT.save(session);
-  }
-
-  async deleteSessionByDeviceId(deviceId: number) {
-    await this.sessionsRepositoryT.delete({ deviceId: deviceId });
-  }
-
-  async newDeviceId(): Promise<SessionEntity> {
-    return this.sessionsRepositoryT.create();
-  }
-}*/

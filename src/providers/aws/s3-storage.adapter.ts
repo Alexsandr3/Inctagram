@@ -69,7 +69,6 @@ export class S3StorageAdapter {
 
     try {
       const data = await this.s3Client.send(command);
-      console.log('Success. Object deleted.------------', data);
       return data; // For unit tests.
     } catch (err) {
       console.error('Error', err);
