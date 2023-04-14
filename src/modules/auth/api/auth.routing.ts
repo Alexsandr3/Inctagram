@@ -7,7 +7,6 @@ export const authEndpoints = {
   login: () => `${baseUrlAuth}/login`,
   passwordRecovery: () => `${baseUrlAuth}/password-recovery`,
   checkRecoveryCode: () => `${baseUrlAuth}/check-recovery-code`,
-  passwordRecoveryEmailResending: () => `${baseUrlAuth}/password-recovery-email-resending`,
   newPassword: () => `${baseUrlAuth}/new-password`,
   logout: () => `${baseUrlAuth}/logout`,
   updateTokens: () => `${baseUrlAuth}/update-tokens`,
@@ -21,6 +20,7 @@ export const authEndpoints = {
 // POST /api/auth/login - вход пользователя в систему
 // POST /api/auth/password-recovery - восcтановление пароля
 // POST /api/auth/check-recovery-code - проверка кода восстановления
-// POST /api/auth/password-recovery-email-resending - повторная отправка pass
-// POST /api/auth/new-password - выход пользователя из системы
+// POST /api/auth/new-password - изменение пароля
 // POST /api/auth/logout - выход пользователя из системы
+// POST /api/auth/updateTokens - обновление токенов
+// POST /api/auth/me - получение инфо о залогиненном пользователе

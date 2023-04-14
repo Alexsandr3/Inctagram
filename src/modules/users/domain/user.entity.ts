@@ -3,7 +3,7 @@ import { add } from 'date-fns';
 import { EmailConfirmationEntity } from './user.email-confirmation.entity';
 import { ProfileEntity } from './profile.entity';
 import { BaseDateEntity } from './base-date.entity';
-import { CreateProfileInputDto } from '../api/inpu-dto/create-profile.input.dto';
+import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
 
 export class UserEntity extends BaseDateEntity {
@@ -25,7 +25,7 @@ export class UserEntity extends BaseDateEntity {
     instanceUser.userName = userName;
     instanceUser.email = email;
     instanceUser.passwordHash = passwordHash;
-    instanceUser.emailConfirmation = new EmailConfirmationEntity();
+    instanceUser.emailConfirmation = EmailConfirmationEntity.initCreate();
     instanceUser.profile = null;
     return instanceUser;
   }
@@ -46,14 +46,8 @@ export class UserEntity extends BaseDateEntity {
   public updatePassword(passwordHash: string) {
     this.passwordHash = passwordHash;
   }
-  //
-  // public createProfile(dto: CreateProfileInputDto) {
-  //   this.profile = ProfileEntity.initCreate(this.id, dto);
-  //   this.userName = dto.userName;
-  // }
 
-  public updateProfile(dto: CreateProfileInputDto) {
-    if (!this.profile) this.profile = ProfileEntity.initCreate(this.id);
+  public updateProfile(dto: UpdateProfileInputDto) {
     this.profile.update(dto);
     this.userName = dto.userName;
   }

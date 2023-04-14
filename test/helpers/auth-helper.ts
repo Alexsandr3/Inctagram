@@ -11,6 +11,7 @@ import { PasswordRecoveryCodeInputDto } from '../../src/modules/auth/api/input-d
 import { NewPasswordInputDto } from '../../src/modules/auth/api/input-dto/new-password.input.dto';
 import { MailManager } from '../../src/providers/mailer/application/mail-manager.service';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
+import { MeViewDto } from '../../src/modules/auth/api/view-dto/me.view.dto';
 
 export class AuthHelper {
   constructor(private readonly app: INestApplication) {}
@@ -213,5 +214,14 @@ export class AuthHelper {
     expect(response.headers['set-cookie'][0]).toContain('Path=/');
     expect(response.headers['set-cookie'][0]).toContain('Secure');
     return response.body.accessToken;
+  }
+
+  async me(accessToken: string, statusCode: HTTP_Status = HTTP_Status.OK_200): Promise<MeViewDto> {
+    const response = await request(this.app.getHttpServer())
+      .get(authEndpoints.me())
+      .auth(accessToken, { type: 'bearer' })
+      .expect(statusCode);
+
+    return response.body;
   }
 }
