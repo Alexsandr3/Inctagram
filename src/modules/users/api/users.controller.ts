@@ -1,7 +1,19 @@
-import { Body, Controller, Get, HttpCode, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Post,
+  Put,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { typeImageAvatar } from '../default-options-for-validate-images';
 import {
+  SwaggerDecoratorsByDeletePhotoAvatar,
   SwaggerDecoratorsByFormData,
   SwaggerDecoratorsByGetProfile,
   SwaggerDecoratorsByUpdateProfile,
@@ -21,6 +33,7 @@ import { NotificationCode } from '../../../configuration/exception.filter';
 import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
 import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
 import { IUsersRepository } from '../infrastructure/users.repository';
+import { DeleteImageAvatarCommand } from '../aplication/use-cases/delete-image-avatar.use-case';
 
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
@@ -68,6 +81,16 @@ export class UsersController {
   ) {
     const notification = await this.commandBus.execute<UploadImageAvatarCommand, ResultNotification<null>>(
       new UploadImageAvatarCommand(userId, file.mimetype, file.buffer),
+    );
+    return notification.getData();
+  }
+
+  @SwaggerDecoratorsByDeletePhotoAvatar()
+  @Delete('/profile/avatar')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async deleteAvatarProfile(@CurrentUserId() userId: number) {
+    const notification = await this.commandBus.execute<DeleteImageAvatarCommand, ResultNotification<null>>(
+      new DeleteImageAvatarCommand(userId),
     );
     return notification.getData();
   }

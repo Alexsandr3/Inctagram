@@ -14,6 +14,8 @@ export abstract class IUsersRepository {
   abstract updateUser(user: UserEntity);
   abstract deleteUser(userId: number);
   abstract saveImageProfile(instanceImage: ImageEntity): Promise<void>;
+
+  abstract deleteImagesAvatar(userId: number): Promise<void>;
 }
 
 @Injectable()
@@ -25,7 +27,7 @@ export class PrismaUsersRepository implements IUsersRepository {
       where: {
         id: userId,
       },
-      include: { emailConfirmation: true, profile: { include: { images: true } } },
+      include: { emailConfirmation: true, profile: { include: { avatars: true } } },
     });
     return plainToInstance(UserEntity, foundUser);
   }
@@ -36,7 +38,7 @@ export class PrismaUsersRepository implements IUsersRepository {
         userName: { contains: userName, mode: 'insensitive' },
       },
 
-      include: { emailConfirmation: true, profile: { include: { images: true } } },
+      include: { emailConfirmation: true, profile: { include: { avatars: true } } },
     });
     return plainToInstance(UserEntity, foundUser);
   }
@@ -49,7 +51,7 @@ export class PrismaUsersRepository implements IUsersRepository {
           mode: 'insensitive', // установка нечувствительности к регистру для сравнения
         },
       },
-      include: { emailConfirmation: true, profile: { include: { images: true } } },
+      include: { emailConfirmation: true, profile: { include: { avatars: true } } },
     });
     return plainToInstance(UserEntity, foundUser);
   }
@@ -61,7 +63,7 @@ export class PrismaUsersRepository implements IUsersRepository {
           { email: { contains: email, mode: 'insensitive' } },
         ],
       },
-      include: { emailConfirmation: true, profile: { include: { images: true } } },
+      include: { emailConfirmation: true, profile: { include: { avatars: true } } },
     });
     return plainToInstance(UserEntity, foundUser);
   }
@@ -71,7 +73,7 @@ export class PrismaUsersRepository implements IUsersRepository {
       where: {
         emailConfirmation: { confirmationCode: confirmationCode },
       },
-      include: { emailConfirmation: true, profile: { include: { images: true } } },
+      include: { emailConfirmation: true, profile: { include: { avatars: true } } },
     });
     return plainToInstance(UserEntity, foundUser);
   }
@@ -155,6 +157,14 @@ export class PrismaUsersRepository implements IUsersRepository {
         fileSize: instanceImage.fileSize,
         createdAt: instanceImage.createdAt,
         updatedAt: instanceImage.updatedAt,
+      },
+    });
+  }
+
+  async deleteImagesAvatar(userId: number): Promise<void> {
+    await this.prisma.image.deleteMany({
+      where: {
+        profileId: userId,
       },
     });
   }

@@ -65,7 +65,7 @@ model Profile {
   aboutMe     String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  images      Image[]
+  avatars     Image[]
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("Profile")

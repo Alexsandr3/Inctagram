@@ -11,7 +11,7 @@ import { ProfileAvatarViewModel } from './api/view-models/user-images-view.dto';
  */
 export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
   return applyDecorators(
-    ApiTags('upload images'),
+    ApiTags('profile-avatar'),
     ApiOperation({
       summary: 'Upload providers square image for Avatar profile (.png or jpg (jpeg) file',
     }),
@@ -25,6 +25,24 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
       status: HTTP_Status.BAD_REQUEST_400,
       description: 'The inputModel has incorrect values',
       type: ApiErrorResultDto,
+    }),
+    ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
+    ApiResponse({
+      status: HTTP_Status.FORBIDDEN_403,
+      description: 'You are not the owner this account',
+    }),
+  );
+}
+
+export function SwaggerDecoratorsByDeletePhotoAvatar(): MethodDecorator {
+  return applyDecorators(
+    ApiTags('profile-avatar'),
+    ApiOperation({
+      summary: 'Delete providers square image for Avatar profile',
+    }),
+    ApiResponse({
+      status: HTTP_Status.NO_CONTENT_204,
+      description: 'Success deleted avatar',
     }),
     ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
     ApiResponse({

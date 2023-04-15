@@ -11,7 +11,7 @@ export class ProfileEntity extends BaseDateEntity {
   dateOfBirth: Date;
   aboutMe: string;
   @Type(() => ImageEntity)
-  images: ImageEntity[];
+  avatars: ImageEntity[];
 
   constructor() {
     super();
@@ -20,7 +20,7 @@ export class ProfileEntity extends BaseDateEntity {
   static initCreate(userId: number) {
     const instance = new ProfileEntity();
     instance.userId = userId;
-    instance.images = [];
+    instance.avatars = [];
     return instance;
   }
 

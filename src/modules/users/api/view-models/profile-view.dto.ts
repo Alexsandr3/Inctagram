@@ -21,7 +21,7 @@ export class ProfileViewDto {
     profileView.city = profile.city;
     profileView.dateOfBirth = profile.dateOfBirth;
     profileView.aboutMe = profile.aboutMe;
-    profileView.images = profile.images;
+    profileView.images = profile.avatars;
     return profileView;
   }
 }

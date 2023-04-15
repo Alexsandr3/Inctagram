@@ -117,4 +117,9 @@ export class ImagesEditorService {
 
     return instancesImages;
   }
+
+  async deleteImages(...images: ImageEntity[]) {
+    const keys = images.map(image => image.url);
+    await this.storageS3.deleteManyFiles(...keys);
+  }
 }

@@ -8,8 +8,9 @@ import { IUsersQueryRepository, PrismaUsersQueryRepository } from './infrastruct
 import { UpdateProfileUseCase } from './aplication/use-cases/update-profile.use-case';
 import { ImagesEditorService } from '../images/application/images-editor.service';
 import { ImagesModule } from '../images/images.module';
+import { DeleteImageAvatarUseCase } from './aplication/use-cases/delete-image-avatar.use-case';
 
-const useCases = [UploadImageAvatarUseCase, UpdateProfileUseCase];
+const useCases = [UploadImageAvatarUseCase, UpdateProfileUseCase, DeleteImageAvatarUseCase];
 
 @Module({
   imports: [AwsModule, CqrsModule, ImagesModule],
