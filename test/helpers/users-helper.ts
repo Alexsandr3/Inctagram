@@ -49,24 +49,6 @@ export class UsersHelper {
     return response.body;
   }
 
-  async getProfile(
-    userId: number,
-    config: {
-      expectedBody?: any;
-      expectedCode?: number;
-    } = {},
-  ) {
-    // default expected code is 200 or code mistake from config
-    const expectedCode = config.expectedCode ?? HttpStatus.OK;
-    // send request for create user
-    const response = await request(this.app.getHttpServer())
-      .get(usersEndpoints.getProfile(userId))
-      .auth(config.expectedBody, { type: 'bearer' })
-      .expect(expectedCode);
-
-    return response.body;
-  }
-
   async getMyProfile(accessToken: string): Promise<ProfileViewDto> {
     const response = await request(this.app.getHttpServer())
       .get(usersEndpoints.getMyProfile())

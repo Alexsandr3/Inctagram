@@ -1,16 +1,4 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-  UploadedFile,
-  UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, Put, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { typeImageAvatar } from '../default-options-for-validate-images';
 import {
@@ -51,19 +39,6 @@ export class UsersController {
   }
 
   @SwaggerDecoratorsByGetProfile()
-  @Get(`/profile/:id`)
-  @HttpCode(HTTP_Status.OK_200)
-  async getProfile(@Param('id', ParseIntPipe) userId: number): Promise<ProfileViewDto> {
-    const user = await this.usersRepository.findById(userId);
-    const notification = new ResultNotification<ProfileViewDto>();
-    notification.addErrorFromNotificationException(
-      new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
-    );
-    if (!user) throw new CheckerNotificationErrors('Error', notification);
-    return ProfileViewDto.createView(user.profile, user.userName);
-  }
-
-  @SwaggerDecoratorsByGetProfile()
   @Get(`/profile`)
   @HttpCode(HTTP_Status.OK_200)
   async getMyProfile(@CurrentUserId() userId: number): Promise<ProfileViewDto> {
@@ -72,11 +47,9 @@ export class UsersController {
     notification.addErrorFromNotificationException(
       new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
     );
-    console.log('111111profile in get---------', user.profile);
     if (!user) throw new CheckerNotificationErrors('Error', notification);
-    const profile = ProfileViewDto.createView(user.profile, user.userName);
-    console.log('222222profile in get---------', profile);
-    return profile;
+
+    return ProfileViewDto.createView(user.profile, user.userName);
   }
 
   /**

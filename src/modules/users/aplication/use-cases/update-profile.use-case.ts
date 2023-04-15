@@ -27,7 +27,6 @@ export class UpdateProfileUseCase
     const foundUser = await this.userRepository.findById(userId);
     if (!foundUser)
       throw new NotificationException(`User with id ${userId} not found`, 'id', NotificationCode.NOT_FOUND);
-
     //check userName is free
     const userWithReceivedUserName = await this.userRepository.findUserByUserName(userName);
     if (userWithReceivedUserName && userWithReceivedUserName.id !== foundUser.id) {
@@ -37,11 +36,9 @@ export class UpdateProfileUseCase
         NotificationCode.BAD_REQUEST,
       );
     }
-
     //create or update profile
     foundUser.updateProfile(body);
     //save profile
-
     await this.userRepository.updateUser(foundUser);
     return ProfileViewDto.createView(foundUser.profile, foundUser.userName);
   }
