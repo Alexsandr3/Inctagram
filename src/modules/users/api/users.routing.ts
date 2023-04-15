@@ -3,6 +3,7 @@ export const baseUrlUser = '/users';
 export const usersEndpoints = {
   getMyProfile: () => `${baseUrlUser}/profile`,
   updateProfile: () => `${baseUrlUser}/profile`,
+  deletePhotosAvatar: () => `${baseUrlUser}/profile/avatar`, //
   uploadPhotoAvatar: () => `${baseUrlUser}/profile/avatar`,
 };
 

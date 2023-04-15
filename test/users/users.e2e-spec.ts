@@ -59,7 +59,7 @@ describe('Update-profile -  e2e', () => {
   });
 
   //Incorrect data
-  it('02 - / (POST) - should return 400 if userName is incorrect', async () => {
+  it('02 - / (PUT) - should return 400 if userName is incorrect', async () => {
     const command = { userName: 'Cat' };
     const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
@@ -67,7 +67,7 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('userName');
   });
-  it('03 - / (POST) - should return 400 if userName is empty', async () => {
+  it('03 - / (PUT) - should return 400 if userName is empty', async () => {
     const command = { userName: '' };
     const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
@@ -75,7 +75,7 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('userName');
   });
-  it('04 - / (POST) - should return 400 if userName is too long or too short', async () => {
+  it('04 - / (PUT) - should return 400 if userName is too long or too short', async () => {
     const command = { userName: 'C'.repeat(31) };
     const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
@@ -83,7 +83,7 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('userName');
   });
-  it('05 - / (POST) - should return 400 if aboutMe is too long or is empty', async () => {
+  it('05 - / (PUT) - should return 400 if aboutMe is too long or is empty', async () => {
     let command = {
       userName: 'SuperPinkUser',
       firstName: 'Kowalski',
@@ -104,7 +104,7 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody2.messages[0].field).toBe('aboutMe');
   });
-  it('06 - / (POST) - should return 400 if dateOfBirth is incorrect', async () => {
+  it('06 - / (PUT) - should return 400 if dateOfBirth is incorrect', async () => {
     const command = {
       userName: 'SuperPinkUser',
       dateOfBirth: 'new Date(1980, 10, 23)',
@@ -117,8 +117,8 @@ describe('Update-profile -  e2e', () => {
     expect(responseBody.messages[0].field).toBe('dateOfBirth');
   });
 
-  //Correct data
-  it('20 - / (POST) - should return updated profile with code - 204 if all data is correct', async () => {
+  //Correct data for update
+  it('20 - / (PUT) - should return updated profile with code - 204 if all data is correct', async () => {
     const command = {
       userName: correctUserName_first_user,
       firstName: 'Kowalski',
@@ -140,11 +140,10 @@ describe('Update-profile -  e2e', () => {
       images: [],
     });
   });
-  it('21 - / (POST) - should return 204 and delete set null in delete property', async () => {
+  it('21 - / (PUT) - should return 204 and delete set null in delete property', async () => {
     const command = {
       aboutMe: null,
     };
-
     await usersHelper.updateProfile(command, {
       expectedBody: accessToken,
       expectedCode: HTTP_Status.NO_CONTENT_204,
@@ -157,7 +156,7 @@ describe('Update-profile -  e2e', () => {
     });
     firstUserProfile = changedProfile;
   });
-  it('22 - / (POST) - should return 400 if userName is not unique', async () => {
+  it('22 - / (PUT) - should return 400 if userName is not unique', async () => {
     const command = {
       userName: correctUserName_second_user,
     };
@@ -177,7 +176,7 @@ describe('Update-profile -  e2e', () => {
       'Esse quasi laboriosam dolores minima quidem dolore. Officiis possimus dignissimos iusto ullam dignissimos ' +
       'laborum. At et consequatur. Earum quod repellat.',
   };
-  it('23 - / (POST) - should return 204 if all data is correct', async () => {
+  it('23 - / (PUT) - should return 204 if all data is correct', async () => {
     await usersHelper.updateProfile(command, {
       expectedBody: accessToken2,
       expectedCode: HTTP_Status.NO_CONTENT_204,
@@ -213,19 +212,12 @@ describe('Update-profile -  e2e', () => {
       images: [],
     });
   });
-  //Upload image profile
-  it.skip('29 - / (POST) - should return 400 if data image incorrect', async () => {
-    let nameFile = '/images/1271х847_357kb.jpeg';
-    const responseBody: ApiErrorResultDto = await usersHelper.uploadPhotoAvatar(nameFile, {
-      expectedBody: accessToken,
-      expectedCode: 400,
-    });
-    expect(responseBody.messages[0].field).toBe('file');
-  });
+
+  //Upload image profile - incorrect data
   it('30 - / (POST) - should return 400 if data image incorrect', async () => {
     let nameFile = '/images/email.html';
     const responseBody: ApiErrorResultDto = await usersHelper.uploadPhotoAvatar(nameFile, {
-      expectedBody: accessToken,
+      token: accessToken,
       expectedCode: 400,
     });
     expect(responseBody.messages[0].field).toBe('file');
@@ -233,23 +225,16 @@ describe('Update-profile -  e2e', () => {
   it('31 - / (POST) - should return 400 if data image incorrect', async () => {
     let nameFile = '/images/img-1028x312.txt';
     const responseBody: ApiErrorResultDto = await usersHelper.uploadPhotoAvatar(nameFile, {
-      expectedBody: accessToken,
+      token: accessToken,
       expectedCode: 400,
     });
     expect(responseBody.messages[0].field).toBe('file');
   });
-  it.skip('32 - / (POST) - should return 400 if data image incorrect', async () => {
-    let nameFile = '/images/667x1000_345kb.jpeg';
-    const responseBody: ApiErrorResultDto = await usersHelper.uploadPhotoAvatar(nameFile, {
-      expectedBody: accessToken,
-      expectedCode: 400,
-    });
-    expect(responseBody.messages[0].field).toBe('file');
-  });
-  it('33 - / (POST) - should return 201 if all data is correct for upload image', async () => {
+  //Upload image profile - avatar by FIRST user - correct data
+  it('33 - / (POST) - should return 201 if all data is correct for upload image of FIRST user', async () => {
     let nameFile = '/images/1000x667_304kb.jpeg';
     const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
-      expectedBody: accessToken,
+      token: accessToken,
       expectedCode: 201,
     });
     expect(responseBody).toEqual({
@@ -269,7 +254,7 @@ describe('Update-profile -  e2e', () => {
       ],
     });
   });
-  it('34 - / (GET) - should return 200 and profile of user', async () => {
+  it('34 - / (GET) - should return 200 and profile with avatar of FIRST user', async () => {
     const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
     expect(profile).toEqual({ ...firstUserProfile, images: expect.any(Array) });
     expect(profile.images.length).toBe(2);
@@ -291,10 +276,11 @@ describe('Update-profile -  e2e', () => {
     );
   });
 
-  it('35 - / (POST) - should return 201 if all data is correct', async () => {
+  //Upload image profile - avatar by SECOND user - correct data
+  it('37 - / (POST) - should return 201 if all data is correct for upload image', async () => {
     let nameFile = '/images/859x720_338kb.jpeg';
     const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
-      expectedBody: accessToken2,
+      token: accessToken2,
       expectedCode: 201,
     });
     expect(responseBody).toEqual({
@@ -313,5 +299,21 @@ describe('Update-profile -  e2e', () => {
         },
       ],
     });
+  });
+  it('38 - / (DELETE) - should return 204 if all data is correct for delete avatar by FIRST user', async () => {
+    const responseBody = await usersHelper.deletePhotosAvatar({ token: accessToken, expectedCode: 204 });
+    expect(responseBody).toEqual({});
+  });
+  it('39 - / (GET) - should return 200 and profile FIRST user', async () => {
+    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
+    expect(profile.images).toHaveLength(0);
+  });
+  it('40 - / (DELETE) - should return 204 if all data is correct for delete avatar by SECOND user', async () => {
+    const responseBody = await usersHelper.deletePhotosAvatar({ token: accessToken2, expectedCode: 204 });
+    expect(responseBody).toEqual({});
+  });
+  it('41 - / (GET) - should return 200 and profile SECOND user', async () => {
+    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken2);
+    expect(profile.images).toHaveLength(0);
   });
 });

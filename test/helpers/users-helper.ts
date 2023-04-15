@@ -30,7 +30,7 @@ export class UsersHelper {
   async uploadPhotoAvatar(
     nameFile: string,
     config: {
-      expectedBody?: any;
+      token?: any;
       expectedCode?: number;
     } = {},
   ): Promise<any> {
@@ -41,7 +41,7 @@ export class UsersHelper {
     // send request for create user
     const response = await request(this.app.getHttpServer())
       .post(usersEndpoints.uploadPhotoAvatar())
-      .auth(config.expectedBody, { type: 'bearer' })
+      .auth(config.token, { type: 'bearer' })
       .set('content-type', 'multipart/form-data')
       .attach('file', file, nameFile)
       .expect(expectedCode);
@@ -54,6 +54,22 @@ export class UsersHelper {
       .get(usersEndpoints.getMyProfile())
       .auth(accessToken, { type: 'bearer' })
       .expect(HTTP_Status.OK_200);
+
+    return response.body;
+  }
+
+  async deletePhotosAvatar(
+    config: {
+      token?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<any> {
+    const expectedCode = config.expectedCode ?? HttpStatus.NO_CONTENT;
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .delete(usersEndpoints.deletePhotosAvatar())
+      .auth(config.token, { type: 'bearer' })
+      .expect(expectedCode);
 
     return response.body;
   }
