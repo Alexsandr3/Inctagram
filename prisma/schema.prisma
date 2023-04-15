@@ -21,6 +21,7 @@ model User {
   emailConfirmation EmailConfirmation?
   profile           Profile?
   Session           Session[]
+  avatars           Image[]
 
   @@map("User")
 }
@@ -86,16 +87,19 @@ enum ImageType {
 
 model Image {
   id        Int           @id @default(autoincrement())
-  profileId Int
+  userId    Int
+  ownerId   Int
   imageType ImageType
   sizeType  ImageSizeType
-  url       String
+  url       String        @unique
   width     Int
   height    Int
   fileSize  Int
+  fieldId   String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  profile   Profile?      @relation(fields: [profileId], references: [userId])
+  profile   Profile?      @relation(fields: [ownerId], references: [userId])
+  user      User?         @relation(fields: [userId], references: [id])
 
   @@map("Image")
 }
