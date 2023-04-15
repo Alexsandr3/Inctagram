@@ -6,13 +6,13 @@ import { AwsModule } from '../../providers/aws/aws.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { IUsersQueryRepository, PrismaUsersQueryRepository } from './infrastructure/users.query-repository';
 import { UpdateProfileUseCase } from './aplication/use-cases/update-profile.use-case';
-import { ImagesEditorService } from '../images-editor/images-editor.service';
-import { ImagesEditorModule } from '../images-editor/images-editor.module';
+import { ImagesEditorService } from '../images-editor/application/images-editor.service';
+import { ImagesModule } from '../images-editor/images.module';
 
 const useCases = [UploadImageAvatarUseCase, UpdateProfileUseCase];
 
 @Module({
-  imports: [AwsModule, CqrsModule, ImagesEditorModule],
+  imports: [AwsModule, CqrsModule, ImagesModule],
   controllers: [UsersController],
   providers: [
     ...useCases,

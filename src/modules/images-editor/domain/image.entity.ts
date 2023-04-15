@@ -1,18 +1,7 @@
-import { BaseDateEntity } from './base-date.entity';
-import { ImageSizeConfig } from '../../images-editor/image-size-config.type';
-
-export enum ImageType {
-  AVATAR = 'AVATAR',
-  POST = 'POST',
-}
-
-export enum ImageSizeType {
-  THUMBNAIL = 'THUMBNAIL',
-  SMALL = 'SMALL',
-  MEDIUM = 'MEDIUM',
-  LARGE = 'LARGE',
-  HUGE_HD = 'HUGE_HD',
-}
+import { BaseDateEntity } from '../../users/domain/base-date.entity';
+import { ImageSizeConfig } from '../image-size-config.type';
+import { ImageSizeType } from '../type/image-size.type';
+import { ImageType } from '../type/image.type';
 
 export class ImageEntity extends BaseDateEntity {
   id: number;

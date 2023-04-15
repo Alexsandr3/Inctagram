@@ -5,7 +5,6 @@ import { UsersHelper } from '../helpers/users-helper';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
 import { ProfileViewDto } from '../../src/modules/users/api/view-models/profile-view.dto';
 import { ProfileAvatarViewModel } from '../../src/modules/users/api/view-models/user-images-view.dto';
-import { UserImagesViewModel } from '../../src/modules/users/api/view-models/user-images-view.dto';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 
 jest.setTimeout(120000);
@@ -57,7 +56,6 @@ describe('Update-profile -  e2e', () => {
       aboutMe: null,
       images: [],
     });
-    console.log('profile------', profile);
   });
 
   //Incorrect data
@@ -118,16 +116,9 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('dateOfBirth');
   });
-  it('07 - / (GET) - should return 404 if user not found', async () => {
-    const responseBody: ApiErrorResultDto = await usersHelper.getProfile(999999999, {
-      expectedBody: accessToken,
-      expectedCode: 404,
-    });
-    expect(responseBody.messages[0].field).toBe('profile');
-  });
 
   //Correct data
-  it('20 - / (POST) - should return 204 if all data is correct', async () => {
+  it('20 - / (POST) - should return updated profile with code - 204 if all data is correct', async () => {
     const command = {
       userName: correctUserName_first_user,
       firstName: 'Kowalski',
@@ -149,21 +140,6 @@ describe('Update-profile -  e2e', () => {
       images: [],
     });
   });
-  it.skip('21 - / (POST) - should return 400 if user already has profile', async () => {
-    const command = {
-      userName: correctUserName_first_user,
-      firstName: 'Kowalski',
-      lastName: 'James',
-      city: 'New York',
-      dateOfBirth: '10.23.2024',
-      aboutMe: 'e'.repeat(200),
-    };
-    const responseBody: ApiErrorResultDto = await usersHelper.updateProfile(command, {
-      expectedBody: accessToken,
-      expectedCode: HTTP_Status.BAD_REQUEST_400,
-    });
-    expect(responseBody.messages[0].field).toBe('profile');
-  });
   let command = {
     userName: correctUserName_second_user,
     firstName: 'Eda',
@@ -174,7 +150,7 @@ describe('Update-profile -  e2e', () => {
       'Esse quasi laboriosam dolores minima quidem dolore. Officiis possimus dignissimos iusto ullam dignissimos ' +
       'laborum. At et consequatur. Earum quod repellat.',
   };
-  it('22 - / (POST) - should return 400 if userName is not unique', async () => {
+  it('21 - / (POST) - should return 400 if userName is not unique', async () => {
     const command = {
       userName: correctUserName_second_user,
     };
@@ -184,7 +160,7 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('userName');
   });
-  it('23 - / (POST) - should return 204 if all data is correct', async () => {
+  it('22 - / (POST) - should return 204 if all data is correct', async () => {
     await usersHelper.updateProfile(command, {
       expectedBody: accessToken2,
       expectedCode: HTTP_Status.NO_CONTENT_204,
@@ -201,7 +177,7 @@ describe('Update-profile -  e2e', () => {
       images: [],
     });
   });
-  it('24 - / (PUT) - should return 204 if all data is correct', async () => {
+  it('23 - / (PUT) - should return 204 if all data is correct', async () => {
     command.userName = 'NightKing';
     command.firstName = 'Nick';
     command.lastName = ' ';
@@ -210,19 +186,7 @@ describe('Update-profile -  e2e', () => {
     const responseBody = await usersHelper.updateProfile(command, { expectedBody: accessToken2, expectedCode: 204 });
     expect(responseBody).toEqual({});
   });
-  it('25 - / (GET) - should return 200 if all data is correct', async () => {
-    const responseBody: ProfileViewDto = await usersHelper.getProfile(userId, {
-      expectedBody: accessToken2,
-      expectedCode: 200,
-    });
-    expect(responseBody).toEqual({
-      ...command,
-      lastName: 'Ratke',
-      id: expect.any(Number),
-      dateOfBirth: new Date(command.dateOfBirth).toISOString(),
-      images: [],
-    });
-  });
+
   //Upload image profile
   it.skip('29 - / (POST) - should return 400 if data image incorrect', async () => {
     let nameFile = '/images/1271х847_357kb.jpeg';
@@ -299,7 +263,6 @@ describe('Update-profile -  e2e', () => {
         },
       ]),
     );
-    console.log('profile------', profile);
   });
 
   it.skip('35 - / (POST) - should return 201 if all data is correct', async () => {

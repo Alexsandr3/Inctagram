@@ -1,5 +1,5 @@
 import { ProfileEntity } from '../../domain/profile.entity';
-import { ImageEntity } from '../../domain/image.entity';
+import { ImageEntity } from '../../../images-editor/domain/image.entity';
 
 export class ProfileViewDto {
   id: number;

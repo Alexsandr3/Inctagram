@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ImagesEditorService } from './images-editor.service';
+import { ImagesEditorService } from './application/images-editor.service';
 import { AwsModule } from '../../providers/aws/aws.module';
 import { ImagesMapperServiceForView } from './images-mapper-for-view.service';
 
@@ -8,4 +8,4 @@ import { ImagesMapperServiceForView } from './images-mapper-for-view.service';
   providers: [ImagesEditorService, ImagesMapperServiceForView],
   exports: [ImagesEditorService, ImagesMapperServiceForView],
 })
-export class ImagesEditorModule {}
+export class ImagesModule {}

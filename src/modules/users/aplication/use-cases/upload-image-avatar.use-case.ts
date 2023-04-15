@@ -2,11 +2,13 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
-import { ImageSizeType, ImageType } from '../../domain/image.entity';
 import { ProfileAvatarViewModel } from '../../api/view-models/user-images-view.dto';
 import { IUsersRepository } from '../../infrastructure/users.repository';
-import { ImageEntitiesAndUrls, ImagesEditorService } from '../../../images-editor/images-editor.service';
+import { ImagesEditorService } from '../../../images-editor/application/images-editor.service';
 import { ImagesMapperServiceForView } from '../../../images-editor/images-mapper-for-view.service';
+import { ImageEntitiesAndUrls } from '../../../images-editor/type/image-entities-and.urls.type';
+import { ImageSizeType } from '../../../images-editor/type/image-size.type';
+import { ImageType } from '../../../images-editor/type/image.type';
 
 export class UploadImageAvatarCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}

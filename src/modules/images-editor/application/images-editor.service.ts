@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
-import { ImageEntity, ImageSizeType, ImageType } from '../users/domain/image.entity';
-import { S3StorageAdapter } from '../../providers/aws/s3-storage.adapter';
-import { UserEntity } from '../users/domain/user.entity';
-import { ImageSizeConfig } from './image-size-config.type';
+import { ImageEntity } from '../domain/image.entity';
+import { S3StorageAdapter } from '../../../providers/aws/s3-storage.adapter';
+import { UserEntity } from '../../users/domain/user.entity';
+import { ImageSizeConfig } from '../image-size-config.type';
+import { ImageEntitiesAndUrls } from '../type/image-entities-and.urls.type';
+import { ImageSizeType } from '../type/image-size.type';
+import { ImageType } from '../type/image.type';
 
 @Injectable()
 export class ImagesEditorService {
@@ -30,6 +33,39 @@ export class ImagesEditorService {
     } catch (e) {
       console.error(`Error resizing image: ${e}`);
     }
+  }
+
+  /**
+   * @description Generate keys for images for avatar
+   * @param userId
+   * @param size
+   */
+  private async generatorKeysImagesForAvatar(userId: number, size: string[]): Promise<string[]> {
+    const keys = [];
+    for (let i = 0; i < size.length; i++) {
+      const key = `users/${userId}/avatar-${ImageSizeConfig[size[i]].defaultWidth}x${
+        ImageSizeConfig[size[i]].defaultHeight
+      }.jpg`;
+      keys.push(key);
+    }
+    return keys;
+  }
+
+  /**
+   * @description Generate keys for images for post
+   * @param userId
+   * @param size
+   * @private
+   */
+  private async generatorKeysImagesForPost(userId: number, size: string[]): Promise<string[]> {
+    const keys = [];
+    for (let i = 0; i < size.length; i++) {
+      const key = `users/${userId}/post-${ImageSizeConfig[size[i]].defaultWidth}x${
+        ImageSizeConfig[size[i]].defaultHeight
+      }.jpg`;
+      keys.push(key);
+    }
+    return keys;
   }
 
   /**
@@ -95,42 +131,4 @@ export class ImagesEditorService {
       urlImages: urlImages,
     };
   }
-
-  /**
-   * @description Generate keys for images for avatar
-   * @param userId
-   * @param size
-   */
-  private async generatorKeysImagesForAvatar(userId: number, size: string[]): Promise<string[]> {
-    const keys = [];
-    for (let i = 0; i < size.length; i++) {
-      const key = `users/${userId}/avatar-${ImageSizeConfig[size[i]].defaultWidth}x${
-        ImageSizeConfig[size[i]].defaultHeight
-      }.jpg`;
-      keys.push(key);
-    }
-    return keys;
-  }
-
-  /**
-   * @description Generate keys for images for post
-   * @param userId
-   * @param size
-   * @private
-   */
-  private async generatorKeysImagesForPost(userId: number, size: string[]): Promise<string[]> {
-    const keys = [];
-    for (let i = 0; i < size.length; i++) {
-      const key = `users/${userId}/post-${ImageSizeConfig[size[i]].defaultWidth}x${
-        ImageSizeConfig[size[i]].defaultHeight
-      }.jpg`;
-      keys.push(key);
-    }
-    return keys;
-  }
 }
-
-export type ImageEntitiesAndUrls = {
-  instancesImages: ImageEntity[];
-  urlImages: string[];
-};
