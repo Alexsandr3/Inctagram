@@ -72,11 +72,8 @@ export class UsersController {
     notification.addErrorFromNotificationException(
       new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
     );
-    console.log('111111profile in get---------', user.profile);
     if (!user) throw new CheckerNotificationErrors('Error', notification);
-    const profile = ProfileViewDto.createView(user.profile, user.userName);
-    console.log('222222profile in get---------', profile);
-    return profile;
+    return ProfileViewDto.createView(user.profile, user.userName);
   }
 
   /**

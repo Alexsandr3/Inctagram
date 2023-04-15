@@ -29,16 +29,18 @@ export class UpdateProfileUseCase
       throw new NotificationException(`User with id ${userId} not found`, 'id', NotificationCode.NOT_FOUND);
 
     //check userName is free
-    const userWithReceivedUserName = await this.userRepository.findUserByUserName(userName);
-    if (userWithReceivedUserName && userWithReceivedUserName.id !== foundUser.id) {
-      throw new NotificationException(
-        `User with userName ${userName} already exists`,
-        'userName',
-        NotificationCode.BAD_REQUEST,
-      );
+    if (userName) {
+      const userWithReceivedUserName = await this.userRepository.findUserByUserName(userName);
+      if (userWithReceivedUserName && userWithReceivedUserName.id !== foundUser.id) {
+        throw new NotificationException(
+          `User with userName ${userName} already exists`,
+          'userName',
+          NotificationCode.BAD_REQUEST,
+        );
+      }
     }
 
-    //create or update profile
+    //update profile
     foundUser.updateProfile(body);
     //save profile
 

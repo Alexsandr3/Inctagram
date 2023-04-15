@@ -49,6 +49,6 @@ export class UserEntity extends BaseDateEntity {
 
   public updateProfile(dto: UpdateProfileInputDto) {
     this.profile.update(dto);
-    this.userName = dto.userName;
+    if (dto.userName) this.userName = dto.userName;
   }
 }
