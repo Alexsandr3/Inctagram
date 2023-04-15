@@ -2,9 +2,7 @@ import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 import { ImageEntity } from '../domain/image.entity';
 import { S3StorageAdapter } from '../../../providers/aws/s3-storage.adapter';
-import { UserEntity } from '../../users/domain/user.entity';
 import { ImageSizeConfig } from '../image-size-config.type';
-import { ImageEntitiesAndUrls } from '../type/image-entities-and.urls.type';
 import { ImageSizeType } from '../type/image-size.type';
 import { ImageType } from '../type/image.type';
 
@@ -16,7 +14,7 @@ export class ImagesEditorService {
    * @description Generate keys for images for user
    * @private
    */
-  imageKeyGenerators: { [type: string]: (userId: number, sizes: string[]) => Promise<string[]> } = {
+  private imageKeyGenerators: { [type: string]: (userId: number, sizes: string[]) => Promise<string[]> } = {
     [ImageType.AVATAR]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForAvatar(userId, sizes),
     [ImageType.POST]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForPost(userId, sizes),
   };
@@ -70,23 +68,25 @@ export class ImagesEditorService {
 
   /**
    * @description Generate keys for images and save images on s3 storage
-   * @param user
+   * @param userId
+   * @param ownerId
    * @param photo
    * @param type
    * @param mimetype
    * @param sizes
    */
   async generatorKeysWithSaveImagesAndCreateImages(
-    user: UserEntity,
+    userId: number,
+    ownerId: number,
     photo: Buffer,
     type: ImageType,
     mimetype: string,
     sizes: string[],
-  ): Promise<ImageEntitiesAndUrls> {
+  ): Promise<ImageEntity[]> {
     //generate keys for images
     const keys: string[] = [];
     if (this.imageKeyGenerators[type]) {
-      const keysGenerator = await this.imageKeyGenerators[type](user.id, sizes);
+      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes);
       keys.push(...keysGenerator);
     }
     //changing size image
@@ -103,27 +103,18 @@ export class ImagesEditorService {
     }
     //delete old image
     await this.storageS3.deleteManyFiles(...keys);
-    //save on s3 storage
-    const urlImages = [];
+
+    //save on s3 storage and create instances images
+    const instancesImages = [];
     for (let i = 0; i < keys.length; i++) {
       const keyImage = keys[i];
       const imageToSave = changeSizeImage[i];
-      const urlImage = await this.storageS3.saveFile(user.id, imageToSave, keyImage, mimetype);
-      urlImages.push(urlImage);
-    }
-    //create instances images
-    const instancesImages = [];
-    for (let i = 0; i < urlImages.length; i++) {
-      const urlImage = urlImages[i];
-      const imageToSave = changeSizeImage[i];
+      const urlImage = await this.storageS3.saveFile(userId, imageToSave, keyImage, mimetype);
       const size = sizes[i];
-      const imageEntity = ImageEntity.initCreateImageEntity(user.id, size, type, urlImage, imageToSave);
+      const imageEntity = ImageEntity.initCreateImageEntity(userId, ownerId, size, type, urlImage, imageToSave);
       instancesImages.push(imageEntity);
     }
 
-    return {
-      instancesImages: instancesImages,
-      urlImages: urlImages,
-    };
+    return instancesImages;
   }
 }

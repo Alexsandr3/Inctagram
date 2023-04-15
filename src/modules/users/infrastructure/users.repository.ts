@@ -146,7 +146,7 @@ export class PrismaUsersRepository implements IUsersRepository {
   async saveImageProfile(instanceImage: ImageEntity): Promise<void> {
     await this.prisma.image.create({
       data: {
-        profileId: instanceImage.profileId,
+        profileId: instanceImage.userId,
         imageType: instanceImage.imageType,
         sizeType: instanceImage.sizeType,
         url: instanceImage.url,

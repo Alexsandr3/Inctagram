@@ -6,9 +6,9 @@ import { ProfileAvatarViewModel } from '../../api/view-models/user-images-view.d
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { ImagesEditorService } from '../../../images/application/images-editor.service';
 import { ImagesMapperServiceForView } from '../../../images/images-mapper-for-view.service';
-import { ImageEntitiesAndUrls } from '../../../images/type/image-entities-and.urls.type';
 import { ImageSizeType } from '../../../images/type/image-size.type';
 import { ImageType } from '../../../images/type/image.type';
+import { ImageEntity } from '../../../images/domain/image.entity';
 
 export class UploadImageAvatarCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}
@@ -44,8 +44,9 @@ export class UploadImageAvatarUseCase
     const sizes = [ImageSizeType.MEDIUM, ImageSizeType.THUMBNAIL];
 
     //generate keys for images and save images on s3 storage and create instances images
-    const result: ImageEntitiesAndUrls = await this.imagesEditor.generatorKeysWithSaveImagesAndCreateImages(
-      user,
+    const result: ImageEntity[] = await this.imagesEditor.generatorKeysWithSaveImagesAndCreateImages(
+      user.id,
+      user.profile.userId,
       photo,
       type,
       mimetype,
@@ -53,8 +54,8 @@ export class UploadImageAvatarUseCase
     );
 
     //result is array of instances images need to save
-    await Promise.all(result.instancesImages.map(image => this.usersRepository.saveImageProfile(image)));
+    await Promise.all(result.map(image => this.usersRepository.saveImageProfile(image)));
 
-    return this.imageMapperService.imageEntityToViewModel(result.urlImages, result.instancesImages);
+    return this.imageMapperService.imageEntityToViewModel(result);
   }
 }
