@@ -14,7 +14,7 @@ export class MailManager {
   async sendUserConfirmation(email: string, code: string) {
     const url = `${this.configService.CLIENT_URL}/auth/registration-confirmation?code=${code}`;
     const subject = 'Finish registration';
-    const template = `./confirmation.hbs`;
+    const template = `./confirmation.html`;
     await this.emailAdapter.sendEmail(email, url, subject, template);
   }
 
@@ -26,19 +26,7 @@ export class MailManager {
   async sendPasswordRecoveryMessage(email: string, code: string) {
     const url = `${this.configService.CLIENT_URL}/auth/recovery?code=${code}`;
     const subject = 'Password recovery';
-    const template = `./recovery.hbs`;
-    await this.emailAdapter.sendEmail(email, url, subject, template);
-  }
-
-  /**
-   * Send email to user with password recovery code
-   * @param email
-   * @param code
-   */
-  async sendEmailRecoveryMessage(email: string, code: string) {
-    const url = `${this.configService.CLIENT_URL}/registration-confirmation?code=${code}`;
-    const subject = 'Email recovery';
-    const template = `./recovery.hbs`;
+    const template = `./recovery.html`;
     await this.emailAdapter.sendEmail(email, url, subject, template);
   }
 }
