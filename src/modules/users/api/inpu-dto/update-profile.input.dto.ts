@@ -10,28 +10,33 @@ export class UpdateProfileInputDto {
   @IsOptional()
   userName: string;
 
+  @ApiProperty({ nullable: true, required: false })
   @Transform(({ value }) =>
     typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
   )
   @IsOptional()
   firstName: string;
 
+  @ApiProperty({ nullable: true, required: false })
   @Transform(({ value }) =>
     typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
   )
   @IsOptional()
   lastName: string;
 
+  @ApiProperty({ nullable: true, required: false })
   @Transform(({ value }) =>
     typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
   )
   @IsOptional()
   city: string;
 
+  @ApiProperty({ nullable: true, required: false })
   @IsDate()
   @IsOptional()
   dateOfBirth: Date;
 
+  @ApiProperty({ nullable: true, required: false })
   @Length(1, 200)
   @IsString()
   @IsOptional()
