@@ -25,11 +25,11 @@ export class ProfileEntity extends BaseDateEntity {
   }
 
   private setValues(dto: UpdateProfileInputDto) {
-    if (dto.firstName) this.firstName = dto.firstName;
-    if (dto.lastName) this.lastName = dto.lastName;
-    if (dto.city) this.city = dto.city;
-    if (dto.dateOfBirth) this.dateOfBirth = dto.dateOfBirth;
-    if (dto.aboutMe) this.aboutMe = dto.aboutMe;
+    if (dto.firstName || dto.firstName === null) this.firstName = dto.firstName;
+    if (dto.lastName || dto.lastName === null) this.lastName = dto.lastName;
+    if (dto.city || dto.city === null) this.city = dto.city;
+    if (dto.dateOfBirth || dto.dateOfBirth === null) this.dateOfBirth = dto.dateOfBirth;
+    if (dto.aboutMe || dto.aboutMe === null) this.aboutMe = dto.aboutMe;
   }
 
   public update(dto: UpdateProfileInputDto) {

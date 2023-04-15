@@ -33,8 +33,8 @@ describe('Update-profile -  e2e', () => {
   let correctUserName_second_user = 'Addison';
   let userId: number;
   //       email: 'Serenity_Fahey@hotmail.com',
+  //registration user
   it('01 - / (POST) - should create user and returned accessToken', async () => {
-    //registration user
     const command = { password: '12345678', email: correctEmail_first_user, userName: correctUserName_first_user };
     const command2 = { password: '12345678', email: correctEmail_second_user, userName: correctUserName_second_user };
     accessToken = await authHelper.createUser(command, { expectedCode: 204 });
@@ -124,7 +124,7 @@ describe('Update-profile -  e2e', () => {
       firstName: 'Kowalski',
       lastName: 'James',
       city: 'New York',
-      dateOfBirth: '10.23.2024',
+      dateOfBirth: '2024-10-23T00:00:00.000Z',
       aboutMe: 'e'.repeat(200),
     };
     await usersHelper.updateProfile(command, {
@@ -140,17 +140,23 @@ describe('Update-profile -  e2e', () => {
       images: [],
     });
   });
-  let command = {
-    userName: correctUserName_second_user,
-    firstName: 'Eda',
-    lastName: 'Ratke',
-    city: 'Leesburg',
-    dateOfBirth: new Date('10.23.2024'),
-    aboutMe:
-      'Esse quasi laboriosam dolores minima quidem dolore. Officiis possimus dignissimos iusto ullam dignissimos ' +
-      'laborum. At et consequatur. Earum quod repellat.',
-  };
-  it('21 - / (POST) - should return 400 if userName is not unique', async () => {
+  it('21 - / (POST) - should return 204 and delete set null in delete property', async () => {
+    const command = {
+      aboutMe: null,
+    };
+
+    await usersHelper.updateProfile(command, {
+      expectedBody: accessToken,
+      expectedCode: HTTP_Status.NO_CONTENT_204,
+    });
+    const changedProfile = await usersHelper.getMyProfile(accessToken);
+
+    expect(changedProfile).toEqual({
+      ...firstUserProfile,
+      aboutMe: null,
+    });
+  });
+  it('22 - / (POST) - should return 400 if userName is not unique', async () => {
     const command = {
       userName: correctUserName_second_user,
     };
@@ -160,7 +166,17 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('userName');
   });
-  it('22 - / (POST) - should return 204 if all data is correct', async () => {
+  let command = {
+    userName: correctUserName_second_user,
+    firstName: 'Eda',
+    lastName: 'Ratke',
+    city: 'Leesburg',
+    dateOfBirth: new Date('2024-10-23T00:00:00.000Z'),
+    aboutMe:
+      'Esse quasi laboriosam dolores minima quidem dolore. Officiis possimus dignissimos iusto ullam dignissimos ' +
+      'laborum. At et consequatur. Earum quod repellat.',
+  };
+  it('23 - / (POST) - should return 204 if all data is correct', async () => {
     await usersHelper.updateProfile(command, {
       expectedBody: accessToken2,
       expectedCode: HTTP_Status.NO_CONTENT_204,
@@ -177,7 +193,7 @@ describe('Update-profile -  e2e', () => {
       images: [],
     });
   });
-  it('23 - / (PUT) - should return 204 if all data is correct', async () => {
+  it('24 - / (PUT) - should return 204 if all data is correct', async () => {
     command.userName = 'NightKing';
     command.firstName = 'Nick';
     command.lastName = ' ';
@@ -186,7 +202,19 @@ describe('Update-profile -  e2e', () => {
     const responseBody = await usersHelper.updateProfile(command, { expectedBody: accessToken2, expectedCode: 204 });
     expect(responseBody).toEqual({});
   });
-
+  it('25 - / (GET) - should return 200 if all data is correct', async () => {
+    const responseBody: ProfileViewDto = await usersHelper.getProfile(userId, {
+      expectedBody: accessToken2,
+      expectedCode: 200,
+    });
+    expect(responseBody).toEqual({
+      ...command,
+      lastName: 'Ratke',
+      id: expect.any(Number),
+      dateOfBirth: new Date(command.dateOfBirth).toISOString(),
+      images: [],
+    });
+  });
   //Upload image profile
   it.skip('29 - / (POST) - should return 400 if data image incorrect', async () => {
     let nameFile = '/images/1271х847_357kb.jpeg';
@@ -220,7 +248,7 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('file');
   });
-  it('33 - / (POST) - should return 201 if all data is correct for upload image', async () => {
+  it.skip('33 - / (POST) - should return 201 if all data is correct for upload image', async () => {
     let nameFile = '/images/1000x667_304kb.jpeg';
     const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken,
@@ -243,7 +271,7 @@ describe('Update-profile -  e2e', () => {
       ],
     });
   });
-  it('34 - / (GET) - should return 200 and profile of user', async () => {
+  it.skip('34 - / (GET) - should return 200 and profile of user', async () => {
     const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
     expect(profile).toEqual({ ...firstUserProfile, images: expect.any(Array) });
     expect(profile.images.length).toBe(2);

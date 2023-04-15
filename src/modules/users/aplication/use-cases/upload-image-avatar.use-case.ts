@@ -38,8 +38,6 @@ export class UploadImageAvatarUseCase
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
     if (!user.isOwner(userId))
       throw new NotificationException(`Account is not yours`, 'user', NotificationCode.FORBIDDEN);
-    if (!user.profile)
-      throw new NotificationException(`User with id: ${userId} not has profile`, 'profile', NotificationCode.NOT_FOUND);
 
     //set type and sizes for images
     const type = ImageType.AVATAR;

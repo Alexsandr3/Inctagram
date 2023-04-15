@@ -6,31 +6,39 @@ export class UpdateProfileInputDto {
   @ApiProperty({ pattern: '^[a-zA-Z0-9_-]*$', example: 'string' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Length(6, 30)
-  @IsString()
   @Matches('^[a-zA-Z0-9_-]*$')
+  @IsOptional()
   userName: string;
 
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @ApiProperty({ nullable: true, required: false })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
+  )
   @IsOptional()
-  @IsString()
   firstName: string;
 
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @ApiProperty({ nullable: true, required: false })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
+  )
   @IsOptional()
-  @IsString()
   lastName: string;
 
-  @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
+  @ApiProperty({ nullable: true, required: false })
+  @Transform(({ value }) =>
+    typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
+  )
   @IsOptional()
-  @IsString()
   city: string;
 
-  @IsOptional()
+  @ApiProperty({ nullable: true, required: false })
   @IsDate()
+  @IsOptional()
   dateOfBirth: Date;
 
-  @IsOptional()
-  @IsString()
+  @ApiProperty({ nullable: true, required: false })
   @Length(1, 200)
+  @IsString()
+  @IsOptional()
   aboutMe: string;
 }

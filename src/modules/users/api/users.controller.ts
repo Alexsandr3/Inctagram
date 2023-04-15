@@ -48,7 +48,6 @@ export class UsersController {
       new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
     );
     if (!user) throw new CheckerNotificationErrors('Error', notification);
-
     return ProfileViewDto.createView(user.profile, user.userName);
   }
 
