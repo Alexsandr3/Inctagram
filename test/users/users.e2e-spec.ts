@@ -155,6 +155,7 @@ describe('Update-profile -  e2e', () => {
       ...firstUserProfile,
       aboutMe: null,
     });
+    firstUserProfile = changedProfile;
   });
   it('22 - / (POST) - should return 400 if userName is not unique', async () => {
     const command = {
@@ -203,10 +204,7 @@ describe('Update-profile -  e2e', () => {
     expect(responseBody).toEqual({});
   });
   it('25 - / (GET) - should return 200 if all data is correct', async () => {
-    const responseBody: ProfileViewDto = await usersHelper.getProfile(userId, {
-      expectedBody: accessToken2,
-      expectedCode: 200,
-    });
+    const responseBody: ProfileViewDto = await usersHelper.getMyProfile(accessToken2);
     expect(responseBody).toEqual({
       ...command,
       lastName: 'Ratke',
@@ -248,7 +246,7 @@ describe('Update-profile -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('file');
   });
-  it.skip('33 - / (POST) - should return 201 if all data is correct for upload image', async () => {
+  it('33 - / (POST) - should return 201 if all data is correct for upload image', async () => {
     let nameFile = '/images/1000x667_304kb.jpeg';
     const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken,
@@ -271,7 +269,7 @@ describe('Update-profile -  e2e', () => {
       ],
     });
   });
-  it.skip('34 - / (GET) - should return 200 and profile of user', async () => {
+  it('34 - / (GET) - should return 200 and profile of user', async () => {
     const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
     expect(profile).toEqual({ ...firstUserProfile, images: expect.any(Array) });
     expect(profile.images.length).toBe(2);
@@ -293,7 +291,7 @@ describe('Update-profile -  e2e', () => {
     );
   });
 
-  it.skip('35 - / (POST) - should return 201 if all data is correct', async () => {
+  it('35 - / (POST) - should return 201 if all data is correct', async () => {
     let nameFile = '/images/859x720_338kb.jpeg';
     const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       expectedBody: accessToken2,
