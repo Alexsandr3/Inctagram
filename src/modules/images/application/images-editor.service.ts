@@ -16,7 +16,7 @@ export class ImagesEditorService {
    * @description Generate keys for images for user
    * @private
    */
-  private imageKeyGenerators: { [type: string]: (userId: number, sizes: string[]) => Promise<string[]> } = {
+  imageKeyGenerators: { [type: string]: (userId: number, sizes: string[]) => Promise<string[]> } = {
     [ImageType.AVATAR]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForAvatar(userId, sizes),
     [ImageType.POST]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForPost(userId, sizes),
   };
@@ -27,7 +27,7 @@ export class ImagesEditorService {
    * @param width
    * @param height
    */
-  private async reSizeImage(inputPath: Buffer, width: number, height: number): Promise<Buffer> {
+  async reSizeImage(inputPath: Buffer, width: number, height: number): Promise<Buffer> {
     try {
       return await sharp(inputPath).resize(width, height).toBuffer();
     } catch (e) {
@@ -101,13 +101,8 @@ export class ImagesEditorService {
         changeSizeImage.push(resizedImage);
       }
     }
-
     //delete old image
-    if (user.profile.images) {
-      for (const keyImage of keys) {
-        await this.storageS3.deleteFile(keyImage);
-      }
-    }
+    await this.storageS3.deleteManyFiles(...keys);
     //save on s3 storage
     const urlImages = [];
     for (let i = 0; i < keys.length; i++) {

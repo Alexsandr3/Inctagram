@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { DeleteObjectCommand, PutObjectCommand, PutObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
+import {
+  DeleteObjectCommand,
+  DeleteObjectsCommand,
+  PutObjectCommand,
+  PutObjectCommandOutput,
+  S3Client,
+} from '@aws-sdk/client-s3';
 import { ApiConfigService } from '../../modules/api-config/api.config.service';
 
 @Injectable()
@@ -57,9 +63,33 @@ export class S3StorageAdapter {
   }
 
   /**
-   * Delete file from S3
-   * @param key
+   * Delete many files from S3
+   * @param keys
    */
+  async deleteManyFiles(...keys: string[]) {
+    const inputKeys = keys.map(key => {
+      return {
+        Key: key,
+      };
+    });
+
+    const input = {
+      Bucket: this.bucket,
+      Delete: {
+        Objects: [...inputKeys],
+      },
+      Quiet: false,
+    };
+    const command = new DeleteObjectsCommand(input);
+
+    try {
+      const data = await this.s3Client.send(command);
+      return data; // For unit tests.
+    } catch (err) {
+      console.error('Error', err);
+    }
+  }
+
   async deleteFile(key: string) {
     const delete_bucket_params = {
       Bucket: this.bucket,
