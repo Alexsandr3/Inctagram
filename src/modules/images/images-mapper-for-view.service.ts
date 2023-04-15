@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PhotoSizeViewModel, ProfileAvatarViewModel } from '../users/api/view-models/user-images-view.dto';
+import { AvatarViewDto, ProfileAvatarViewModel } from '../users/api/view-models/user-images-view.dto';
 import { ImageEntity } from './domain/image.entity';
 
 @Injectable()
 export class ImagesMapperServiceForView {
-  private async mapperEntity(url: string, imageEntity: ImageEntity): Promise<PhotoSizeViewModel> {
-    return new PhotoSizeViewModel(url, imageEntity.width, imageEntity.height, imageEntity.fileSize);
+  private async mapperEntity(url: string, imageEntity: ImageEntity): Promise<AvatarViewDto> {
+    return new AvatarViewDto(url, imageEntity.width, imageEntity.height, imageEntity.fileSize);
   }
 
   async imageEntityToViewModel(instancesImages: ImageEntity[]): Promise<ProfileAvatarViewModel> {

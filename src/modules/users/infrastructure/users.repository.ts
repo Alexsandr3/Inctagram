@@ -146,9 +146,10 @@ export class PrismaUsersRepository implements IUsersRepository {
   }
 
   async saveImageProfile(instanceImage: ImageEntity): Promise<void> {
-    await this.prisma.image.create({
-      data: {
-        profileId: instanceImage.userId,
+    await this.prisma.image.upsert({
+      create: {
+        ownerId: instanceImage.ownerId,
+        userId: instanceImage.userId,
         imageType: instanceImage.imageType,
         sizeType: instanceImage.sizeType,
         url: instanceImage.url,
@@ -157,14 +158,27 @@ export class PrismaUsersRepository implements IUsersRepository {
         fileSize: instanceImage.fileSize,
         createdAt: instanceImage.createdAt,
         updatedAt: instanceImage.updatedAt,
+        fieldId: instanceImage.fieldId,
       },
+      update: {
+        ownerId: instanceImage.ownerId,
+        userId: instanceImage.userId,
+        imageType: instanceImage.imageType,
+        sizeType: instanceImage.sizeType,
+        url: instanceImage.url,
+        width: instanceImage.width,
+        height: instanceImage.height,
+        fileSize: instanceImage.fileSize,
+        fieldId: instanceImage.fieldId,
+      },
+      where: { url: instanceImage.url },
     });
   }
 
   async deleteImagesAvatar(userId: number): Promise<void> {
     await this.prisma.image.deleteMany({
       where: {
-        profileId: userId,
+        ownerId: userId,
       },
     });
   }
