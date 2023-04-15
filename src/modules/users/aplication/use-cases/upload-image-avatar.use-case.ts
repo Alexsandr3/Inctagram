@@ -4,11 +4,11 @@ import { NotificationException } from '../../../../main/validators/result-notifi
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { ProfileAvatarViewModel } from '../../api/view-models/user-images-view.dto';
 import { IUsersRepository } from '../../infrastructure/users.repository';
-import { ImagesEditorService } from '../../../images-editor/application/images-editor.service';
-import { ImagesMapperServiceForView } from '../../../images-editor/images-mapper-for-view.service';
-import { ImageEntitiesAndUrls } from '../../../images-editor/type/image-entities-and.urls.type';
-import { ImageSizeType } from '../../../images-editor/type/image-size.type';
-import { ImageType } from '../../../images-editor/type/image.type';
+import { ImagesEditorService } from '../../../images/application/images-editor.service';
+import { ImagesMapperServiceForView } from '../../../images/images-mapper-for-view.service';
+import { ImageEntitiesAndUrls } from '../../../images/type/image-entities-and.urls.type';
+import { ImageSizeType } from '../../../images/type/image-size.type';
+import { ImageType } from '../../../images/type/image.type';
 
 export class UploadImageAvatarCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}

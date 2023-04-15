@@ -2,7 +2,7 @@ import { UserEntity } from '../domain/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
-import { ImageEntity } from '../../images-editor/domain/image.entity';
+import { ImageEntity } from '../../images/domain/image.entity';
 
 export abstract class IUsersRepository {
   abstract findById(userId: number): Promise<UserEntity | null>;

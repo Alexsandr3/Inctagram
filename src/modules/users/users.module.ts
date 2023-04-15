@@ -6,8 +6,8 @@ import { AwsModule } from '../../providers/aws/aws.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { IUsersQueryRepository, PrismaUsersQueryRepository } from './infrastructure/users.query-repository';
 import { UpdateProfileUseCase } from './aplication/use-cases/update-profile.use-case';
-import { ImagesEditorService } from '../images-editor/application/images-editor.service';
-import { ImagesModule } from '../images-editor/images.module';
+import { ImagesEditorService } from '../images/application/images-editor.service';
+import { ImagesModule } from '../images/images.module';
 
 const useCases = [UploadImageAvatarUseCase, UpdateProfileUseCase];
 
