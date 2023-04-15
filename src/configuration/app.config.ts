@@ -2,8 +2,11 @@ import { INestApplication } from '@nestjs/common';
 import { pipeSetup } from './pipe.setup';
 import { exceptionFilterSetup } from './exception-filter.setup';
 import cookieParser from 'cookie-parser';
+import CustomLogger from '../providers/logger/customLogger';
 
 export const appConfig = (app: INestApplication) => {
+  //use custom logger
+  app.useLogger(app.get(CustomLogger));
   //pipe validation
   pipeSetup(app);
   //exception filter

@@ -9,7 +9,6 @@ import { SessionsModule } from './modules/sessions/sessions.module';
 import { TestingModule } from './providers/testing/testing.module';
 import { LoggerModule } from './providers/logger/logger.module';
 import LogsMiddleware from './providers/logger/logs.middleware';
-import { DatabaseModule } from './providers/database/database.module';
 import { PrismaModule } from './providers/prisma/prisma.module';
 
 @Module({
@@ -20,7 +19,6 @@ import { PrismaModule } from './providers/prisma/prisma.module';
     UsersModule,
     ApiJwtModule,
     SessionsModule,
-    DatabaseModule,
     TestingModule, //need for testing !!!
     LoggerModule,
     PrismaModule,
