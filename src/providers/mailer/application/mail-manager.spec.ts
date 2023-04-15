@@ -21,9 +21,9 @@ describe('MailManager', () => {
     it('should send email with confirmation link', async () => {
       const email = 'user@example.com';
       const code = '123456';
-      const expectedUrl = 'http://localhost:3000/registration-confirmation?code=123456';
+      const expectedUrl = 'http://localhost:3000/auth/registration-confirmation?code=123456';
       const expectedSubject = 'Finish registration';
-      const expectedTemplate = './confirmation.hbs';
+      const expectedTemplate = './confirmation.html';
 
       await mailService.sendUserConfirmation(email, code);
 
@@ -35,9 +35,9 @@ describe('MailManager', () => {
     it('should send email with password recovery link', async () => {
       const email = 'user@example.com';
       const code = '123456';
-      const expectedUrl = 'http://localhost:3000/new-password?code=123456';
+      const expectedUrl = 'http://localhost:3000/auth/recovery?code=123456';
       const expectedSubject = 'Password recovery';
-      const expectedTemplate = './recovery.hbs';
+      const expectedTemplate = './recovery.html';
 
       await mailService.sendPasswordRecoveryMessage(email, code);
 

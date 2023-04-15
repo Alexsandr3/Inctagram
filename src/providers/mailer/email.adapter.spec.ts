@@ -20,9 +20,9 @@ describe('EmailAdapter', () => {
   describe('sendEmail', () => {
     it('should send email with the correct data', async () => {
       const email = 'user@example.com';
-      const url = 'http://localhost:3000/registration-confirmation?code=123456';
+      const url = 'http://localhost:3000/auth/registration-confirmation?code=123456';
       const subject = 'Finish registration';
-      const template = './confirmation.hbs';
+      const template = './confirmation.html';
       const expectedFrom = 'support@example.com';
       const expectedContext = { name: email, url };
 
