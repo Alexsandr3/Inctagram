@@ -196,7 +196,7 @@ describe('Update-profile -  e2e', () => {
   it('24 - / (PUT) - should return 204 if all data is correct', async () => {
     command.userName = 'NightKing';
     command.firstName = 'Nick';
-    command.lastName = ' ';
+    command.lastName = '   ';
     command.city = 'Los Angeles';
     command.aboutMe = 'e'.repeat(200);
     const responseBody = await usersHelper.updateProfile(command, { expectedBody: accessToken2, expectedCode: 204 });
@@ -206,7 +206,7 @@ describe('Update-profile -  e2e', () => {
     const responseBody: ProfileViewDto = await usersHelper.getMyProfile(accessToken2);
     expect(responseBody).toEqual({
       ...command,
-      lastName: 'Ratke',
+      lastName: null,
       id: expect.any(Number),
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
       avatars: [],

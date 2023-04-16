@@ -11,34 +11,28 @@ export class UpdateProfileInputDto {
   userName: string;
 
   @ApiProperty({ nullable: true, required: false })
-  @Transform(({ value }) =>
-    typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? (value.trim().length === 0 ? null : value.trim()) : value))
   @IsOptional()
-  firstName: string;
+  firstName: string | null;
 
   @ApiProperty({ nullable: true, required: false })
-  @Transform(({ value }) =>
-    typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? (value.trim().length === 0 ? null : value.trim()) : value))
   @IsOptional()
-  lastName: string;
+  lastName: string | null;
 
   @ApiProperty({ nullable: true, required: false })
-  @Transform(({ value }) =>
-    typeof value === 'string' ? (value.trim().length === 0 ? undefined : value.trim()) : value,
-  )
+  @Transform(({ value }) => (typeof value === 'string' ? (value.trim().length === 0 ? null : value.trim()) : value))
   @IsOptional()
-  city: string;
+  city: string | null;
 
   @ApiProperty({ nullable: true, required: false })
   @IsDate()
   @IsOptional()
-  dateOfBirth: Date;
+  dateOfBirth: Date | null;
 
   @ApiProperty({ nullable: true, required: false })
   @Length(1, 200)
   @IsString()
   @IsOptional()
-  aboutMe: string;
+  aboutMe: string | null;
 }

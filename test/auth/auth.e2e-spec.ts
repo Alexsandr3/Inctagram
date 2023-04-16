@@ -183,11 +183,14 @@ describe('Authorisation -  e2e', () => {
   });
 
   // Registration correct data
-  let correctEmail: string = 'test@test.ts';
-  let correctPassword: string = '12345678';
-  let userName: string = 'raccoon';
+  let correctEmail: string;
+  let correctPassword: string;
+  let userName: string;
   let confirmationCode: string;
   it('30 - / (POST) - should return 204 if email and password is correct', async () => {
+    correctEmail = 'test@test.ts';
+    correctPassword = '12345678';
+    userName = 'raccoon';
     const mailManager = app.get<MailManager>(MailManager);
     const emailAdapter = app.get<EmailAdapter>(EmailAdapter);
     jest.spyOn(emailAdapter, 'sendEmail');
@@ -323,5 +326,45 @@ describe('Authorisation -  e2e', () => {
     jest.advanceTimersByTime(10000);
     const response = await authHelper.refreshToken({ expectedCode: 401, expectedBody: refreshToken });
     expect(response.error).toBe('Unauthorized');
+  });
+
+  // New register data
+  it('45 - / (POST) - should register user and resend email', async () => {
+    correctEmail = 'test2@test.ts';
+    correctPassword = '12345678';
+    userName = 'raccoon2';
+    const mailManager = app.get<MailManager>(MailManager);
+
+    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmation');
+    const command = { password: correctPassword, email: correctEmail, userName };
+    await authHelper.registrationUser(command);
+    const oldConfirmationCode = sendEmailConfirmationMessage.mock.lastCall[1];
+    await authHelper.registrationEmailResending({ email: correctEmail });
+    confirmationCode = sendEmailConfirmationMessage.mock.lastCall[1];
+    expect(oldConfirmationCode).not.toBe(confirmationCode);
+  });
+  // Registration confirmation
+  it('46 - / (POST) - should confirm email after resending confirmationCode', async () => {
+    const command = { confirmationCode: confirmationCode };
+    await authHelper.registrationConfirmation(command);
+  });
+  it('47 - / (POST) - should register user and resend email 2 times', async () => {
+    correctEmail = 'test3@test.ts';
+    correctPassword = '12345678';
+    userName = 'raccoon3';
+    const mailManager = app.get<MailManager>(MailManager);
+
+    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmation');
+    const command = { password: correctPassword, email: correctEmail, userName };
+    await authHelper.registrationUser(command);
+    const oldConfirmationCode = sendEmailConfirmationMessage.mock.lastCall[1];
+
+    await authHelper.registrationEmailResending({ email: correctEmail });
+    const confirmationCode1 = sendEmailConfirmationMessage.mock.lastCall[1];
+    expect(confirmationCode1).not.toBe(oldConfirmationCode);
+
+    await authHelper.registrationEmailResending({ email: correctEmail });
+    const confirmationCode2 = sendEmailConfirmationMessage.mock.lastCall[1];
+    expect(confirmationCode2).not.toBe(confirmationCode1);
   });
 });

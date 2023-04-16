@@ -16,6 +16,7 @@ model User {
   userName          String             @unique
   email             String             @unique // @map("email" varchar(255) COLLATE "C")
   passwordHash      String
+  isConfirmed       Boolean
   createdAt         DateTime           @default(now()) //, map: "created_at::timestamptz"
   updatedAt         DateTime           @updatedAt
   emailConfirmation EmailConfirmation?
@@ -28,7 +29,6 @@ model User {
 
 model EmailConfirmation {
   userId             Int       @unique
-  isConfirmed        Boolean   @default(false)
   confirmationCode   String? // является необязательным (nullable)
   codeExpirationDate DateTime? // является необязательным (nullable)
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)

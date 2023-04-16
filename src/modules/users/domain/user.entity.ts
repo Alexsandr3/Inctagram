@@ -1,6 +1,3 @@
-import { randomUUID } from 'crypto';
-import { add } from 'date-fns';
-import { EmailConfirmationEntity } from './user.email-confirmation.entity';
 import { ProfileEntity } from './profile.entity';
 import { BaseDateEntity } from './base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
@@ -11,8 +8,7 @@ export class UserEntity extends BaseDateEntity {
   userName: string;
   email: string;
   passwordHash: string;
-  @Type(() => EmailConfirmationEntity)
-  emailConfirmation: EmailConfirmationEntity;
+  isConfirmed: boolean;
   @Type(() => ProfileEntity)
   profile: ProfileEntity;
 
@@ -25,7 +21,7 @@ export class UserEntity extends BaseDateEntity {
     instanceUser.userName = userName;
     instanceUser.email = email;
     instanceUser.passwordHash = passwordHash;
-    instanceUser.emailConfirmation = EmailConfirmationEntity.initCreate();
+    instanceUser.isConfirmed = false;
     instanceUser.profile = null;
     return instanceUser;
   }
@@ -35,12 +31,7 @@ export class UserEntity extends BaseDateEntity {
   }
 
   public confirmUser() {
-    this.emailConfirmation.isConfirmed = true;
-  }
-
-  public updateEmailConfirmation() {
-    this.emailConfirmation.confirmationCode = randomUUID();
-    this.emailConfirmation.codeExpirationDate = add(new Date(), { hours: 1 });
+    this.isConfirmed = true;
   }
 
   public updatePassword(passwordHash: string) {

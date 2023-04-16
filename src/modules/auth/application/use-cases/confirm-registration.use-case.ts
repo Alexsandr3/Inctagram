@@ -28,14 +28,14 @@ export class ConfirmRegistrationUseCase
   async executeUseCase(command: ConfirmRegistrationCommand) {
     const { confirmationCode } = command.codeInputModel;
 
-    const foundUser = await this.usersRepository.findUserByConfirmationCode(confirmationCode);
+    const { foundUser, foundEmailConfirmation } =
+      await this.usersRepository.findUserWithEmailConfirmationByConfirmationCode(confirmationCode);
     if (!foundUser) throw new NotificationException('User not found', null, NotificationCode.NOT_FOUND);
 
-    const { emailConfirmation } = foundUser;
     if (
-      emailConfirmation.isConfirmed ||
-      emailConfirmation.codeExpirationDate < new Date() ||
-      emailConfirmation.confirmationCode !== confirmationCode
+      foundUser.isConfirmed ||
+      foundEmailConfirmation.codeExpirationDate < new Date() ||
+      foundEmailConfirmation.confirmationCode !== confirmationCode
     ) {
       throw new NotificationException('Confirmation code is invalid', 'code', NotificationCode.BAD_REQUEST);
     }
