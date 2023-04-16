@@ -1,4 +1,4 @@
-import { BaseImageEntity } from '../../images/domain/baseImageEntity';
+import { BaseImageEntity } from '../../images/domain/base-image.entity';
 import { BaseDateEntity } from './base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
