@@ -1,4 +1,4 @@
-import { ImageEntity } from '../../images/domain/image.entity';
+import { BaseImageEntity } from '../../images/domain/baseImageEntity';
 import { BaseDateEntity } from './base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
@@ -10,8 +10,8 @@ export class ProfileEntity extends BaseDateEntity {
   city: string;
   dateOfBirth: Date;
   aboutMe: string;
-  @Type(() => ImageEntity)
-  avatars: ImageEntity[];
+  @Type(() => BaseImageEntity)
+  avatars: BaseImageEntity[];
 
   constructor() {
     super();
