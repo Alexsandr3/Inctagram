@@ -26,7 +26,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { UploadImageAvatarCommand } from '../aplication/use-cases/upload-image-avatar.use-case';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
 import { UpdateProfileInputDto } from './inpu-dto/update-profile.input.dto';
-import { ProfileViewDto } from './view-models/profile-view.dto';
+import { ProfileViewModel } from './view-models/profile-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { UpdateProfileCommand } from '../aplication/use-cases/update-profile.use-case';
 import { NotificationCode } from '../../../configuration/exception.filter';
@@ -55,14 +55,14 @@ export class UsersController {
   @SwaggerDecoratorsByGetProfile()
   @Get(`/profile`)
   @HttpCode(HTTP_Status.OK_200)
-  async getMyProfile(@CurrentUserId() userId: number): Promise<ProfileViewDto> {
+  async getMyProfile(@CurrentUserId() userId: number): Promise<ProfileViewModel> {
     const user = await this.usersRepository.findById(userId);
-    const notification = new ResultNotification<ProfileViewDto>();
+    const notification = new ResultNotification<ProfileViewModel>();
     notification.addErrorFromNotificationException(
       new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
     );
     if (!user) throw new CheckerNotificationErrors('Error', notification);
-    return ProfileViewDto.createView(user.profile, user.userName);
+    return ProfileViewModel.createView(user.profile, user.userName);
   }
 
   /**

@@ -1,10 +1,10 @@
-import { PhotoSizeViewModel } from '../../../images/api/view-models/photo-size-view.dto';
+import { PostImageViewModel } from './post-image-view.dto';
 
 export class PostViewModel {
   id: number;
   description: string;
   location: string;
-  images: PhotoSizeViewModel[];
+  images: PostImageViewModel[];
   createdAt: Date;
   updatedAt: Date;
 
@@ -12,7 +12,7 @@ export class PostViewModel {
     id: number,
     description: string,
     location: string,
-    images: PhotoSizeViewModel[],
+    images: PostImageViewModel[],
     createdAt: Date,
     updatedAt: Date,
   ) {

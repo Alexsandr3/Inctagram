@@ -2,7 +2,7 @@ import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger
 import { applyDecorators } from '@nestjs/common';
 import { ApiErrorResultDto } from '../../main/validators/api-error-result.dto';
 import { HTTP_Status } from '../../main/enums/http-status.enum';
-import { ProfileViewDto } from './api/view-models/profile-view.dto';
+import { ProfileViewModel } from './api/view-models/profile-view.dto';
 import { ProfileAvatarViewModel } from './api/view-models/user-images-view.dto';
 
 /**
@@ -60,7 +60,7 @@ export function SwaggerDecoratorsByGetProfile(): MethodDecorator {
     ApiResponse({
       status: HTTP_Status.OK_200,
       description: 'Get profile information object',
-      type: ProfileViewDto,
+      type: ProfileViewModel,
     }),
     ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
     ApiResponse({

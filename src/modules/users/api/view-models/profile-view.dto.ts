@@ -1,7 +1,7 @@
 import { ProfileEntity } from '../../domain/profile.entity';
-import { BaseImageEntity } from '../../../images/domain/baseImageEntity';
+import { AvatarImageViewDto } from './avatar-image-view.dto';
 
-export class ProfileViewDto {
+export class ProfileViewModel {
   id: number;
   userName: string;
   firstName: string | null;
@@ -9,11 +9,11 @@ export class ProfileViewDto {
   city: string | null;
   dateOfBirth: Date | null;
   aboutMe: string | null;
-  avatars: BaseImageEntity[];
+  avatars: AvatarImageViewDto[];
   constructor() {}
 
-  static createView(profile: ProfileEntity, userName: string): ProfileViewDto {
-    const profileView = new ProfileViewDto();
+  static createView(profile: ProfileEntity, userName: string): ProfileViewModel {
+    const profileView = new ProfileViewModel();
     profileView.id = profile.userId;
     profileView.userName = userName;
     profileView.firstName = profile.firstName;
@@ -21,7 +21,7 @@ export class ProfileViewDto {
     profileView.city = profile.city;
     profileView.dateOfBirth = profile.dateOfBirth;
     profileView.aboutMe = profile.aboutMe;
-    profileView.avatars = profile.avatars.map(a => new AvatarViewDto(a.url, a.width, a.height, a.fileSize));
+    profileView.avatars = profile.avatars.map(a => new AvatarImageViewDto(a.url, a.width, a.height, a.fileSize, a.id));
     return profileView;
   }
 }

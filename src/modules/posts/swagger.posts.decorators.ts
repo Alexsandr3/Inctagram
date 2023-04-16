@@ -2,7 +2,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
 import { ApiErrorResultDto } from '../../main/validators/api-error-result.dto';
 import { HTTP_Status } from '../../main/enums/http-status.enum';
-import { PostImagesViewDto } from './api/view-models/post-images-view.dto';
+import { UploadedImageViewModel } from './api/view-models/uploaded-image-view.dto';
 import { PostViewModel } from './api/view-models/post-view.dto';
 
 export function SwaggerDecoratorsByUploadImagePost(): MethodDecorator {
@@ -15,7 +15,7 @@ export function SwaggerDecoratorsByUploadImagePost(): MethodDecorator {
       description:
         'Uploaded image information object. Return array with Must contain medium photo size (_______) and thumbnail photo size (________)',
 
-      type: PostImagesViewDto,
+      type: UploadedImageViewModel,
     }),
     ApiResponse({
       status: HTTP_Status.BAD_REQUEST_400,

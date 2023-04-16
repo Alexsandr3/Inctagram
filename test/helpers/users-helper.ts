@@ -3,7 +3,7 @@ import request from 'supertest';
 import { usersEndpoints } from '../../src/modules/users/api/users.routing';
 import fs from 'fs';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
-import { ProfileViewDto } from '../../src/modules/users/api/view-models/profile-view.dto';
+import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
 
 export class UsersHelper {
   constructor(private readonly app: INestApplication) {}
@@ -49,7 +49,7 @@ export class UsersHelper {
     return response.body;
   }
 
-  async getMyProfile(accessToken: string): Promise<ProfileViewDto> {
+  async getMyProfile(accessToken: string): Promise<ProfileViewModel> {
     const response = await request(this.app.getHttpServer())
       .get(usersEndpoints.getMyProfile())
       .auth(accessToken, { type: 'bearer' })

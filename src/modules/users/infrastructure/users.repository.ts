@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 import { EmailConfirmationEntity } from '../domain/user.email-confirmation.entity';
-import { BaseImageEntity } from '../../images/domain/baseImageEntity';
+import { BaseImageEntity } from '../../images/domain/base-image.entity';
 
 export abstract class IUsersRepository {
   abstract findById(userId: number): Promise<UserEntity | null>;
@@ -158,9 +158,8 @@ export class PrismaUsersRepository implements IUsersRepository {
   }
 
   async saveImageProfile(instanceImage: BaseImageEntity): Promise<void> {
-    await this.prisma.image.upsert({
+    await this.prisma.avatarImage.upsert({
       create: {
-        ownerId: instanceImage.ownerId,
         userId: instanceImage.userId,
         imageType: instanceImage.imageType,
         sizeType: instanceImage.sizeType,
@@ -173,7 +172,6 @@ export class PrismaUsersRepository implements IUsersRepository {
         fieldId: instanceImage.fieldId,
       },
       update: {
-        ownerId: instanceImage.ownerId,
         userId: instanceImage.userId,
         imageType: instanceImage.imageType,
         sizeType: instanceImage.sizeType,
@@ -188,9 +186,9 @@ export class PrismaUsersRepository implements IUsersRepository {
   }
 
   async deleteImagesAvatar(userId: number): Promise<void> {
-    await this.prisma.image.deleteMany({
+    await this.prisma.avatarImage.deleteMany({
       where: {
-        ownerId: userId,
+        userId: userId,
       },
     });
   }

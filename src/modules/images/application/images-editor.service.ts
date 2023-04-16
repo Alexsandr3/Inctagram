@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
-import { BaseImageEntity } from '../domain/baseImageEntity';
+import { BaseImageEntity } from '../domain/base-image.entity';
 import { S3StorageAdapter } from '../../../providers/aws/s3-storage.adapter';
 import { ImageSizeConfig } from '../image-size-config.type';
 import { ImageSizeType } from '../type/image-size.type';

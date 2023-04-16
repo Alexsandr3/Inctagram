@@ -8,7 +8,7 @@ import { ImagesEditorService } from '../../../images/application/images-editor.s
 import { ImagesMapperServiceForView } from '../../../images/images-mapper-for-view.service';
 import { ImageSizeType } from '../../../images/type/image-size.type';
 import { ImageType } from '../../../images/type/image.type';
-import { BaseImageEntity } from '../../../images/domain/baseImageEntity';
+import { BaseImageEntity } from '../../../images/domain/base-image.entity';
 
 export class UploadImageAvatarCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}

@@ -1,15 +1,14 @@
+/**
+ * @description Base photo size view model
+ */
 export class BasePhotoSizeViewModel {
+  public url: string;
   public width: number;
-  /**
-   * In pixels
-   */
   public height: number;
-  /**
-   * In bytes
-   */
   public fileSize: number;
 
-  constructor(width: number, height: number, fileSize: number) {
+  constructor(url: string, width: number, height: number, fileSize: number) {
+    this.url = url;
     this.width = width;
     this.height = height;
     this.fileSize = fileSize;

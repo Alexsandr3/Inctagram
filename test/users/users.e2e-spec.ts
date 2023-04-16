@@ -3,7 +3,7 @@ import { AuthHelper } from '../helpers/auth-helper';
 import { getAppForE2ETesting } from '../utils/tests.utils';
 import { UsersHelper } from '../helpers/users-helper';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
-import { ProfileViewDto } from '../../src/modules/users/api/view-models/profile-view.dto';
+import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
 import { ProfileAvatarViewModel } from '../../src/modules/users/api/view-models/user-images-view.dto';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 
@@ -28,7 +28,7 @@ describe('Update-profile -  e2e', () => {
   let accessToken2: string;
   let correctEmail_first_user = 'Kiarra92@yahoo.om';
   let correctUserName_first_user = 'Anderson';
-  let firstUserProfile: ProfileViewDto;
+  let firstUserProfile: ProfileViewModel;
   let correctEmail_second_user = 'Garnet4@yahoo.cm';
   let correctUserName_second_user = 'Addison';
   let userId: number;
@@ -45,7 +45,7 @@ describe('Update-profile -  e2e', () => {
     userId = myInfo.userId;
   });
   it('01.2 - / (GET) - should return 200 and profile of user', async () => {
-    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
+    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken);
     expect(profile).toEqual({
       id: userId,
       userName: correctUserName_first_user,
@@ -203,7 +203,7 @@ describe('Update-profile -  e2e', () => {
     expect(responseBody).toEqual({});
   });
   it('25 - / (GET) - should return 200 if all data is correct', async () => {
-    const responseBody: ProfileViewDto = await usersHelper.getMyProfile(accessToken2);
+    const responseBody: ProfileViewModel = await usersHelper.getMyProfile(accessToken2);
     expect(responseBody).toEqual({
       ...command,
       lastName: null,
@@ -254,7 +254,7 @@ describe('Update-profile -  e2e', () => {
     );
   });
   it('34 - / (GET) - should return 200 and profile with avatar of FIRST user', async () => {
-    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
+    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken);
     expect(profile).toEqual({ ...firstUserProfile, avatars: expect.any(Array) });
     expect(profile.avatars.length).toBe(2);
     expect(profile.avatars).toEqual(
@@ -294,7 +294,7 @@ describe('Update-profile -  e2e', () => {
     });
   });
   it('36 - / (GET) - should return 200 and profile of user', async () => {
-    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
+    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken);
     expect(profile).toEqual({ ...firstUserProfile, avatars: expect.any(Array) });
     expect(profile.avatars.length).toBe(2);
     expect(profile.avatars).toEqual(
@@ -339,7 +339,7 @@ describe('Update-profile -  e2e', () => {
     expect(responseBody).toEqual({});
   });
   it('39 - / (GET) - should return 200 and profile FIRST user', async () => {
-    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
+    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken);
     expect(profile.avatars).toHaveLength(0);
   });
   it('40 - / (DELETE) - should return 204 if all data is correct for delete avatar by SECOND user', async () => {
@@ -347,7 +347,7 @@ describe('Update-profile -  e2e', () => {
     expect(responseBody).toEqual({});
   });
   it('41 - / (GET) - should return 200 and profile SECOND user', async () => {
-    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken2);
+    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken2);
     expect(profile.avatars).toHaveLength(0);
   });
 });
