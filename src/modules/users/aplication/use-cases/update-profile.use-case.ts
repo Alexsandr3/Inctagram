@@ -4,7 +4,6 @@ import { UpdateProfileInputDto } from '../../api/inpu-dto/update-profile.input.d
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
-import { ProfileViewDto } from '../../api/view-models/profile-view.dto';
 
 export class UpdateProfileCommand {
   constructor(public readonly userId: number, public readonly body: UpdateProfileInputDto) {}
@@ -12,14 +11,14 @@ export class UpdateProfileCommand {
 
 @CommandHandler(UpdateProfileCommand)
 export class UpdateProfileUseCase
-  extends BaseNotificationUseCase<UpdateProfileCommand, ProfileViewDto>
+  extends BaseNotificationUseCase<UpdateProfileCommand, void>
   implements ICommandHandler<UpdateProfileCommand>
 {
   constructor(private readonly userRepository: IUsersRepository) {
     super();
   }
 
-  async executeUseCase(command: UpdateProfileCommand): Promise<ProfileViewDto> {
+  async executeUseCase(command: UpdateProfileCommand): Promise<void> {
     const { userId, body } = command;
     const { userName } = body;
 
@@ -43,8 +42,6 @@ export class UpdateProfileUseCase
     //update profile
     foundUser.updateProfile(body);
     //save profile
-
     await this.userRepository.updateUser(foundUser);
-    return ProfileViewDto.createView(foundUser.profile, foundUser.userName);
   }
 }

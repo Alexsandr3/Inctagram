@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { ProfileAvatarViewModel } from '../users/api/view-models/user-images-view.dto';
-import { BaseImageEntity } from './domain/baseImageEntity';
-import { PhotoSizeViewModel } from './api/view-models/photo-size-view.dto';
+import { PhotoSizeViewModel, ProfileAvatarViewModel } from '../users/api/view-models/user-images-view.dto';
+import { ImageEntity } from './domain/image.entity';
 
 @Injectable()
 export class ImagesMapperServiceForView {

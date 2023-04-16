@@ -5,6 +5,7 @@ import { IUsersRepository } from '../../../users/infrastructure/users.repository
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
+import { EmailConfirmationEntity } from '../../../users/domain/user.email-confirmation.entity';
 
 /**
  * @description Resending command
@@ -30,12 +31,13 @@ export class ResendRegistrationEmailUseCase
     const { email } = command.dto;
 
     const foundUser = await this.usersRepository.findUserByEmail(email);
-    if (!foundUser || foundUser.emailConfirmation.isConfirmed)
+    if (!foundUser || foundUser.isConfirmed)
       throw new NotificationException("Email isn't valid or already confirmed", 'email', NotificationCode.BAD_REQUEST);
 
-    foundUser.updateEmailConfirmation();
-    await this.usersRepository.updateUser(foundUser);
+    const emailConfirmation = EmailConfirmationEntity.initCreate();
+    emailConfirmation.updateEmailConfirmation();
 
-    await this.mailService.sendUserConfirmation(email, foundUser.emailConfirmation.confirmationCode);
+    await this.usersRepository.updateUser(foundUser, emailConfirmation);
+    await this.mailService.sendUserConfirmation(email, emailConfirmation.confirmationCode);
   }
 }

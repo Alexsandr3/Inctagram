@@ -16,18 +16,19 @@ model User {
   userName          String             @unique
   email             String             @unique // @map("email" varchar(255) COLLATE "C")
   passwordHash      String
+  isConfirmed       Boolean
   createdAt         DateTime           @default(now()) //, map: "created_at::timestamptz"
   updatedAt         DateTime           @updatedAt
   emailConfirmation EmailConfirmation?
   profile           Profile?
   Session           Session[]
+  avatars           Image[]
 
   @@map("User")
 }
 
 model EmailConfirmation {
   userId             Int       @unique
-  isConfirmed        Boolean   @default(false)
   confirmationCode   String? // является необязательным (nullable)
   codeExpirationDate DateTime? // является необязательным (nullable)
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -86,16 +87,19 @@ enum ImageType {
 
 model Image {
   id        Int           @id @default(autoincrement())
-  profileId Int
+  userId    Int
+  ownerId   Int
   imageType ImageType
   sizeType  ImageSizeType
-  url       String
+  url       String        @unique
   width     Int
   height    Int
   fileSize  Int
+  fieldId   String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  profile   Profile?      @relation(fields: [profileId], references: [userId])
+  profile   Profile?      @relation(fields: [ownerId], references: [userId])
+  user      User?         @relation(fields: [userId], references: [id])
 
   @@map("Image")
 }

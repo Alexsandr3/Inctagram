@@ -54,7 +54,7 @@ describe('Update-profile -  e2e', () => {
       city: null,
       dateOfBirth: null,
       aboutMe: null,
-      images: [],
+      avatars: [],
     });
   });
 
@@ -137,7 +137,7 @@ describe('Update-profile -  e2e', () => {
       ...command,
       id: userId,
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
-      images: [],
+      avatars: [],
     });
   });
   it('21 - / (PUT) - should return 204 and delete set null in delete property', async () => {
@@ -190,13 +190,13 @@ describe('Update-profile -  e2e', () => {
       ...command,
       id: userId,
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
-      images: [],
+      avatars: [],
     });
   });
   it('24 - / (PUT) - should return 204 if all data is correct', async () => {
     command.userName = 'NightKing';
     command.firstName = 'Nick';
-    command.lastName = ' ';
+    command.lastName = '   ';
     command.city = 'Los Angeles';
     command.aboutMe = 'e'.repeat(200);
     const responseBody = await usersHelper.updateProfile(command, { expectedBody: accessToken2, expectedCode: 204 });
@@ -206,10 +206,10 @@ describe('Update-profile -  e2e', () => {
     const responseBody: ProfileViewDto = await usersHelper.getMyProfile(accessToken2);
     expect(responseBody).toEqual({
       ...command,
-      lastName: 'Ratke',
+      lastName: null,
       id: expect.any(Number),
       dateOfBirth: new Date(command.dateOfBirth).toISOString(),
-      images: [],
+      avatars: [],
     });
   });
 
@@ -238,7 +238,7 @@ describe('Update-profile -  e2e', () => {
       expectedCode: 201,
     });
     expect(responseBody).toEqual({
-      avatar: [
+      avatars: [
         {
           url: expect.any(String),
           width: expect.any(Number),
@@ -256,19 +256,52 @@ describe('Update-profile -  e2e', () => {
   });
   it('34 - / (GET) - should return 200 and profile with avatar of FIRST user', async () => {
     const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
-    expect(profile).toEqual({ ...firstUserProfile, images: expect.any(Array) });
-    expect(profile.images.length).toBe(2);
-    expect(profile.images).toEqual(
+    expect(profile).toEqual({ ...firstUserProfile, avatars: expect.any(Array) });
+    expect(profile.avatars.length).toBe(2);
+    expect(profile.avatars).toEqual(
       expect.arrayContaining([
         {
-          createdAt: expect.any(String),
           fileSize: expect.any(Number),
           height: expect.any(Number),
-          id: expect.any(Number),
-          imageType: expect.any(String),
-          profileId: expect.any(Number),
-          sizeType: expect.any(String),
-          updatedAt: expect.any(String),
+          url: expect.any(String),
+          width: expect.any(Number),
+        },
+      ]),
+    );
+  });
+
+  it('35 - / (POST) - should return 201 if all data is correct for upload image', async () => {
+    let nameFile = '/images/859x720_338kb.jpeg';
+    const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
+      token: accessToken,
+      expectedCode: 201,
+    });
+    expect(responseBody).toEqual({
+      avatars: [
+        {
+          url: expect.any(String),
+          width: expect.any(Number),
+          height: expect.any(Number),
+          fileSize: expect.any(Number),
+        },
+        {
+          url: expect.any(String),
+          width: expect.any(Number),
+          height: expect.any(Number),
+          fileSize: expect.any(Number),
+        },
+      ],
+    });
+  });
+  it('36 - / (GET) - should return 200 and profile of user', async () => {
+    const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
+    expect(profile).toEqual({ ...firstUserProfile, avatars: expect.any(Array) });
+    expect(profile.avatars.length).toBe(2);
+    expect(profile.avatars).toEqual(
+      expect.arrayContaining([
+        {
+          fileSize: expect.any(Number),
+          height: expect.any(Number),
           url: expect.any(String),
           width: expect.any(Number),
         },
@@ -284,7 +317,7 @@ describe('Update-profile -  e2e', () => {
       expectedCode: 201,
     });
     expect(responseBody).toEqual({
-      avatar: [
+      avatars: [
         {
           url: expect.any(String),
           width: expect.any(Number),
@@ -306,7 +339,7 @@ describe('Update-profile -  e2e', () => {
   });
   it('39 - / (GET) - should return 200 and profile FIRST user', async () => {
     const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken);
-    expect(profile.images).toHaveLength(0);
+    expect(profile.avatars).toHaveLength(0);
   });
   it('40 - / (DELETE) - should return 204 if all data is correct for delete avatar by SECOND user', async () => {
     const responseBody = await usersHelper.deletePhotosAvatar({ token: accessToken2, expectedCode: 204 });
@@ -314,6 +347,6 @@ describe('Update-profile -  e2e', () => {
   });
   it('41 - / (GET) - should return 200 and profile SECOND user', async () => {
     const profile: ProfileViewDto = await usersHelper.getMyProfile(accessToken2);
-    expect(profile.images).toHaveLength(0);
+    expect(profile.avatars).toHaveLength(0);
   });
 });

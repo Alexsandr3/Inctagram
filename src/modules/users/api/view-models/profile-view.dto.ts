@@ -9,7 +9,7 @@ export class ProfileViewDto {
   city: string | null;
   dateOfBirth: Date | null;
   aboutMe: string | null;
-  images: BaseImageEntity[];
+  avatars: BaseImageEntity[];
   constructor() {}
 
   static createView(profile: ProfileEntity, userName: string): ProfileViewDto {
@@ -21,7 +21,7 @@ export class ProfileViewDto {
     profileView.city = profile.city;
     profileView.dateOfBirth = profile.dateOfBirth;
     profileView.aboutMe = profile.aboutMe;
-    profileView.images = profile.avatars;
+    profileView.avatars = profile.avatars.map(a => new AvatarViewDto(a.url, a.width, a.height, a.fileSize));
     return profileView;
   }
 }

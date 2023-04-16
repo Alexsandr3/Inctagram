@@ -7,6 +7,7 @@ import { NotificationException } from '../../../../main/validators/result-notifi
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { UserEntity } from '../../../users/domain/user.entity';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
+import { EmailConfirmationEntity } from '../../../users/domain/user.email-confirmation.entity';
 
 /**
  * @description create new user and send email for confirmation
@@ -48,8 +49,12 @@ export class RegisterUserUseCase
     const passwordHash = await this.authService.getPasswordHash(password);
     //create user
     const user = UserEntity.initCreateUser(userName, email, passwordHash);
+    //create emailConfirmation
+    const emailConfirmation = EmailConfirmationEntity.initCreate();
 
-    await this.usersRepository.saveUser(user); //save user
-    await this.mailService.sendUserConfirmation(email, user.emailConfirmation.confirmationCode);
+    //save user with emailConfirmation
+    await this.usersRepository.saveUserWithEmailConfirmation(user, emailConfirmation);
+
+    await this.mailService.sendUserConfirmation(email, emailConfirmation.confirmationCode);
   }
 }

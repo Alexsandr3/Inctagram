@@ -1,4 +1,4 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { RegisterInputDto } from '../../src/modules/auth/api/input-dto/register.input.dto';
 import request from 'supertest';
 import { authEndpoints } from '../../src/modules/auth/api/auth.routing';
@@ -23,7 +23,7 @@ export class AuthHelper {
     } = {},
   ): Promise<any> {
     // default expected code is 204 or code mistake from config
-    const expectedCode = config.expectedCode ?? HttpStatus.CREATED;
+    const expectedCode = config.expectedCode ?? HTTP_Status.NO_CONTENT_204;
     // send request for create user
     const response = await request(this.app.getHttpServer())
       .post(authEndpoints.registration())
