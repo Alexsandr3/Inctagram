@@ -2,7 +2,7 @@ import { UserEntity } from '../domain/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
-import { ImageEntity } from '../../images/domain/image.entity';
+import { BaseImageEntity } from '../../images/domain/baseImageEntity';
 
 export abstract class IUsersRepository {
   abstract findById(userId: number): Promise<UserEntity | null>;
@@ -13,7 +13,7 @@ export abstract class IUsersRepository {
   abstract saveUser(user: UserEntity);
   abstract updateUser(user: UserEntity);
   abstract deleteUser(userId: number);
-  abstract saveImageProfile(instanceImage: ImageEntity): Promise<void>;
+  abstract saveImageProfile(instanceImage: BaseImageEntity): Promise<void>;
 
   abstract deleteImagesAvatar(userId: number): Promise<void>;
 }
@@ -145,7 +145,7 @@ export class PrismaUsersRepository implements IUsersRepository {
     });
   }
 
-  async saveImageProfile(instanceImage: ImageEntity): Promise<void> {
+  async saveImageProfile(instanceImage: BaseImageEntity): Promise<void> {
     await this.prisma.image.create({
       data: {
         profileId: instanceImage.userId,

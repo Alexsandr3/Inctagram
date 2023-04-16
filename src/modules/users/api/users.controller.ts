@@ -21,7 +21,7 @@ import {
 } from '../swagger.users.decorators';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { UploadImageAvatarCommand } from '../aplication/use-cases/upload-image-avatar.use-case';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
@@ -35,8 +35,9 @@ import { ValidationTypeImagePipe } from '../../../main/validators/validation-typ
 import { IUsersRepository } from '../infrastructure/users.repository';
 import { DeleteImageAvatarCommand } from '../aplication/use-cases/delete-image-avatar.use-case';
 
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
+@ApiTags('Profile')
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly commandBus: CommandBus, private readonly usersRepository: IUsersRepository) {}

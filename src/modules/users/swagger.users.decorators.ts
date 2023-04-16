@@ -1,4 +1,4 @@
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
 import { ApiErrorResultDto } from '../../main/validators/api-error-result.dto';
 import { HTTP_Status } from '../../main/enums/http-status.enum';
@@ -11,7 +11,6 @@ import { ProfileAvatarViewModel } from './api/view-models/user-images-view.dto';
  */
 export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
   return applyDecorators(
-    ApiTags('profile-avatar'),
     ApiOperation({
       summary: 'Upload providers square image for Avatar profile (.png or jpg (jpeg) file',
     }),
@@ -36,7 +35,6 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
 
 export function SwaggerDecoratorsByDeletePhotoAvatar(): MethodDecorator {
   return applyDecorators(
-    ApiTags('profile-avatar'),
     ApiOperation({
       summary: 'Delete providers square image for Avatar profile',
     }),
@@ -58,7 +56,6 @@ export function SwaggerDecoratorsByDeletePhotoAvatar(): MethodDecorator {
  */
 export function SwaggerDecoratorsByGetProfile(): MethodDecorator {
   return applyDecorators(
-    ApiTags('profile'),
     ApiOperation({ summary: 'Get profile for user by id from query params' }),
     ApiResponse({
       status: HTTP_Status.OK_200,
@@ -79,7 +76,6 @@ export function SwaggerDecoratorsByGetProfile(): MethodDecorator {
  */
 export function SwaggerDecoratorsByUpdateProfile(): MethodDecorator {
   return applyDecorators(
-    ApiTags('profile'),
     ApiOperation({ summary: 'Update profile for user' }),
     ApiResponse({
       status: HTTP_Status.NO_CONTENT_204,
