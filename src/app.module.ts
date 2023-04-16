@@ -10,6 +10,7 @@ import { TestingModule } from './providers/testing/testing.module';
 import { LoggerModule } from './providers/logger/logger.module';
 import LogsMiddleware from './providers/logger/logs.middleware';
 import { PrismaModule } from './providers/prisma/prisma.module';
+import { PostsModule } from './modules/posts/posts.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { PrismaModule } from './providers/prisma/prisma.module';
     TestingModule, //need for testing !!!
     LoggerModule,
     PrismaModule,
+    PostsModule,
   ],
   controllers: [AppController],
   providers: [],
