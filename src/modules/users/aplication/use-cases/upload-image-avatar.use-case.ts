@@ -8,7 +8,7 @@ import { ImagesEditorService } from '../../../images/application/images-editor.s
 import { ImagesMapperServiceForView } from '../../../images/images-mapper-for-view.service';
 import { ImageSizeType } from '../../../images/type/image-size.type';
 import { ImageType } from '../../../images/type/image.type';
-import { ImageEntity } from '../../../images/domain/image.entity';
+import { BaseImageEntity } from '../../../images/domain/baseImageEntity';
 
 export class UploadImageAvatarCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}
@@ -44,7 +44,7 @@ export class UploadImageAvatarUseCase
     const sizes = [ImageSizeType.MEDIUM, ImageSizeType.THUMBNAIL];
 
     //generate keys for images and save images on s3 storage and create instances images
-    const result: ImageEntity[] = await this.imagesEditor.generatorKeysWithSaveImagesAndCreateImages(
+    const result: BaseImageEntity[] = await this.imagesEditor.generatorKeysWithSaveImagesAndCreateImages(
       user.id,
       user.profile.userId,
       photo,

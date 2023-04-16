@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
-import { ImageEntity } from '../domain/image.entity';
+import { BaseImageEntity } from '../domain/baseImageEntity';
 import { S3StorageAdapter } from '../../../providers/aws/s3-storage.adapter';
 import { ImageSizeConfig } from '../image-size-config.type';
 import { ImageSizeType } from '../type/image-size.type';
@@ -14,9 +14,12 @@ export class ImagesEditorService {
    * @description Generate keys for images for user
    * @private
    */
-  private imageKeyGenerators: { [type: string]: (userId: number, sizes: string[]) => Promise<string[]> } = {
+  private imageKeyGenerators: {
+    [type: string]: (userId: number, sizes: string[], ownerId?: number) => Promise<string[]>;
+  } = {
     [ImageType.AVATAR]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForAvatar(userId, sizes),
-    [ImageType.POST]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForPost(userId, sizes),
+    [ImageType.POST]: async (userId: number, sizes: string[], ownerId?: number) =>
+      this.generatorKeysImagesForPost(userId, sizes, ownerId),
   };
 
   /**
@@ -53,12 +56,13 @@ export class ImagesEditorService {
    * @description Generate keys for images for post
    * @param userId
    * @param size
+   * @param ownerId
    * @private
    */
-  private async generatorKeysImagesForPost(userId: number, size: string[]): Promise<string[]> {
+  private async generatorKeysImagesForPost(userId: number, size: string[], ownerId?: number): Promise<string[]> {
     const keys = [];
     for (let i = 0; i < size.length; i++) {
-      const key = `users/${userId}/post-${ImageSizeConfig[size[i]].defaultWidth}x${
+      const key = `users/${userId}/post/${ownerId}-${ImageSizeConfig[size[i]].defaultWidth}x${
         ImageSizeConfig[size[i]].defaultHeight
       }.jpg`;
       keys.push(key);
@@ -82,11 +86,11 @@ export class ImagesEditorService {
     type: ImageType,
     mimetype: string,
     sizes: string[],
-  ): Promise<ImageEntity[]> {
+  ): Promise<BaseImageEntity[]> {
     //generate keys for images
     const keys: string[] = [];
     if (this.imageKeyGenerators[type]) {
-      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes);
+      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes, ownerId);
       keys.push(...keysGenerator);
     }
     //changing size image
@@ -111,14 +115,14 @@ export class ImagesEditorService {
       const imageToSave = changeSizeImage[i];
       const urlImage = await this.storageS3.saveFile(userId, imageToSave, keyImage, mimetype);
       const size = sizes[i];
-      const imageEntity = ImageEntity.initCreateImageEntity(userId, ownerId, size, type, urlImage, imageToSave);
+      const imageEntity = BaseImageEntity.initCreateImageEntity(userId, size, type, urlImage, imageToSave);
       instancesImages.push(imageEntity);
     }
 
     return instancesImages;
   }
 
-  async deleteImages(...images: ImageEntity[]) {
+  async deleteImages(...images: BaseImageEntity[]) {
     const keys = images.map(image => image.url);
     await this.storageS3.deleteManyFiles(...keys);
   }

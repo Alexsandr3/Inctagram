@@ -3,10 +3,9 @@ import { ImageSizeConfig } from '../image-size-config.type';
 import { ImageSizeType } from '../type/image-size.type';
 import { ImageType } from '../type/image.type';
 
-export class ImageEntity extends BaseDateEntity {
+export class BaseImageEntity extends BaseDateEntity {
   id: number;
   userId: number;
-  ownerId: number; //postId - profileId
   imageType: ImageType;
   sizeType: ImageSizeType;
   url: string;
@@ -21,16 +20,13 @@ export class ImageEntity extends BaseDateEntity {
 
   static initCreateImageEntity(
     userId: number,
-    ownerId: number,
     size: string,
     type: ImageType,
     urlImageAvatar: { key: string; fieldId: string },
     photo: Buffer,
   ) {
-    const instance = new ImageEntity();
+    const instance = new BaseImageEntity();
     instance.userId = userId;
-    if (type === ImageType.AVATAR) instance.ownerId = ownerId;
-    if (type === ImageType.POST) instance.ownerId = ownerId;
     instance.imageType = type;
     instance.sizeType = size as ImageSizeType;
     instance.url = urlImageAvatar.key;
