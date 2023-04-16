@@ -22,7 +22,6 @@ model User {
   emailConfirmation EmailConfirmation?
   profile           Profile?
   Session           Session[]
-  avatars           Image[]
 
   @@map("User")
 }
@@ -66,7 +65,7 @@ model Profile {
   aboutMe     String?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  avatars     Image[]
+  avatars     AvatarImage[]
   user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("Profile")
@@ -85,10 +84,9 @@ enum ImageType {
   POST
 }
 
-model Image {
+model AvatarImage {
   id        Int           @id @default(autoincrement())
   userId    Int
-  ownerId   Int
   imageType ImageType
   sizeType  ImageSizeType
   url       String        @unique
@@ -98,8 +96,8 @@ model Image {
   fieldId   String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  profile   Profile?      @relation(fields: [ownerId], references: [userId])
-  user      User?         @relation(fields: [userId], references: [id])
+  profile   Profile?      @relation(fields: [userId], references: [userId])
 
-  @@map("Image")
+
+  @@map("AvatarImage")
 }
