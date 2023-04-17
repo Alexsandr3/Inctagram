@@ -57,16 +57,16 @@ model PasswordRecovery {
 }
 
 model Profile {
-  userId      Int       @unique
+  userId      Int           @unique
   firstName   String?
   lastName    String?
   city        String?
   dateOfBirth DateTime?
   aboutMe     String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
   avatars     AvatarImage[]
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("Profile")
 }
@@ -86,7 +86,7 @@ enum ImageType {
 
 model AvatarImage {
   id        Int           @id @default(autoincrement())
-  userId    Int
+  profileId Int
   imageType ImageType
   sizeType  ImageSizeType
   url       String        @unique
@@ -96,8 +96,7 @@ model AvatarImage {
   fieldId   String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  profile   Profile?      @relation(fields: [userId], references: [userId])
-
+  profile   Profile?      @relation(fields: [profileId], references: [userId])
 
   @@map("AvatarImage")
 }

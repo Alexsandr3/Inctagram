@@ -2,13 +2,12 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
-import { ProfileAvatarViewModel } from '../../api/view-models/user-images-view.dto';
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { ImagesEditorService } from '../../../images/application/images-editor.service';
-import { ImagesMapperServiceForView } from '../../../images/images-mapper-for-view.service';
 import { ImageSizeType } from '../../../images/type/image-size.type';
 import { ImageType } from '../../../images/type/image.type';
 import { BaseImageEntity } from '../../../images/domain/base-image.entity';
+import { AvatarEntity } from '../../domain/avatar.entity';
 
 export class UploadImageAvatarCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}
@@ -16,14 +15,10 @@ export class UploadImageAvatarCommand {
 
 @CommandHandler(UploadImageAvatarCommand)
 export class UploadImageAvatarUseCase
-  extends BaseNotificationUseCase<UploadImageAvatarCommand, ProfileAvatarViewModel>
+  extends BaseNotificationUseCase<UploadImageAvatarCommand, void>
   implements ICommandHandler<UploadImageAvatarCommand>
 {
-  constructor(
-    private readonly usersRepository: IUsersRepository,
-    private readonly imagesEditor: ImagesEditorService,
-    private readonly imageMapperService: ImagesMapperServiceForView,
-  ) {
+  constructor(private readonly usersRepository: IUsersRepository, private readonly imagesEditor: ImagesEditorService) {
     super();
   }
 
@@ -31,7 +26,7 @@ export class UploadImageAvatarUseCase
    * @description Upload image avatar profile for current user
    * @param command
    */
-  async executeUseCase(command: UploadImageAvatarCommand): Promise<ProfileAvatarViewModel> {
+  async executeUseCase(command: UploadImageAvatarCommand): Promise<void> {
     const { userId, photo, mimetype } = command;
     //find profile
     const user = await this.usersRepository.findById(userId);
@@ -53,9 +48,8 @@ export class UploadImageAvatarUseCase
       sizes,
     );
 
+    const avatars = result.map(i => AvatarEntity.initCreate(userId, i));
     //result is array of instances images need to save
-    await Promise.all(result.map(image => this.usersRepository.saveImageProfile(image)));
-
-    return this.imageMapperService.imageEntityToViewModel(result);
+    await Promise.all(avatars.map(avatar => this.usersRepository.saveImageProfile(avatar)));
   }
 }

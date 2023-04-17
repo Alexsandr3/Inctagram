@@ -115,7 +115,7 @@ export class ImagesEditorService {
       const imageToSave = changeSizeImage[i];
       const urlImage = await this.storageS3.saveFile(userId, imageToSave, keyImage, mimetype);
       const size = sizes[i];
-      const imageEntity = BaseImageEntity.initCreateImageEntity(userId, size, type, urlImage, imageToSave);
+      const imageEntity = BaseImageEntity.initCreateImageEntity(size, type, urlImage, imageToSave);
       instancesImages.push(imageEntity);
     }
 

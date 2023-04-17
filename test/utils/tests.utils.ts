@@ -1,6 +1,6 @@
 import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
-import { appConfig } from '../../src/configuration/app.config';
+import { baseAppConfig } from '../../src/configuration/app.config';
 import { DataSource } from 'typeorm';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { PrismaClient } from '@prisma/client';
@@ -39,7 +39,7 @@ export const getAppForE2ETesting = async (
   if (!mailerOn) appModule.overrideProvider(EmailAdapter).useValue({ sendEmail: () => 'SENT EMAIL' });
   const appCompile = await appModule.compile();
   const app = appCompile.createNestApplication();
-  appConfig(app);
+  baseAppConfig(app);
   await app.init();
   const connection = appCompile.get(DataSource); //If you need to use Prisma, you need to  exchange  PrismaClient instead of DataSource
   await truncateDBTables(connection);

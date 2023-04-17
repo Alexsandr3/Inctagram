@@ -2,8 +2,8 @@ import { UserEntity } from '../domain/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
-import { EmailConfirmationEntity } from '../domain/user.email-confirmation.entity';
-import { BaseImageEntity } from '../../images/domain/base-image.entity';
+import { EmailConfirmationEntity } from '../../auth/domain/user.email-confirmation.entity';
+import { AvatarEntity } from '../domain/avatar.entity';
 
 export abstract class IUsersRepository {
   abstract findById(userId: number): Promise<UserEntity | null>;
@@ -16,7 +16,7 @@ export abstract class IUsersRepository {
   abstract saveUserWithEmailConfirmation(user: UserEntity, emailConfirmation: EmailConfirmationEntity);
   abstract updateUser(user: UserEntity, emailConfirmation?: EmailConfirmationEntity);
   abstract deleteUser(userId: number);
-  abstract saveImageProfile(instanceImage: BaseImageEntity): Promise<void>;
+  abstract saveImageProfile(instanceImage: AvatarEntity): Promise<void>;
 
   abstract deleteImagesAvatar(userId: number): Promise<void>;
 }
@@ -157,38 +157,41 @@ export class PrismaUsersRepository implements IUsersRepository {
     });
   }
 
-  async saveImageProfile(instanceImage: BaseImageEntity): Promise<void> {
+  async saveImageProfile(avatar: AvatarEntity): Promise<void> {
     await this.prisma.avatarImage.upsert({
       create: {
-        userId: instanceImage.userId,
-        imageType: instanceImage.imageType,
-        sizeType: instanceImage.sizeType,
-        url: instanceImage.url,
-        width: instanceImage.width,
-        height: instanceImage.height,
-        fileSize: instanceImage.fileSize,
-        createdAt: instanceImage.createdAt,
-        updatedAt: instanceImage.updatedAt,
-        fieldId: instanceImage.fieldId,
+        profileId: avatar.profileId,
+        imageType: avatar.imageType,
+        sizeType: avatar.sizeType,
+        url: avatar.url,
+        width: avatar.width,
+        height: avatar.height,
+        fileSize: avatar.fileSize,
+        createdAt: avatar.createdAt,
+        updatedAt: avatar.updatedAt,
+        fieldId: avatar.fieldId,
       },
       update: {
-        userId: instanceImage.userId,
-        imageType: instanceImage.imageType,
-        sizeType: instanceImage.sizeType,
-        url: instanceImage.url,
-        width: instanceImage.width,
-        height: instanceImage.height,
-        fileSize: instanceImage.fileSize,
-        fieldId: instanceImage.fieldId,
+        profileId: avatar.profileId,
+        imageType: avatar.imageType,
+        sizeType: avatar.sizeType,
+        url: avatar.url,
+        width: avatar.width,
+        height: avatar.height,
+        fileSize: avatar.fileSize,
+        fieldId: avatar.fieldId,
       },
-      where: { url: instanceImage.url },
+      where: { url: avatar.url },
     });
   }
 
   async deleteImagesAvatar(userId: number): Promise<void> {
-    await this.prisma.avatarImage.deleteMany({
+    await this.prisma.user.update({
       where: {
-        userId: userId,
+        id: userId,
+      },
+      data: {
+        profile: { update: { avatars: { deleteMany: { profileId: userId } } } },
       },
     });
   }

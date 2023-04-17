@@ -27,8 +27,6 @@ export class DeleteImageAvatarUseCase
     //find profile
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-    if (!user.isOwner(userId))
-      throw new NotificationException(`Account is not yours`, 'user', NotificationCode.FORBIDDEN);
 
     //delete image from cloud
     await this.imagesEditor.deleteImages(...user.profile.avatars);

@@ -5,7 +5,6 @@ import { ImageType } from '../type/image.type';
 
 export class BaseImageEntity extends BaseDateEntity {
   id: number;
-  userId: number;
   imageType: ImageType;
   sizeType: ImageSizeType;
   url: string;
@@ -19,14 +18,12 @@ export class BaseImageEntity extends BaseDateEntity {
   }
 
   static initCreateImageEntity(
-    userId: number,
     size: string,
     type: ImageType,
     urlImageAvatar: { key: string; fieldId: string },
     photo: Buffer,
   ) {
     const instance = new BaseImageEntity();
-    instance.userId = userId;
     instance.imageType = type;
     instance.sizeType = size as ImageSizeType;
     instance.url = urlImageAvatar.key;

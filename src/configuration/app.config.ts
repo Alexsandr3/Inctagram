@@ -5,14 +5,9 @@ import cookieParser from 'cookie-parser';
 import CustomLogger from '../providers/logger/customLogger';
 
 export const appConfig = (app: INestApplication) => {
+  baseAppConfig(app);
   //use custom logger
   app.useLogger(app.get(CustomLogger));
-  //pipe validation
-  pipeSetup(app);
-  //exception filter
-  exceptionFilterSetup(app);
-  //add work with cookies
-  app.use(cookieParser());
   //add cors
   // const url = app.get(ApiConfigService).FRONTEND_URL
   app.enableCors({
@@ -27,4 +22,13 @@ export const appConfig = (app: INestApplication) => {
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   });
   return app;
+};
+
+export const baseAppConfig = (app: INestApplication) => {
+  //pipe validation
+  pipeSetup(app);
+  //exception filter
+  exceptionFilterSetup(app);
+  //add work with cookies
+  app.use(cookieParser());
 };

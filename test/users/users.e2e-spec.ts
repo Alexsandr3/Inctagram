@@ -4,7 +4,7 @@ import { getAppForE2ETesting } from '../utils/tests.utils';
 import { UsersHelper } from '../helpers/users-helper';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
 import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
-import { ProfileAvatarViewModel } from '../../src/modules/users/api/view-models/user-images-view.dto';
+import { AvatarsViewModel } from '../../src/modules/users/api/view-models/avatars-view.dto';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 
 jest.setTimeout(120000);
@@ -233,7 +233,7 @@ describe('Update-profile -  e2e', () => {
   //Upload image profile - avatar by FIRST user - correct data
   it('33 - / (POST) - should return 201 if all data is correct for upload image of FIRST user', async () => {
     let nameFile = '/images/1000x667_304kb.jpeg';
-    const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
+    const responseBody: AvatarsViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       token: accessToken,
       expectedCode: 201,
     });
@@ -264,7 +264,6 @@ describe('Update-profile -  e2e', () => {
           height: expect.any(Number),
           url: expect.any(String),
           width: expect.any(Number),
-          uploadId: expect.any(Number),
         },
       ]),
     );
@@ -272,7 +271,7 @@ describe('Update-profile -  e2e', () => {
 
   it('35 - / (POST) - should return 201 if all data is correct for upload image', async () => {
     let nameFile = '/images/859x720_338kb.jpeg';
-    const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
+    const responseBody: AvatarsViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       token: accessToken,
       expectedCode: 201,
     });
@@ -304,7 +303,6 @@ describe('Update-profile -  e2e', () => {
           height: expect.any(Number),
           url: expect.any(String),
           width: expect.any(Number),
-          uploadId: expect.any(Number),
         },
       ]),
     );
@@ -313,7 +311,7 @@ describe('Update-profile -  e2e', () => {
   //Upload image profile - avatar by SECOND user - correct data
   it('37 - / (POST) - should return 201 if all data is correct for upload image', async () => {
     let nameFile = '/images/859x720_338kb.jpeg';
-    const responseBody: ProfileAvatarViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
+    const responseBody: AvatarsViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       token: accessToken2,
       expectedCode: 201,
     });

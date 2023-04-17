@@ -32,15 +32,16 @@ import { UpdateProfileCommand } from '../aplication/use-cases/update-profile.use
 import { NotificationCode } from '../../../configuration/exception.filter';
 import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
 import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
-import { IUsersRepository } from '../infrastructure/users.repository';
 import { DeleteImageAvatarCommand } from '../aplication/use-cases/delete-image-avatar.use-case';
+import { AvatarsViewModel } from './view-models/avatars-view.dto';
+import { IUsersQueryRepository } from '../infrastructure/users.query-repository';
 
 @ApiBearerAuth()
 @ApiTags('Profile')
 @UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly commandBus: CommandBus, private readonly usersRepository: IUsersRepository) {}
+  constructor(private readonly commandBus: CommandBus, private readonly usersQueryRepository: IUsersQueryRepository) {}
 
   @SwaggerDecoratorsByUpdateProfile()
   @Put('/profile')
@@ -56,13 +57,13 @@ export class UsersController {
   @Get(`/profile`)
   @HttpCode(HTTP_Status.OK_200)
   async getMyProfile(@CurrentUserId() userId: number): Promise<ProfileViewModel> {
-    const user = await this.usersRepository.findById(userId);
+    const profile = await this.usersQueryRepository.findUserProfile(userId);
     const notification = new ResultNotification<ProfileViewModel>();
     notification.addErrorFromNotificationException(
       new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
     );
-    if (!user) throw new CheckerNotificationErrors('Error', notification);
-    return ProfileViewModel.createView(user.profile, user.userName);
+    if (!profile) throw new CheckerNotificationErrors('Error', notification);
+    return profile;
   }
 
   /**
@@ -79,11 +80,11 @@ export class UsersController {
     @CurrentUserId() userId: number,
     @UploadedFile(new ValidationTypeImagePipe(typeImageAvatar))
     file: Express.Multer.File,
-  ) {
-    const notification = await this.commandBus.execute<UploadImageAvatarCommand, ResultNotification<null>>(
+  ): Promise<AvatarsViewModel> {
+    await this.commandBus.execute<UploadImageAvatarCommand, ResultNotification<null>>(
       new UploadImageAvatarCommand(userId, file.mimetype, file.buffer),
     );
-    return notification.getData();
+    return this.usersQueryRepository.findUserAvatars(userId);
   }
 
   @SwaggerDecoratorsByDeletePhotoAvatar()

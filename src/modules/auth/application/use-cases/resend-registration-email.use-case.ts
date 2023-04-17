@@ -5,7 +5,7 @@ import { IUsersRepository } from '../../../users/infrastructure/users.repository
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
-import { EmailConfirmationEntity } from '../../../users/domain/user.email-confirmation.entity';
+import { EmailConfirmationEntity } from '../../domain/user.email-confirmation.entity';
 
 /**
  * @description Resending command

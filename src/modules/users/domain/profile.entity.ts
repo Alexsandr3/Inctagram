@@ -1,7 +1,7 @@
-import { BaseImageEntity } from '../../images/domain/base-image.entity';
 import { BaseDateEntity } from './base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
+import { AvatarEntity } from './avatar.entity';
 
 export class ProfileEntity extends BaseDateEntity {
   userId: number;
@@ -10,18 +10,11 @@ export class ProfileEntity extends BaseDateEntity {
   city: string;
   dateOfBirth: Date;
   aboutMe: string;
-  @Type(() => BaseImageEntity)
-  avatars: BaseImageEntity[];
+  @Type(() => AvatarEntity)
+  avatars: AvatarEntity[];
 
   constructor() {
     super();
-  }
-
-  static initCreate(userId: number) {
-    const instance = new ProfileEntity();
-    instance.userId = userId;
-    instance.avatars = [];
-    return instance;
   }
 
   private setValues(dto: UpdateProfileInputDto) {

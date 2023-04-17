@@ -3,7 +3,7 @@ import { applyDecorators } from '@nestjs/common';
 import { ApiErrorResultDto } from '../../main/validators/api-error-result.dto';
 import { HTTP_Status } from '../../main/enums/http-status.enum';
 import { ProfileViewModel } from './api/view-models/profile-view.dto';
-import { ProfileAvatarViewModel } from './api/view-models/user-images-view.dto';
+import { AvatarsViewModel } from './api/view-models/avatars-view.dto';
 
 /**
  * @description Swagger decorators for upload image avatar
@@ -18,7 +18,7 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
       status: HTTP_Status.CREATED_201,
       description:
         'Uploaded image information object. Return array with Must contain medium photo size (192x192) and thumbnail photo size (45x45)',
-      type: ProfileAvatarViewModel,
+      type: AvatarsViewModel,
     }),
     ApiResponse({
       status: HTTP_Status.BAD_REQUEST_400,
@@ -26,10 +26,6 @@ export function SwaggerDecoratorsByUploadPhotoAvatar(): MethodDecorator {
       type: ApiErrorResultDto,
     }),
     ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
-    ApiResponse({
-      status: HTTP_Status.FORBIDDEN_403,
-      description: 'You are not the owner this account',
-    }),
   );
 }
 
@@ -43,10 +39,6 @@ export function SwaggerDecoratorsByDeletePhotoAvatar(): MethodDecorator {
       description: 'Success deleted avatar',
     }),
     ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
-    ApiResponse({
-      status: HTTP_Status.FORBIDDEN_403,
-      description: 'You are not the owner this account',
-    }),
   );
 }
 
@@ -63,10 +55,6 @@ export function SwaggerDecoratorsByGetProfile(): MethodDecorator {
       type: ProfileViewModel,
     }),
     ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
-    ApiResponse({
-      status: HTTP_Status.NOT_FOUND_404,
-      description: 'User not found',
-    }),
   );
 }
 
@@ -87,10 +75,6 @@ export function SwaggerDecoratorsByUpdateProfile(): MethodDecorator {
       type: ApiErrorResultDto,
     }),
     ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
-    ApiResponse({
-      status: HTTP_Status.NOT_FOUND_404,
-      description: 'User not found',
-    }),
   );
 }
 
