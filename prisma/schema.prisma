@@ -22,6 +22,7 @@ model User {
   emailConfirmation EmailConfirmation?
   profile           Profile?
   Session           Session[]
+  posts             Post[]
 
   @@map("User")
 }
@@ -99,4 +100,33 @@ model AvatarImage {
   profile   Profile?      @relation(fields: [profileId], references: [userId])
 
   @@map("AvatarImage")
+}
+model PostImage {
+  id        Int           @id @default(autoincrement())
+  postId    Int
+  imageType ImageType
+  sizeType  ImageSizeType
+  url       String        @unique
+  width     Int
+  height    Int
+  fileSize  Int
+  fieldId   String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  post      Post?         @relation(fields: [postId], references: [id])
+
+  @@map("PostImages")
+}
+
+
+model Post {
+  id          Int      @id @default(autoincrement())
+  description Int?
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  images      PostImage[]
+  user        User     @relation(fields: [id], references: [id], onDelete: Cascade)
+
+  @@map("Posts")
 }
