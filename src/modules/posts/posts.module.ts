@@ -8,11 +8,12 @@ import { IPostsQueryRepository, PostsQueryRepository } from './infrastructure/po
 import { ImagesModule } from '../images/images.module';
 import { UsersModule } from '../users/users.module';
 import { DeleteImagePostUseCase } from './aplication/delete-image-post-use.case';
+import { PrismaModule } from '../../providers/prisma/prisma.module';
 
 const useCases = [UploadImagePostUseCase, CreatePostUseCase, DeleteImagePostUseCase];
 
 @Module({
-  imports: [CqrsModule, ImagesModule, UsersModule],
+  imports: [CqrsModule, ImagesModule, UsersModule, PrismaModule],
   controllers: [PostsController],
   providers: [
     ...useCases,

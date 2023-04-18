@@ -8,9 +8,9 @@ export class ImagePostEntity extends BaseImageEntity {
     super();
   }
 
-  static initCreate(userId: number, baseImage: BaseImageEntity): ImagePostEntity {
+  static initCreate(userId: number, baseImage: BaseImageEntity, postId: number): ImagePostEntity {
     const imagePost = new ImagePostEntity();
-    imagePost.postId = userId;
+    imagePost.postId = postId;
     imagePost.status = PostStatus.PENDING;
     imagePost.imageType = baseImage.imageType;
     imagePost.sizeType = baseImage.sizeType;
@@ -24,6 +24,11 @@ export class ImagePostEntity extends BaseImageEntity {
 
   changeStatusToPublished(): ImagePostEntity {
     this.status = PostStatus.PUBLISHED;
+    return this;
+  }
+
+  changeStatusToDeleted() {
+    this.status = PostStatus.DELETED;
     return this;
   }
 }

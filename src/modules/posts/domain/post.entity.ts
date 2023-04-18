@@ -17,8 +17,18 @@ export class PostEntity extends BaseDateEntity {
   @Type(() => ImagePostEntity)
   images: ImagePostEntity[];
 
-  addImages(...images: ImagePostEntity[]) {
-    this.images = [...this.images, ...images];
+  static initCreate(userId: number) {
+    const post = new PostEntity();
+    post.ownerId = userId;
+    post.status = PostStatus.PENDING;
+    post.images = [];
+    return post;
+  }
+
+  addImagesAndFilterNew(...images: ImagePostEntity[]): PostEntity {
+    const res = this.images.filter(image => !image.id);
+    this.images = [...res, ...images];
+    return this;
   }
 
   async changeStatusToPublished(description: string): Promise<PostEntity> {
@@ -28,8 +38,10 @@ export class PostEntity extends BaseDateEntity {
     return this;
   }
 
-  async deleteImage(uploadId: number) {
-    this.images = this.images.filter(image => image.id !== uploadId);
+  deleteImage(uploadId: number) {
+    this.images.map(image => {
+      image.id === uploadId ? image.changeStatusToDeleted() : image;
+    });
     return this;
   }
 }

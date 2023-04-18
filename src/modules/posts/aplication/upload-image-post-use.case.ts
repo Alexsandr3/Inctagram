@@ -36,7 +36,8 @@ export class UploadImagePostUseCase
     let post: PostEntity;
     post = await this.postsRepository.findPostByOwnerIdAndStatus(userId);
     if (!post) {
-      post = await this.postsRepository.newPost(userId);
+      const instancePost = PostEntity.initCreate(userId);
+      post = await this.postsRepository.newPost(instancePost);
     }
     //set type and sizes for images
     const type = ImageType.POST;
@@ -49,12 +50,13 @@ export class UploadImagePostUseCase
       type,
       mimetype,
       sizes,
+      post.images.length,
     );
-    const postImage = result.map(i => ImagePostEntity.initCreate(userId, i));
+    const postImage = result.map(i => ImagePostEntity.initCreate(userId, i, post.id));
     //result is array of instances images need to save
-    post.addImages(...postImage);
+    post.addImagesAndFilterNew(...postImage);
     //save post
-    await this.postsRepository.savePost(post);
+    await this.postsRepository.addImagesToPost(post);
 
     return post.id;
   }

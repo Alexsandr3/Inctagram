@@ -15,11 +15,11 @@ export class ImagesEditorService {
    * @private
    */
   private imageKeyGenerators: {
-    [type: string]: (userId: number, sizes: string[], ownerId?: number) => Promise<string[]>;
+    [type: string]: (userId: number, sizes: string[], ownerId?: number, length?: number) => Promise<string[]>;
   } = {
     [ImageType.AVATAR]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForAvatar(userId, sizes),
-    [ImageType.POST]: async (userId: number, sizes: string[], ownerId?: number) =>
-      this.generatorKeysImagesForPost(userId, sizes, ownerId),
+    [ImageType.POST]: async (userId: number, sizes: string[], ownerId?: number, length?: number) =>
+      this.generatorKeysImagesForPost(userId, sizes, ownerId, length),
   };
 
   /**
@@ -44,9 +44,9 @@ export class ImagesEditorService {
   private async generatorKeysImagesForAvatar(userId: number, size: string[]): Promise<string[]> {
     const keys = [];
     for (let i = 0; i < size.length; i++) {
-      const key = `users/${userId}/avatar-${ImageSizeConfig[size[i]].defaultWidth}x${
+      const key = `users/${userId}/avatar/images-${ImageSizeConfig[size[i]].defaultWidth}x${
         ImageSizeConfig[size[i]].defaultHeight
-      }.jpg`;
+      }`;
       keys.push(key);
     }
     return keys;
@@ -57,14 +57,20 @@ export class ImagesEditorService {
    * @param userId
    * @param size
    * @param ownerId
+   * @param length
    * @private
    */
-  private async generatorKeysImagesForPost(userId: number, size: string[], ownerId?: number): Promise<string[]> {
+  private async generatorKeysImagesForPost(
+    userId: number,
+    size: string[],
+    ownerId?: number,
+    length?: number,
+  ): Promise<string[]> {
     const keys = [];
     for (let i = 0; i < size.length; i++) {
-      const key = `users/${userId}/post/${ownerId}-${ImageSizeConfig[size[i]].defaultWidth}x${
+      const key = `users/${userId}/post/${ownerId}/${length + 1}-images-${ImageSizeConfig[size[i]].defaultWidth}x${
         ImageSizeConfig[size[i]].defaultHeight
-      }.jpg`;
+      }`;
       keys.push(key);
     }
     return keys;
@@ -78,6 +84,7 @@ export class ImagesEditorService {
    * @param type
    * @param mimetype
    * @param sizes
+   * @param length
    */
   async generatorKeysWithSaveImagesAndCreateImages(
     userId: number,
@@ -86,11 +93,12 @@ export class ImagesEditorService {
     type: ImageType,
     mimetype: string,
     sizes: string[],
+    length?: number,
   ): Promise<BaseImageEntity[]> {
     //generate keys for images
     const keys: string[] = [];
     if (this.imageKeyGenerators[type]) {
-      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes, ownerId);
+      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes, ownerId, length);
       keys.push(...keysGenerator);
     }
     //changing size image
