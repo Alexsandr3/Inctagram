@@ -6,6 +6,7 @@ import { CreatePostInputDto } from '../../src/modules/posts/api/input-dto/create
 import { PostImageViewModel } from '../../src/modules/posts/api/view-models/post-image-view.dto';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
+import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
 
 jest.setTimeout(120000);
 describe('Posts flow - e2e', () => {
@@ -179,10 +180,45 @@ describe('Posts flow - e2e', () => {
     expect(foundPost).toEqual({ ...post, updatedAt: expect.any(String), images: expect.anything() });
     expect(foundPost.updatedAt).not.toBe(post.updatedAt);
     expect(foundPost.images.length).toBe(2);
+    post = foundPost;
+  });
+
+  //Update post
+  it('56 - / (PUT) - should return 204 and update post', async () => {
+    let command: UpdatePostInputDto = { description: 'New super description' };
+    await postsHelper.updatePost(post.id, command, { token: accessToken, expectedCode: 204 });
+
+    let foundPost = await postsHelper.getPost(post.id, { token: accessToken, expectedCode: 200 });
+    expect(foundPost).not.toEqual(post);
+    expect(foundPost).toEqual({ ...post, ...command, updatedAt: expect.any(String) });
+    expect(foundPost.updatedAt).not.toBe(post.updatedAt);
+
+    command = { description: '' };
+    await postsHelper.updatePost(post.id, command, { token: accessToken, expectedCode: 204 });
+
+    foundPost = await postsHelper.getPost(post.id, { token: accessToken, expectedCode: 200 });
+    expect(foundPost).not.toEqual(post);
+    expect(foundPost).toEqual({ ...post, ...command, updatedAt: expect.any(String) });
+    expect(foundPost.updatedAt).not.toBe(post.updatedAt);
+  });
+  it('57 - / (PUT) - should return 400 for update post with bad data', async () => {
+    const command: UpdatePostInputDto = { description: 'e'.repeat(501) };
+    await postsHelper.updatePost(post.id, command, { token: accessToken, expectedCode: 400 });
+
+    await postsHelper.updatePost(post.id, null, { token: accessToken, expectedCode: 400 });
+  });
+  it('58 - / (PUT) - should return 403 if user isn`t owner of post', async () => {
+    let command: UpdatePostInputDto = { description: 'New super description' };
+    const responseBody = await postsHelper.updatePost<ApiErrorResultDto>(post.id, command, {
+      token: accessToken2,
+      expectedCode: 403,
+    });
+    expect(responseBody.messages[0].field).toBe('post');
+    expect(responseBody.messages[0].message).toContain(`User with id:`);
   });
 
   //Delete - incorrect data
-  it('56 - / (DELETE) - should return 403 if user isn`t owner of post', async () => {
+  it('59 - / (DELETE) - should return 403 if user isn`t owner of post', async () => {
     const responseBody = await postsHelper.deletePost<ApiErrorResultDto>(post.id, {
       token: accessToken2,
       expectedCode: 403,
@@ -192,7 +228,7 @@ describe('Posts flow - e2e', () => {
   });
 
   //Delete post
-  it('57 - / (DELETE) - should return 204 and delete post. Get deleted post should return 404', async () => {
+  it('60 - / (DELETE) - should return 204 and delete post. Get deleted post should return 404', async () => {
     await postsHelper.deletePost(post.id, {
       token: accessToken,
       expectedCode: 204,

@@ -4,6 +4,7 @@ import fs from 'fs';
 import { postsEndpoints } from '../../src/modules/posts/api/posts.routing';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
+import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
 
 export class PostsHelper {
   constructor(private readonly app: INestApplication) {}
@@ -95,6 +96,25 @@ export class PostsHelper {
     const response = await request(this.app.getHttpServer())
       .delete(postsEndpoints.deletePost(postId))
       .auth(config.token, { type: 'bearer' })
+      .expect(expectedCode);
+
+    return response.body;
+  }
+
+  async updatePost<T = void>(
+    postId: number,
+    command: UpdatePostInputDto,
+    config: {
+      token?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<T> {
+    // default expected code is 204 or code mistake from config
+    const expectedCode = config.expectedCode ?? HTTP_Status.NO_CONTENT_204;
+    const response = await request(this.app.getHttpServer())
+      .put(postsEndpoints.updatePost(postId))
+      .auth(config.token, { type: 'bearer' })
+      .send(command)
       .expect(expectedCode);
 
     return response.body;

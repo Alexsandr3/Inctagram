@@ -15,7 +15,6 @@ import {
 import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
-import { typeImageAvatar } from '../../users/default-options-for-validate-images';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { CreatePostInputDto } from './input-dto/create-post.input.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -44,6 +43,7 @@ import { NotificationCode } from '../../../configuration/exception.filter';
 import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
 import { DeletePostCommand } from '../aplication/delete-post-use.case';
 import { PostStatus } from '../domain/post.entity';
+import { UpdatePostCommand } from '../aplication/update-post-use.case';
 
 @ApiBearerAuth()
 @ApiTags('Posts')
@@ -109,15 +109,13 @@ export class PostsController {
   @Put('/:postId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async updatePost(
-    @Param('postId') postId: number,
+    @Param('postId', ParseIntPipe) postId: number,
     @CurrentUserId() userId: number,
     @Body() body: UpdatePostInputDto,
-    @UploadedFile(new ValidationTypeImagePipe(typeImageAvatar))
-    file: Express.Multer.File,
   ) {
-    // await this.commandBus.execute<UpdatePostCommand, ResultNotification>(
-    //   new UpdatePostCommand({ userId, postId, body, file }),
-    // );
+    await this.commandBus.execute<UpdatePostCommand, ResultNotification>(
+      new UpdatePostCommand({ userId, postId, body }),
+    );
   }
 
   @SwaggerDecoratorsByDeletePost()

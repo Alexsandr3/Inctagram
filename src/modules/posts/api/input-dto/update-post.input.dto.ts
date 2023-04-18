@@ -1,10 +1,9 @@
-import { IsOptional, IsString, Length } from 'class-validator';
+import { IsString, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdatePostInputDto {
-  @ApiProperty({ nullable: true, required: false })
+  @ApiProperty({ nullable: true, required: true })
+  @MaxLength(500)
   @IsString()
-  @Length(1, 500)
-  @IsOptional()
   description: string;
 }

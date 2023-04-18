@@ -48,4 +48,8 @@ export class PostEntity extends BaseDateEntity {
   setPostStatusToDeleted() {
     this.status = PostStatus.DELETED;
   }
+
+  updateDescription(description: string) {
+    this.description = description;
+  }
 }
