@@ -1,25 +1,24 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { usersEndpoints } from '../../src/modules/users/api/users.routing';
 import fs from 'fs';
 import { postsEndpoints } from '../../src/modules/posts/api/posts.routing';
 
 export class PostsHelper {
   constructor(private readonly app: INestApplication) {}
 
-  async updateProfile(
-    command: any, //UpdateProfileInputDto,
+  async createPost(
+    command: any, //CreatePostInputDto,
     config: {
-      expectedBody?: any;
+      token?: any;
       expectedCode?: number;
     } = {},
   ): Promise<any> {
-    // default expected code is 204 or code mistake from config
-    const expectedCode = config.expectedCode ?? HttpStatus.NO_CONTENT;
+    // default expected code is 201 or code mistake from config
+    const expectedCode = config.expectedCode ?? HttpStatus.CREATED;
     // send request for create user
     const response = await request(this.app.getHttpServer())
-      .put(usersEndpoints.updateProfile())
-      .auth(config.expectedBody, { type: 'bearer' })
+      .post(postsEndpoints.createPost())
+      .auth(config.token, { type: 'bearer' })
       .send(command)
       .expect(expectedCode);
 
@@ -27,6 +26,7 @@ export class PostsHelper {
   }
 
   async deletePhotoPost(
+    uploadId: number,
     config: {
       token?: any;
       expectedCode?: number;
@@ -35,7 +35,7 @@ export class PostsHelper {
     const expectedCode = config.expectedCode ?? HttpStatus.NO_CONTENT;
     // send request for create user
     const response = await request(this.app.getHttpServer())
-      .delete(usersEndpoints.deletePhotosAvatar())
+      .delete(postsEndpoints.deleteImagePost(uploadId))
       .auth(config.token, { type: 'bearer' })
       .expect(expectedCode);
 
