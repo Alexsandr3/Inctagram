@@ -126,4 +126,8 @@ export class ImagesEditorService {
     const keys = images.map(image => image.url);
     await this.storageS3.deleteManyFiles(...keys);
   }
+
+  async deleteImagesByKeys(key: string) {
+    await this.storageS3.deleteFile(key);
+  }
 }
