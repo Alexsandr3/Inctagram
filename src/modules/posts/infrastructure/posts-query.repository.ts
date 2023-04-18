@@ -3,12 +3,14 @@ import { PostImageViewModel } from '../api/view-models/post-image-view.dto';
 import { PostEntity } from '../domain/post.entity';
 import { plainToInstance } from 'class-transformer';
 import { PostViewModel } from '../api/view-models/post-view.dto';
+import { Injectable } from '@nestjs/common';
 
 export abstract class IPostsQueryRepository {
   abstract getPost(postId: number): Promise<PostViewModel>;
   abstract getUploadImagePost(postId: number): Promise<PostImageViewModel>;
 }
 
+@Injectable()
 export class PostsQueryRepository implements IPostsQueryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -33,7 +35,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
         postId,
       },
       orderBy: {
-        width: 'desc',
+        createdAt: 'desc',
       },
     });
 
