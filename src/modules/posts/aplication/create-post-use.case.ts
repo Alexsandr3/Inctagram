@@ -5,6 +5,7 @@ import { NotificationException } from '../../../main/validators/result-notificat
 import { NotificationCode } from '../../../configuration/exception.filter';
 import { IUsersRepository } from '../../users/infrastructure/users.repository';
 import { IPostsRepository } from '../infrastructure/posts.repository';
+import { PostStatus } from '../domain/post.entity';
 
 export class CreatePostCommand {
   constructor(
@@ -28,7 +29,7 @@ export class CreatePostUseCase
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
     //find post
-    const post = await this.postsRepository.findPostByOwnerIdAndUploadIds(userId, childrenMetadata);
+    const post = await this.postsRepository.findPostByOwnerIdAndUploadIds(userId, childrenMetadata, PostStatus.PENDING);
     if (!post)
       throw new NotificationException(`Post with id: ${post.id} already exists`, 'post', NotificationCode.NOT_FOUND);
     //change status of images and post
