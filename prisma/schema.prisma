@@ -101,10 +101,17 @@ model AvatarImage {
 
   @@map("AvatarImage")
 }
+
+enum Status {
+  PENDING
+  PUBLISHED
+  DELETED
+}
+
 model PostImage {
   id        Int           @id @default(autoincrement())
   postId    Int
-  status    PostStatus
+  status    Status        @default(PENDING)
   imageType ImageType
   sizeType  ImageSizeType
   url       String        @unique
@@ -119,19 +126,12 @@ model PostImage {
   @@map("PostImage")
 }
 
-enum PostStatus {
-  PENDING
-  UPLOAD
-  PUBLISHED
-  DELETED
-}
-
 model Post {
   id          Int         @id @default(autoincrement())
   ownerId     Int
   description String?
   location    String?
-  status      PostStatus  @default(PENDING)
+  status      Status      @default(PENDING)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime?   @updatedAt
   images      PostImage[]
