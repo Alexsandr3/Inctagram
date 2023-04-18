@@ -20,14 +20,3 @@ export class CreatePostInputDto {
   @ArrayMinSize(1)
   childrenMetadata: ChildMetadataDto[];
 }
-
-export class StorageObjectDto {
-  @ApiProperty({ nullable: true, required: false })
-  @IsString()
-  @Length(1, 500)
-  @IsOptional()
-  description?: string;
-
-  @ApiProperty({ type: 'string', format: 'binary', required: true })
-  file: Express.Multer.File;
-}
