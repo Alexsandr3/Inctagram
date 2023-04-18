@@ -10,6 +10,7 @@ async function bootstrap() {
     rawBody: true,
     logger: getLogLevels(false), // true - for production
   });
+  //configuration app
   const createdApp = appConfig(app);
   //configuration app
   const PORT = app.get(ApiConfigService).PORT;

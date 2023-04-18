@@ -4,12 +4,16 @@ import { exceptionFilterSetup } from './exception-filter.setup';
 import cookieParser from 'cookie-parser';
 import CustomLogger from '../providers/logger/customLogger';
 
+/**
+ * Need for use without testing
+ * @param app
+ */
 export const appConfig = (app: INestApplication) => {
+  //base config for all app
   baseAppConfig(app);
   //use custom logger
   app.useLogger(app.get(CustomLogger));
   //add cors
-  // const url = app.get(ApiConfigService).FRONTEND_URL
   app.enableCors({
     origin: [
       'http://localhost:3000',
@@ -24,6 +28,10 @@ export const appConfig = (app: INestApplication) => {
   return app;
 };
 
+/**
+ * Start config for testing and all APP
+ * @param app
+ */
 export const baseAppConfig = (app: INestApplication) => {
   //pipe validation
   pipeSetup(app);
