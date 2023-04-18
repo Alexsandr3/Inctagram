@@ -1,4 +1,5 @@
 import { PostImageViewModel } from './post-image-view.dto';
+import { PostEntity } from '../../domain/post.entity';
 
 export class PostViewModel {
   id: number;
@@ -8,19 +9,12 @@ export class PostViewModel {
   createdAt: Date;
   updatedAt: Date;
 
-  constructor(
-    id: number,
-    description: string,
-    location: string,
-    images: PostImageViewModel[],
-    createdAt: Date,
-    updatedAt: Date,
-  ) {
-    this.id = id;
-    this.description = description;
-    this.location = location;
-    this.images = images;
-    this.createdAt = createdAt;
-    this.updatedAt = updatedAt;
+  constructor(post: PostEntity) {
+    this.id = post.id;
+    this.description = post.description;
+    this.location = post.location;
+    this.images = post.images.map(i => new PostImageViewModel(i.url, i.width, i.height, i.fileSize, i.id));
+    this.createdAt = post.createdAt;
+    this.updatedAt = post.updatedAt;
   }
 }

@@ -1,7 +1,7 @@
 export const ImageSizeConfig = {
   HUGE_HD: {
-    defaultWidth: 1280,
-    defaultHeight: 720,
+    defaultWidth: 1440,
+    defaultHeight: 1440,
   },
   LARGE: {
     defaultWidth: 640,
