@@ -38,10 +38,14 @@ export class PostEntity extends BaseDateEntity {
     return this;
   }
 
-  deleteImage(uploadId: number) {
+  setImageStatusToDeleted(uploadId: number) {
     this.images.map(image => {
       image.id === uploadId ? image.changeStatusToDeleted() : image;
     });
     return this;
+  }
+
+  setPostStatusToDeleted() {
+    this.status = PostStatus.DELETED;
   }
 }

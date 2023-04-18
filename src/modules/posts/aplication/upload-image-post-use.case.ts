@@ -34,7 +34,7 @@ export class UploadImagePostUseCase
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
     //find post
     let post: PostEntity;
-    post = await this.postsRepository.findPostByOwnerIdAndStatus(userId);
+    post = await this.postsRepository.findPendingPostByUserId(userId);
     if (!post) {
       const instancePost = PostEntity.initCreate(userId);
       post = await this.postsRepository.newPost(instancePost);

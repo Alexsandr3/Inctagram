@@ -58,11 +58,13 @@ export class UsersController {
   @HttpCode(HTTP_Status.OK_200)
   async getMyProfile(@CurrentUserId() userId: number): Promise<ProfileViewModel> {
     const profile = await this.usersQueryRepository.findUserProfile(userId);
-    const notification = new ResultNotification<ProfileViewModel>();
-    notification.addErrorFromNotificationException(
-      new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
-    );
-    if (!profile) throw new CheckerNotificationErrors('Error', notification);
+    if (!profile) {
+      const notification = new ResultNotification<ProfileViewModel>();
+      notification.addErrorFromNotificationException(
+        new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
+      );
+      throw new CheckerNotificationErrors('Error', notification);
+    }
     return profile;
   }
 

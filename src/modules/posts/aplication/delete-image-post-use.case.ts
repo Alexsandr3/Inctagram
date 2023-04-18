@@ -43,7 +43,7 @@ export class DeleteImagePostUseCase
     //delete image from aws
     // await this.imagesEditor.deleteImagesByKeys
     //delete image from post
-    post.deleteImage(uploadId);
+    post.setImageStatusToDeleted(uploadId);
     //save post
     await this.postsRepository.savePost(post);
   }

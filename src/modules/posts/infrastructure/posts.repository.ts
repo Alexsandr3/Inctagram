@@ -8,7 +8,9 @@ export abstract class IPostsRepository {
   abstract newPost(instancePost: PostEntity): Promise<PostEntity>;
   abstract savePost(post: PostEntity): Promise<void>;
   abstract addImagesToPost(post: PostEntity): Promise<void>;
-  abstract findPostByOwnerIdAndStatus(userId: number): Promise<PostEntity>;
+  abstract findPostById(postId: number): Promise<PostEntity>;
+  abstract deletePostById(postId: number);
+  abstract findPendingPostByUserId(userId: number): Promise<PostEntity>;
   abstract findPostByOwnerIdAndUploadIds(
     userId: number,
     childrenMetadata: ChildMetadataDto[],
@@ -29,6 +31,7 @@ export class PostsRepository implements IPostsRepository {
     });
     return plainToInstance(PostEntity, post);
   }
+
   async savePost(post: PostEntity): Promise<void> {
     await this.prisma.post.update({
       where: {
@@ -58,6 +61,7 @@ export class PostsRepository implements IPostsRepository {
       },
     });
   }
+
   async addImagesToPost(post: PostEntity): Promise<void> {
     await this.prisma.post.update({
       where: {
@@ -79,7 +83,29 @@ export class PostsRepository implements IPostsRepository {
       },
     });
   }
-  async findPostByOwnerIdAndStatus(userId: number): Promise<PostEntity> {
+
+  async findPostById(postId: number): Promise<PostEntity> {
+    const post = await this.prisma.post.findUnique({
+      where: {
+        id: postId,
+      },
+      include: { images: true },
+    });
+    return plainToInstance(PostEntity, post);
+  }
+
+  async deletePostById(postId: number) {
+    console.log(postId);
+    await this.prisma.post.delete({
+      where: {
+        id: postId,
+      },
+      include: { images: true },
+    });
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!');
+  }
+
+  async findPendingPostByUserId(userId: number): Promise<PostEntity> {
     const post = await this.prisma.post.findFirst({
       where: {
         ownerId: userId,
@@ -89,6 +115,7 @@ export class PostsRepository implements IPostsRepository {
     });
     return plainToInstance(PostEntity, post);
   }
+
   async findPostByOwnerIdAndUploadIds(
     userId: number,
     childrenMetadata: ChildMetadataDto[],

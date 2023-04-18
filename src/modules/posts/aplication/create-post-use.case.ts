@@ -17,13 +17,13 @@ export class CreatePostCommand {
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostUseCase
-  extends BaseNotificationUseCase<CreatePostCommand, void>
+  extends BaseNotificationUseCase<CreatePostCommand, number>
   implements ICommandHandler<CreatePostCommand>
 {
   constructor(private readonly usersRepository: IUsersRepository, private readonly postsRepository: IPostsRepository) {
     super();
   }
-  async executeUseCase(command: CreatePostCommand): Promise<void> {
+  async executeUseCase(command: CreatePostCommand): Promise<number> {
     const { userId, description, childrenMetadata } = command;
     //find user
     const user = await this.usersRepository.findById(userId);
@@ -36,5 +36,7 @@ export class CreatePostUseCase
     const changePost = await post.changeStatusToPublished(description);
     //save post
     await this.postsRepository.savePost(changePost);
+
+    return changePost.id;
   }
 }

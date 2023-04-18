@@ -9,8 +9,9 @@ import { ImagesModule } from '../images/images.module';
 import { UsersModule } from '../users/users.module';
 import { DeleteImagePostUseCase } from './aplication/delete-image-post-use.case';
 import { PrismaModule } from '../../providers/prisma/prisma.module';
+import { DeletePostUseCase } from './aplication/delete-post-use.case';
 
-const useCases = [UploadImagePostUseCase, CreatePostUseCase, DeleteImagePostUseCase];
+const useCases = [UploadImagePostUseCase, CreatePostUseCase, DeleteImagePostUseCase, DeletePostUseCase];
 
 @Module({
   imports: [CqrsModule, ImagesModule, UsersModule, PrismaModule],

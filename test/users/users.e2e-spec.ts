@@ -238,8 +238,8 @@ describe('Update-profile -  e2e', () => {
       expectedCode: 201,
     });
     expect(responseBody.avatars).toHaveLength(2);
-    expect(responseBody.avatars[0].url).toContain('avatar-192x192');
-    expect(responseBody.avatars[1].url).toContain('avatar-45x45');
+    expect(responseBody.avatars[0].url).toContain('images-192x192');
+    expect(responseBody.avatars[1].url).toContain('images-45x45');
     expect(responseBody.avatars[0].width).toBe(192);
     expect(responseBody.avatars[1].width).toBe(45);
     expect(responseBody.avatars).toEqual(
