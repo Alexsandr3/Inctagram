@@ -3,12 +3,13 @@ import { PostEntity, PostStatus } from '../domain/post.entity';
 import { ChildMetadataDto } from '../api/input-dto/create-post.input.dto';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { UserEntity } from '../../users/domain/user.entity';
 
 export abstract class IPostsRepository {
   abstract newPost(instancePost: PostEntity): Promise<PostEntity>;
   abstract savePost(post: PostEntity): Promise<void>;
   abstract addImagesToPost(post: PostEntity): Promise<void>;
-  abstract findPostById(postId: number): Promise<PostEntity>;
+  abstract findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }>;
   abstract deletePostById(postId: number);
   abstract findPendingPostByUserId(userId: number): Promise<PostEntity>;
   abstract findPostByOwnerIdAndUploadIds(
@@ -84,14 +85,18 @@ export class PostsRepository implements IPostsRepository {
     });
   }
 
-  async findPostById(postId: number): Promise<PostEntity> {
-    const post = await this.prisma.post.findUnique({
+  async findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }> {
+    const postWithUser = await this.prisma.post.findFirst({
       where: {
         id: postId,
       },
-      include: { images: true },
+      include: { images: true, user: true },
     });
-    return plainToInstance(PostEntity, post);
+    if (!postWithUser) return { post: null, owner: null };
+
+    const post = plainToInstance(PostEntity, postWithUser);
+    const owner = plainToInstance(UserEntity, postWithUser.user);
+    return { post: post, owner: owner };
   }
 
   async deletePostById(postId: number) {

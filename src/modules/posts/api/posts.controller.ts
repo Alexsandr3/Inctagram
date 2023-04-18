@@ -28,22 +28,22 @@ import {
 } from '../swagger.posts.decorators';
 import { SwaggerDecoratorsByFormData } from '../../users/swagger.users.decorators';
 import { UpdatePostInputDto } from './input-dto/update-post.input.dto';
-import { UploadImagePostCommand } from '../aplication/upload-image-post-use.case';
+import { UploadImagePostCommand } from '../application/use-cases/upload-image-post-use.case';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
 import { typeImagePost } from '../default-options-for-validate-images-post';
 import { IPostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PostImageViewModel } from './view-models/post-image-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
-import { CreatePostCommand } from '../aplication/create-post-use.case';
-import { DeleteImagePostCommand } from '../aplication/delete-image-post-use.case';
+import { CreatePostCommand } from '../application/use-cases/create-post-use.case';
+import { DeleteImagePostCommand } from '../application/use-cases/delete-image-post-use.case';
 import { PostViewModel } from './view-models/post-view.dto';
 import { ProfileViewModel } from '../../users/api/view-models/profile-view.dto';
 import { NotificationCode } from '../../../configuration/exception.filter';
 import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
-import { DeletePostCommand } from '../aplication/delete-post-use.case';
+import { DeletePostCommand } from '../application/use-cases/delete-post-use.case';
 import { PostStatus } from '../domain/post.entity';
-import { UpdatePostCommand } from '../aplication/update-post-use.case';
+import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
 
 @ApiBearerAuth()
 @ApiTags('Posts')

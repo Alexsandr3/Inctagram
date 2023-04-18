@@ -1,15 +1,15 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../main/use-cases/base-notification.use-case';
-import { ImageType } from '../../images/type/image.type';
-import { IUsersRepository } from '../../users/infrastructure/users.repository';
-import { ImagesEditorService } from '../../images/application/images-editor.service';
-import { NotificationException } from '../../../main/validators/result-notification';
-import { NotificationCode } from '../../../configuration/exception.filter';
-import { ImageSizeType } from '../../images/type/image-size.type';
-import { BaseImageEntity } from '../../images/domain/base-image.entity';
-import { IPostsRepository } from '../infrastructure/posts.repository';
-import { ImagePostEntity } from '../domain/image-post.entity';
-import { PostEntity } from '../domain/post.entity';
+import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
+import { ImageType } from '../../../images/type/image.type';
+import { IUsersRepository } from '../../../users/infrastructure/users.repository';
+import { ImagesEditorService } from '../../../images/application/images-editor.service';
+import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationCode } from '../../../../configuration/exception.filter';
+import { ImageSizeType } from '../../../images/type/image-size.type';
+import { BaseImageEntity } from '../../../images/domain/base-image.entity';
+import { IPostsRepository } from '../../infrastructure/posts.repository';
+import { ImagePostEntity } from '../../domain/image-post.entity';
+import { PostEntity } from '../../domain/post.entity';
 
 export class UploadImagePostCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}

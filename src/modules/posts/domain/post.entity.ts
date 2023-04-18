@@ -52,4 +52,8 @@ export class PostEntity extends BaseDateEntity {
   updateDescription(description: string) {
     this.description = description;
   }
+
+  isOwner(userId: number) {
+    return this.ownerId === userId;
+  }
 }

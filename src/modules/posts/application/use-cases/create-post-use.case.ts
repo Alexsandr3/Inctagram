@@ -1,11 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../main/use-cases/base-notification.use-case';
-import { ChildMetadataDto } from '../api/input-dto/create-post.input.dto';
-import { NotificationException } from '../../../main/validators/result-notification';
-import { NotificationCode } from '../../../configuration/exception.filter';
-import { IUsersRepository } from '../../users/infrastructure/users.repository';
-import { IPostsRepository } from '../infrastructure/posts.repository';
-import { PostStatus } from '../domain/post.entity';
+import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
+import { ChildMetadataDto } from '../../api/input-dto/create-post.input.dto';
+import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationCode } from '../../../../configuration/exception.filter';
+import { IUsersRepository } from '../../../users/infrastructure/users.repository';
+import { IPostsRepository } from '../../infrastructure/posts.repository';
+import { PostStatus } from '../../domain/post.entity';
 
 export class CreatePostCommand {
   constructor(
