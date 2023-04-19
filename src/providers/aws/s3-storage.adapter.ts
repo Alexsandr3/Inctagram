@@ -66,7 +66,14 @@ export class S3StorageAdapter {
    * Delete many files from S3
    * @param keys
    */
-  async deleteManyFiles(...keys: string[]) {
+  async deleteManyFiles(keys: string[]) {
+    // Remove endpoint from keys
+    keys = keys.map(key => {
+      if (key.includes(this.endpoint)) {
+        return key.replace(this.endpoint + '/', '');
+      }
+      return key;
+    });
     const inputKeys = keys.map(key => {
       return {
         Key: key,
