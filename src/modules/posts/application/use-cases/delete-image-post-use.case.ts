@@ -40,6 +40,7 @@ export class DeleteImagePostUseCase
         'post',
         NotificationCode.NOT_FOUND,
       );
+    console.log(post);
     //find image for delete
     const imageForDelete = post.images.find(image => image.id === uploadId);
     //delete image from aws
