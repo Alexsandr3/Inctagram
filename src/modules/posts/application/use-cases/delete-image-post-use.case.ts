@@ -8,7 +8,7 @@ import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { PostStatus } from '../../domain/post.entity';
 
 export class DeleteImagePostCommand {
-  constructor(public readonly userId: number, public readonly uploadId: number) {}
+  constructor(public readonly userId: number, public readonly uploadId: string) {}
 }
 
 @CommandHandler(DeleteImagePostCommand)
@@ -29,25 +29,22 @@ export class DeleteImagePostUseCase
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
     const metadata = [{ uploadId: uploadId }];
-    //find post by uploadId and userId
-    const post = await this.postsRepository.findPostByOwnerIdAndUploadIds(userId, metadata, PostStatus.PUBLISHED);
-    if (!post)
-      throw new NotificationException(`Post with id: ${post.id} already exists`, 'post', NotificationCode.NOT_FOUND);
-    //check length of images
-    if (post.images.length === 1)
-      throw new NotificationException(
-        `Post with id: ${post.id} must have at least one image`,
-        'post',
-        NotificationCode.NOT_FOUND,
-      );
-    console.log(post);
-    //find image for delete
-    const imageForDelete = post.images.find(image => image.id === uploadId);
+    //find images by uploadId and userId
+    const imagesForDelete = await this.postsRepository.findImageByOwnerIdAndResourceIds(
+      userId,
+      metadata,
+      PostStatus.PENDING,
+    );
+    //urls for delete
+    const urlsForDelete = imagesForDelete.map(image => image.url);
     //delete image from aws
-    await this.imagesEditor.deleteImageByUrl(imageForDelete.url);
-    //delete image from post
-    post.setImageStatusToDeleted(uploadId);
-    //save post
-    await this.postsRepository.savePost(post);
+    await this.imagesEditor.deleteImageByUrl(urlsForDelete);
+    //find images by resourceIds and userId and change status to deleted
+    const images = imagesForDelete.map(image => {
+      image.changeStatusToDeleted(uploadId);
+      return image;
+    });
+    //update images
+    await this.postsRepository.updateImages(images);
   }
 }
