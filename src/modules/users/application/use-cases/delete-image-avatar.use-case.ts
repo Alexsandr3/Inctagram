@@ -27,9 +27,10 @@ export class DeleteImageAvatarUseCase
     //find profile
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-
+    //urls for delete
+    const urlsForDelete = user.profile.avatars.map(image => image.url);
     //delete image from cloud
-    await this.imagesEditor.deleteImages(...user.profile.avatars);
+    await this.imagesEditor.deleteImageByUrl(urlsForDelete);
     //delete image from db
     await this.usersRepository.deleteImagesAvatar(userId);
   }
