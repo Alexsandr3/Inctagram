@@ -5,6 +5,7 @@ import { S3StorageAdapter } from '../../../providers/aws/s3-storage.adapter';
 import { ImageSizeConfig } from '../image-size-config.type';
 import { ImageSizeType } from '../type/image-size.type';
 import { ImageType } from '../type/image.type';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class ImagesEditorService {
@@ -15,11 +16,10 @@ export class ImagesEditorService {
    * @private
    */
   private imageKeyGenerators: {
-    [type: string]: (userId: number, sizes: string[], ownerId?: number, length?: number) => Promise<string[]>;
+    [type: string]: (userId: number, sizes: string[]) => Promise<string[]>;
   } = {
     [ImageType.AVATAR]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForAvatar(userId, sizes),
-    [ImageType.POST]: async (userId: number, sizes: string[], ownerId?: number, length?: number) =>
-      this.generatorKeysImagesForPost(userId, sizes, ownerId, length),
+    [ImageType.POST]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForPost(userId, sizes),
   };
 
   /**
@@ -56,19 +56,12 @@ export class ImagesEditorService {
    * @description Generate keys for images for post
    * @param userId
    * @param size
-   * @param ownerId
-   * @param length
    * @private
    */
-  private async generatorKeysImagesForPost(
-    userId: number,
-    size: string[],
-    ownerId?: number,
-    length?: number,
-  ): Promise<string[]> {
+  private async generatorKeysImagesForPost(userId: number, size: string[]): Promise<string[]> {
     const keys = [];
     for (let i = 0; i < size.length; i++) {
-      const key = `users/${userId}/post/${ownerId}/${length + 1}-images-${ImageSizeConfig[size[i]].defaultWidth}x${
+      const key = `users/${userId}/post/${randomUUID()}-images-${ImageSizeConfig[size[i]].defaultWidth}x${
         ImageSizeConfig[size[i]].defaultHeight
       }`;
       keys.push(key);
@@ -84,7 +77,6 @@ export class ImagesEditorService {
    * @param type
    * @param mimetype
    * @param sizes
-   * @param length
    */
   async generatorKeysWithSaveImagesAndCreateImages(
     userId: number,
@@ -93,12 +85,11 @@ export class ImagesEditorService {
     type: ImageType,
     mimetype: string,
     sizes: string[],
-    length?: number,
   ): Promise<BaseImageEntity[]> {
     //generate keys for images
     const keys: string[] = [];
     if (this.imageKeyGenerators[type]) {
-      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes, ownerId, length);
+      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes);
       keys.push(...keysGenerator);
     }
     //changing size image
@@ -135,7 +126,7 @@ export class ImagesEditorService {
     await this.storageS3.deleteManyFiles(...keys);
   }
 
-  async deleteImagesByKeys(key: string) {
-    await this.storageS3.deleteFile(key);
+  async deleteImageByUrl(url: string) {
+    await this.storageS3.deleteFile(url);
   }
 }

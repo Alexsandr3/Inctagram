@@ -54,7 +54,7 @@ export class S3StorageAdapter {
     try {
       const uploadResult: PutObjectCommandOutput = await this.s3Client.send(command);
       return {
-        key: `${this.endpoint}/${key}`,
+        url: `${this.endpoint}/${key}`,
         fieldId: uploadResult.ETag.slice(1, -1),
       };
     } catch (e) {
@@ -91,6 +91,10 @@ export class S3StorageAdapter {
   }
 
   async deleteFile(key: string) {
+    // Remove endpoint from key
+    if (key.includes(this.endpoint)) {
+      key = key.replace(this.endpoint + '/', '');
+    }
     const delete_bucket_params = {
       Bucket: this.bucket,
       Key: key,

@@ -50,7 +50,6 @@ export class UploadImagePostUseCase
       type,
       mimetype,
       sizes,
-      post.images.length,
     );
     const postImage = result.map(i => ImagePostEntity.initCreate(userId, i, post.id));
     //result is array of instances images need to save

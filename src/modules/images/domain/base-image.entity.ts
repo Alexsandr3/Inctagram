@@ -20,13 +20,13 @@ export class BaseImageEntity extends BaseDateEntity {
   static initCreateImageEntity(
     size: string,
     type: ImageType,
-    urlImageAvatar: { key: string; fieldId: string },
+    urlImageAvatar: { url: string; fieldId: string },
     photo: Buffer,
   ) {
     const instance = new BaseImageEntity();
     instance.imageType = type;
     instance.sizeType = size as ImageSizeType;
-    instance.url = urlImageAvatar.key;
+    instance.url = urlImageAvatar.url;
     instance.width = ImageSizeConfig[size].defaultWidth;
     instance.height = ImageSizeConfig[size].defaultHeight;
     instance.fileSize = photo.length;

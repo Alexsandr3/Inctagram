@@ -40,8 +40,10 @@ export class DeleteImagePostUseCase
         'post',
         NotificationCode.NOT_FOUND,
       );
+    //find image for delete
+    const imageForDelete = post.images.find(image => image.id === uploadId);
     //delete image from aws
-    // await this.imagesEditor.deleteImagesByKeys
+    await this.imagesEditor.deleteImageByUrl(imageForDelete.url);
     //delete image from post
     post.setImageStatusToDeleted(uploadId);
     //save post
