@@ -7,9 +7,9 @@ export class UploadedImageViewModel {
   /**
    * @param main -> Must contain medium photo size (___________) and  photo size (___________)
    */
-  image: PostImageViewModel;
+  images: PostImageViewModel[];
 
-  constructor(image: PostImageViewModel) {
-    this.image = image;
+  constructor(images: PostImageViewModel[]) {
+    this.images = images;
   }
 }

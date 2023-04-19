@@ -1,11 +1,11 @@
-import { ArrayMinSize, IsNotEmpty, IsNumber, IsString, MaxLength, ValidateNested } from 'class-validator';
+import { ArrayMinSize, IsNotEmpty, IsString, MaxLength, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 
 export class ChildMetadataDto {
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
-  uploadId: number;
+  uploadId: string;
 }
 
 export class CreatePostInputDto {

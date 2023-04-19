@@ -13,7 +13,7 @@ export class PostViewModel {
     this.id = post.id;
     this.description = post.description;
     this.location = post.location;
-    this.images = post.images.map(i => new PostImageViewModel(i.url, i.width, i.height, i.fileSize, i.id));
+    this.images = post.images.map(i => new PostImageViewModel(i.url, i.width, i.height, i.fileSize, i.resourceId));
     this.createdAt = post.createdAt;
     this.updatedAt = post.updatedAt;
   }
