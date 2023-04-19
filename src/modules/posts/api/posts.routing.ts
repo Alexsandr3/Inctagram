@@ -2,7 +2,7 @@ export const baseUrlPost = '/posts';
 
 export const postsEndpoints = {
   uploadImagePost: () => `${baseUrlPost}/image`,
-  deleteImagePost: (uploadId: number) => `${baseUrlPost}/image/${uploadId}`,
+  deleteImagePost: (uploadId: string) => `${baseUrlPost}/image/${uploadId}`,
   createPost: () => `${baseUrlPost}`,
   getPost: (postId: number) => `${baseUrlPost}/${postId}`,
   updatePost: (postId: number) => `${baseUrlPost}/${postId}`,

@@ -29,7 +29,7 @@ export class PostsHelper {
   }
 
   async deletePhotoPost(
-    uploadId: number,
+    uploadId: string,
     config: {
       token?: any;
       expectedCode?: number;
