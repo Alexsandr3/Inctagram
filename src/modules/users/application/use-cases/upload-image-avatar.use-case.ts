@@ -41,7 +41,6 @@ export class UploadImageAvatarUseCase
     //generate keys for images and save images on s3 storage and create instances images
     const result: BaseImageEntity[] = await this.imagesEditor.generatorKeysWithSaveImagesAndCreateImages(
       user.id,
-      user.profile.userId,
       photo,
       type,
       mimetype,
