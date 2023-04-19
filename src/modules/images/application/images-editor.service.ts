@@ -72,7 +72,6 @@ export class ImagesEditorService {
   /**
    * @description Generate keys for images and save images on s3 storage
    * @param userId
-   * @param ownerId
    * @param photo
    * @param type
    * @param mimetype
@@ -80,7 +79,6 @@ export class ImagesEditorService {
    */
   async generatorKeysWithSaveImagesAndCreateImages(
     userId: number,
-    ownerId: number,
     photo: Buffer,
     type: ImageType,
     mimetype: string,

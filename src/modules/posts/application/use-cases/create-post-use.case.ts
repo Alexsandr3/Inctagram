@@ -5,7 +5,7 @@ import { NotificationException } from '../../../../main/validators/result-notifi
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { IPostsRepository } from '../../infrastructure/posts.repository';
-import { PostStatus } from '../../domain/post.entity';
+import { PostEntity } from '../../domain/post.entity';
 
 export class CreatePostCommand {
   constructor(
@@ -28,15 +28,11 @@ export class CreatePostUseCase
     //find user
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-    //find post
-    const post = await this.postsRepository.findPostByOwnerIdAndUploadIds(userId, childrenMetadata, PostStatus.PENDING);
-    if (!post)
-      throw new NotificationException(`Post with id: ${post.id} already exists`, 'post', NotificationCode.NOT_FOUND);
-    //change status of images and post
-    const changePost = await post.changeStatusToPublished(description);
+    //find all images
+    const images = await this.postsRepository.findImagesByUploadIds(childrenMetadata);
+    //create post
+    const instancePost = PostEntity.initCreate(userId, images, description);
     //save post
-    await this.postsRepository.savePost(changePost);
-
-    return changePost.id;
+    return this.postsRepository.newPost(instancePost);
   }
 }

@@ -110,7 +110,7 @@ enum Status {
 
 model PostImage {
   id        Int           @id @default(autoincrement())
-  postId    Int
+  postId    Int?
   status    Status        @default(PENDING)
   imageType ImageType
   sizeType  ImageSizeType
@@ -118,7 +118,7 @@ model PostImage {
   width     Int
   height    Int
   fileSize  Int
-  fieldId   String
+  fieldId   String        @unique
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   post      Post?         @relation(fields: [postId], references: [id])

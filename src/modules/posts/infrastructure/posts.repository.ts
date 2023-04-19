@@ -4,9 +4,10 @@ import { ChildMetadataDto } from '../api/input-dto/create-post.input.dto';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../../users/domain/user.entity';
+import { ImagePostEntity } from '../domain/image-post.entity';
 
 export abstract class IPostsRepository {
-  abstract newPost(instancePost: PostEntity): Promise<PostEntity>;
+  abstract newPost(instancePost: PostEntity): Promise<number>;
   abstract savePost(post: PostEntity): Promise<void>;
   abstract addImagesToPost(post: PostEntity): Promise<void>;
   abstract findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }>;
@@ -17,23 +18,65 @@ export abstract class IPostsRepository {
     childrenMetadata: ChildMetadataDto[],
     status: PostStatus,
   ): Promise<PostEntity>;
+
+  abstract saveImages(image: ImagePostEntity[]): Promise<void>;
+
+  abstract findImagesByUploadIds(childrenMetadata: ChildMetadataDto[]): Promise<ImagePostEntity[]>;
 }
 
 @Injectable()
 export class PostsRepository implements IPostsRepository {
   constructor(private readonly prisma: PrismaService) {}
-  async newPost(instancePost: PostEntity): Promise<PostEntity> {
+  async newPost(instancePost: PostEntity): Promise<number> {
+    //create post
     const post = await this.prisma.post.create({
       data: {
         ownerId: instancePost.ownerId,
+        description: instancePost.description,
+        location: instancePost.location,
         status: instancePost.status,
       },
-      include: { images: true },
     });
-    return plainToInstance(PostEntity, post);
+    //update images
+    await this.prisma.$transaction(
+      instancePost.images.map(image =>
+        this.prisma.postImage.update({
+          where: { id: image.id },
+          data: {
+            postId: post.id,
+            status: image.status,
+            imageType: image.imageType,
+            sizeType: image.sizeType,
+            url: image.url,
+            width: image.width,
+            height: image.height,
+            fileSize: image.fileSize,
+            fieldId: image.fieldId,
+          },
+        }),
+      ),
+    );
+    return post.id;
   }
 
   async savePost(post: PostEntity): Promise<void> {
+    const images = post.images.map(i => {
+      return {
+        where: {
+          id: i.id,
+        },
+        data: {
+          status: i.status,
+          imageType: i.imageType,
+          sizeType: i.sizeType,
+          url: i.url,
+          width: i.width,
+          height: i.height,
+          fileSize: i.fileSize,
+          fieldId: i.fieldId,
+        },
+      };
+    });
     await this.prisma.post.update({
       where: {
         id: post.id,
@@ -43,21 +86,7 @@ export class PostsRepository implements IPostsRepository {
         location: post.location,
         status: post.status,
         images: {
-          updateMany: post.images.map(i => ({
-            where: {
-              id: i.id,
-            },
-            data: {
-              status: i.status,
-              imageType: i.imageType,
-              sizeType: i.sizeType,
-              url: i.url,
-              width: i.width,
-              height: i.height,
-              fileSize: i.fileSize,
-              fieldId: i.fieldId,
-            },
-          })),
+          updateMany: images,
         },
       },
     });
@@ -141,5 +170,35 @@ export class PostsRepository implements IPostsRepository {
       include: { images: true },
     });
     return plainToInstance(PostEntity, post);
+  }
+
+  async saveImages(images: ImagePostEntity[]): Promise<void> {
+    const postImages = images.map(i => {
+      return {
+        postId: i.postId,
+        status: i.status,
+        imageType: i.imageType,
+        sizeType: i.sizeType,
+        url: i.url,
+        width: i.width,
+        height: i.height,
+        fileSize: i.fileSize,
+        fieldId: i.fieldId,
+      };
+    });
+    await this.prisma.postImage.createMany({
+      data: postImages,
+    });
+  }
+
+  async findImagesByUploadIds(childrenMetadata: ChildMetadataDto[]): Promise<ImagePostEntity[]> {
+    const images = await this.prisma.postImage.findMany({
+      where: {
+        id: {
+          in: childrenMetadata.map(c => c.uploadId),
+        },
+      },
+    });
+    return plainToInstance(ImagePostEntity, images);
   }
 }

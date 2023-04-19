@@ -17,11 +17,12 @@ export class PostEntity extends BaseDateEntity {
   @Type(() => ImagePostEntity)
   images: ImagePostEntity[];
 
-  static initCreate(userId: number) {
+  static initCreate(userId: number, images: ImagePostEntity[], description: string) {
     const post = new PostEntity();
     post.ownerId = userId;
-    post.status = PostStatus.PENDING;
-    post.images = [];
+    post.status = PostStatus.PUBLISHED;
+    post.description = description;
+    post.images = images.map(image => image.changeStatusToPublished());
     return post;
   }
 

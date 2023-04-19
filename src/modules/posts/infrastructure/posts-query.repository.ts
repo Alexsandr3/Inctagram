@@ -7,7 +7,7 @@ import { Injectable } from '@nestjs/common';
 
 export abstract class IPostsQueryRepository {
   abstract getPost(postId: number, status: PostStatus): Promise<PostViewModel>;
-  abstract getUploadImagePost(postId: number): Promise<PostImageViewModel>;
+  abstract getUploadImages(fieldId: string): Promise<PostImageViewModel>;
 }
 
 @Injectable()
@@ -31,10 +31,11 @@ export class PostsQueryRepository implements IPostsQueryRepository {
     return new PostViewModel(post);
   }
 
-  async getUploadImagePost(postId: number): Promise<PostImageViewModel> {
+  async getUploadImages(fieldId: string): Promise<PostImageViewModel> {
     const images = await this.prisma.postImage.findMany({
       where: {
-        postId,
+        fieldId: fieldId,
+        status: 'PENDING',
       },
       orderBy: {
         createdAt: 'desc',
