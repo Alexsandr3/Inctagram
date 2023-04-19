@@ -12,6 +12,7 @@ export class BaseImageEntity extends BaseDateEntity {
   height: number;
   fileSize: number;
   fieldId: string;
+  resourceId: string;
 
   constructor() {
     super();
@@ -22,6 +23,7 @@ export class BaseImageEntity extends BaseDateEntity {
     type: ImageType,
     urlImageAvatar: { url: string; fieldId: string },
     photo: Buffer,
+    resourceId: string,
   ) {
     const instance = new BaseImageEntity();
     instance.imageType = type;
@@ -31,6 +33,7 @@ export class BaseImageEntity extends BaseDateEntity {
     instance.height = ImageSizeConfig[size].defaultHeight;
     instance.fileSize = photo.length;
     instance.fieldId = urlImageAvatar.fieldId;
+    instance.resourceId = resourceId;
     return instance;
   }
 }

@@ -12,17 +12,6 @@ export class ImagesEditorService {
   constructor(private readonly storageS3: S3StorageAdapter) {}
 
   /**
-   * @description Generate keys for images for user
-   * @private
-   */
-  private imageKeyGenerators: {
-    [type: string]: (userId: number, sizes: string[]) => Promise<string[]>;
-  } = {
-    [ImageType.AVATAR]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForAvatar(userId, sizes),
-    [ImageType.POST]: async (userId: number, sizes: string[]) => this.generatorKeysImagesForPost(userId, sizes),
-  };
-
-  /**
    * @description Resize image to width and height
    * @param inputPath
    * @param width
@@ -37,11 +26,25 @@ export class ImagesEditorService {
   }
 
   /**
+   * @description Generate keys for images for user
+   * @private
+   */
+  private imageKeyGenerators: {
+    [type: string]: (userId: number, sizes: string[], resourceId) => Promise<string[]>;
+  } = {
+    [ImageType.AVATAR]: async (userId: number, sizes: string[], resourceId) =>
+      this.generatorKeysImagesForAvatar(userId, sizes, resourceId),
+    [ImageType.POST]: async (userId: number, sizes: string[], resourceId) =>
+      this.generatorKeysImagesForPost(userId, sizes, resourceId),
+  };
+
+  /**
    * @description Generate keys for images for avatar
    * @param userId
    * @param size
+   * @param resourceId
    */
-  private async generatorKeysImagesForAvatar(userId: number, size: string[]): Promise<string[]> {
+  private async generatorKeysImagesForAvatar(userId: number, size: string[], resourceId: string): Promise<string[]> {
     const keys = [];
     for (let i = 0; i < size.length; i++) {
       const key = `users/${userId}/avatar/images-${ImageSizeConfig[size[i]].defaultWidth}x${
@@ -56,12 +59,13 @@ export class ImagesEditorService {
    * @description Generate keys for images for post
    * @param userId
    * @param size
+   * @param resourceId
    * @private
    */
-  private async generatorKeysImagesForPost(userId: number, size: string[]): Promise<string[]> {
+  private async generatorKeysImagesForPost(userId: number, size: string[], resourceId: string): Promise<string[]> {
     const keys = [];
     for (let i = 0; i < size.length; i++) {
-      const key = `users/${userId}/post/${randomUUID()}-images-${ImageSizeConfig[size[i]].defaultWidth}x${
+      const key = `users/${userId}/post/${resourceId}-images-${ImageSizeConfig[size[i]].defaultWidth}x${
         ImageSizeConfig[size[i]].defaultHeight
       }`;
       keys.push(key);
@@ -86,8 +90,9 @@ export class ImagesEditorService {
   ): Promise<BaseImageEntity[]> {
     //generate keys for images
     const keys: string[] = [];
+    const resourceId = randomUUID();
     if (this.imageKeyGenerators[type]) {
-      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes);
+      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes, resourceId);
       keys.push(...keysGenerator);
     }
     //changing size image
@@ -103,7 +108,7 @@ export class ImagesEditorService {
       }
     }
     //delete old image
-    await this.storageS3.deleteManyFiles(...keys);
+    await this.storageS3.deleteManyFiles(keys);
 
     //save on s3 storage and create instances images
     const instancesImages = [];
@@ -112,7 +117,7 @@ export class ImagesEditorService {
       const imageToSave = changeSizeImage[i];
       const urlImage = await this.storageS3.saveFile(userId, imageToSave, keyImage, mimetype);
       const size = sizes[i];
-      const imageEntity = BaseImageEntity.initCreateImageEntity(size, type, urlImage, imageToSave);
+      const imageEntity = BaseImageEntity.initCreateImageEntity(size, type, urlImage, imageToSave, resourceId);
       instancesImages.push(imageEntity);
     }
 
@@ -121,10 +126,10 @@ export class ImagesEditorService {
 
   async deleteImages(...images: BaseImageEntity[]) {
     const keys = images.map(image => image.url);
-    await this.storageS3.deleteManyFiles(...keys);
+    await this.storageS3.deleteManyFiles(keys);
   }
 
-  async deleteImageByUrl(url: string) {
-    await this.storageS3.deleteFile(url);
+  async deleteImageByUrl(urlsForDelete: string[]) {
+    await this.storageS3.deleteManyFiles(urlsForDelete);
   }
 }
