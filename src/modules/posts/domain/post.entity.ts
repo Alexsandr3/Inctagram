@@ -26,26 +26,6 @@ export class PostEntity extends BaseDateEntity {
     return post;
   }
 
-  addImagesAndFilterNew(...images: ImagePostEntity[]): PostEntity {
-    const res = this.images.filter(image => !image.id);
-    this.images = [...res, ...images];
-    return this;
-  }
-
-  async changeStatusToPublished(description: string): Promise<PostEntity> {
-    this.description = description;
-    this.status = PostStatus.PUBLISHED;
-    this.images.forEach(image => image.changeStatusToPublished());
-    return this;
-  }
-
-  setImageStatusToDeleted(uploadId: number) {
-    this.images.map(image => {
-      image.id === uploadId ? image.changeStatusToDeleted() : image;
-    });
-    return this;
-  }
-
   setPostStatusToDeleted() {
     this.status = PostStatus.DELETED;
   }

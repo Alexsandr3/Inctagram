@@ -19,6 +19,7 @@ export class ImagePostEntity extends BaseImageEntity {
     imagePost.height = baseImage.height;
     imagePost.fileSize = baseImage.fileSize;
     imagePost.fieldId = baseImage.fieldId;
+    imagePost.resourceId = baseImage.resourceId;
     return imagePost;
   }
 
@@ -27,7 +28,8 @@ export class ImagePostEntity extends BaseImageEntity {
     return this;
   }
 
-  changeStatusToDeleted() {
+  changeStatusToDeleted(resourceId: string) {
+    if (this.resourceId !== resourceId) return;
     this.status = PostStatus.DELETED;
     return this;
   }

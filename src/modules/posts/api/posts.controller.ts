@@ -33,7 +33,6 @@ import { NotificationException, ResultNotification } from '../../../main/validat
 import { typeImagePost } from '../default-options-for-validate-images-post';
 import { IPostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { PostImageViewModel } from './view-models/post-image-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { CreatePostCommand } from '../application/use-cases/create-post-use.case';
 import { DeleteImagePostCommand } from '../application/use-cases/delete-image-post-use.case';
@@ -44,6 +43,7 @@ import { CheckerNotificationErrors } from '../../../main/validators/checker-noti
 import { DeletePostCommand } from '../application/use-cases/delete-post-use.case';
 import { PostStatus } from '../domain/post.entity';
 import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
+import { UploadedImageViewModel } from './view-models/uploaded-image-view.dto';
 
 @ApiBearerAuth()
 @ApiTags('Posts')
@@ -61,12 +61,12 @@ export class PostsController {
     @CurrentUserId() userId: number,
     @UploadedFile(new ValidationTypeImagePipe(typeImagePost))
     file: Express.Multer.File,
-  ): Promise<PostImageViewModel> {
+  ): Promise<UploadedImageViewModel> {
     const notification = await this.commandBus.execute<
       UploadImagePostCommand,
       ResultNotification<{ fieldId: string }[]>
     >(new UploadImagePostCommand(userId, file.mimetype, file.buffer));
-    return this.postsQueryRepository.getUploadImages(notification.getData()[0].fieldId);
+    return this.postsQueryRepository.getUploadImages(notification.getData());
   }
 
   @SwaggerDecoratorsByCreatePost()
@@ -82,7 +82,7 @@ export class PostsController {
   @SwaggerDecoratorsByDeleteImagePost()
   @Delete('/image/:uploadId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async deleteImagePost(@CurrentUserId() userId: number, @Param('uploadId', ParseIntPipe) uploadId: number) {
+  async deleteImagePost(@CurrentUserId() userId: number, @Param('uploadId') uploadId: string) {
     await this.commandBus.execute<DeleteImagePostCommand, ResultNotification>(
       new DeleteImagePostCommand(userId, uploadId),
     );

@@ -33,7 +33,7 @@ export class UploadImagePostUseCase
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
     //set type and sizes for images
     const type = ImageType.POST;
-    const sizes = [ImageSizeType.HUGE_HD, ImageSizeType.SMALL];
+    const sizes = [ImageSizeType.HUGE_HD, ImageSizeType.LARGE];
     //generate keys for images and save images on s3 storage and create instances images
     const result: BaseImageEntity[] = await this.imagesEditor.generatorKeysWithSaveImagesAndCreateImages(
       user.id,

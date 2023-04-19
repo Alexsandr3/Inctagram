@@ -33,6 +33,6 @@ export class CreatePostUseCase
     //create post
     const instancePost = PostEntity.initCreate(userId, images, description);
     //save post
-    return this.postsRepository.newPost(instancePost);
+    return this.postsRepository.createPost(instancePost);
   }
 }
