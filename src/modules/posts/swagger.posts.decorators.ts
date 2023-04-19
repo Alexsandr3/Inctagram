@@ -8,7 +8,7 @@ import { PostViewModel } from './api/view-models/post-view.dto';
 export function SwaggerDecoratorsByUploadImagePost(): MethodDecorator {
   return applyDecorators(
     ApiOperation({
-      summary: 'Upload image for post',
+      summary: 'Upload image for future post',
     }),
     ApiResponse({
       status: HTTP_Status.CREATED_201,
@@ -29,7 +29,7 @@ export function SwaggerDecoratorsByUploadImagePost(): MethodDecorator {
 export function SwaggerDecoratorsByDeleteImagePost(): MethodDecorator {
   return applyDecorators(
     ApiOperation({
-      summary: 'Delete image for post by uploadId, image can be restored',
+      summary: 'Delete images for post by uploadId, when user not create post',
     }),
     ApiResponse({
       status: HTTP_Status.NO_CONTENT_204,
