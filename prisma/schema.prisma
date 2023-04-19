@@ -109,19 +109,20 @@ enum Status {
 }
 
 model PostImage {
-  id        Int           @id @default(autoincrement())
-  postId    Int?
-  status    Status        @default(PENDING)
-  imageType ImageType
-  sizeType  ImageSizeType
-  url       String        @unique
-  width     Int
-  height    Int
-  fileSize  Int
-  fieldId   String        @unique
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
-  post      Post?         @relation(fields: [postId], references: [id])
+  id         Int           @id @default(autoincrement())
+  postId     Int?
+  resourceId String
+  status     Status        @default(PENDING)
+  imageType  ImageType
+  sizeType   ImageSizeType
+  url        String        @unique
+  width      Int
+  height     Int
+  fileSize   Int
+  fieldId    String        @unique
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  post       Post?         @relation(fields: [postId], references: [id])
 
   @@map("PostImage")
 }
