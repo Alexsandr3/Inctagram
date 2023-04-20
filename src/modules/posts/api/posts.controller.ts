@@ -64,7 +64,7 @@ export class PostsController {
   ): Promise<UploadedImageViewModel> {
     const notification = await this.commandBus.execute<
       UploadImagePostCommand,
-      ResultNotification<{ fieldId: string }[]>
+      ResultNotification<{ resourceId: string }[]>
     >(new UploadImagePostCommand(userId, file.mimetype, file.buffer));
     return this.postsQueryRepository.getUploadImages(notification.getData());
   }

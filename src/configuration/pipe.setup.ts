@@ -9,7 +9,7 @@ export function pipeSetup(app: INestApplication) {
     new ValidationPipe({
       whitelist: true, //data from input DTO
       //forbidNonWhitelisted: true, //stopping create data
-      // transform: true, //transform data to correct
+      transform: true, //transform data to correct
       stopAtFirstError: true, //stop at first error
 
       transformOptions: { enableImplicitConversion: true },

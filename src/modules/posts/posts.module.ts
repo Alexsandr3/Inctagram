@@ -12,6 +12,7 @@ import { PrismaModule } from '../../providers/prisma/prisma.module';
 import { DeletePostUseCase } from './application/use-cases/delete-post-use.case';
 import { UpdatePostUseCase } from './application/use-cases/update-post-use.case';
 import { PostsService } from './application/posts.service';
+import { PostsGetController } from './api/posts-get.controller';
 
 const useCases = [
   UploadImagePostUseCase,
@@ -23,7 +24,7 @@ const useCases = [
 
 @Module({
   imports: [CqrsModule, ImagesModule, UsersModule, PrismaModule],
-  controllers: [PostsController],
+  controllers: [PostsController, PostsGetController],
   providers: [
     PostsService,
     ...useCases,

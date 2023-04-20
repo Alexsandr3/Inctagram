@@ -116,3 +116,12 @@ export function SwaggerDecoratorsByUpdatePost(): MethodDecorator {
     ApiResponse({ status: HTTP_Status.FORBIDDEN_403, description: 'Forbidden' }),
   );
 }
+
+export function SwaggerDecoratorsByGetPosts(): MethodDecorator {
+  return applyDecorators(
+    ApiOperation({
+      summary: 'Get posts with pagination',
+    }),
+    ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
+  );
+}

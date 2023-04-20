@@ -6,7 +6,7 @@ import { CreatePostInputDto } from '../../src/modules/posts/api/input-dto/create
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
 import { UploadedImageViewModel } from '../../src/modules/posts/api/view-models/uploaded-image-view.dto';
-import { PaginationViewDto } from '../../src/modules/posts/api/input-dto/pagination-View.dto';
+import { PaginationViewModel } from '../../src/main/shared/pagination-view.dto';
 import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
 
 jest.setTimeout(120000);
@@ -292,7 +292,7 @@ describe('Posts flow - e2e', () => {
     userId2 = myInfo2.userId;
   });
   it('42 - / (GET) - should return 200 posts with pagination for FIRST user', async () => {
-    const responseBody: PaginationViewDto<PostViewModel> = await postsHelper.getPosts(userId, null, {
+    const responseBody: PaginationViewModel<PostViewModel> = await postsHelper.getPosts(userId, null, {
       token: accessToken,
       expectedCode: 200,
     });
@@ -304,7 +304,7 @@ describe('Posts flow - e2e', () => {
     expect(responseBody.items[1].images).toHaveLength(2);
   });
   it('43 - / (GET) - should return 200 posts with pagination for SECOND user', async () => {
-    const responseBody: PaginationViewDto<PostViewModel> = await postsHelper.getPosts(userId2, null, {
+    const responseBody: PaginationViewModel<PostViewModel> = await postsHelper.getPosts(userId2, null, {
       token: accessToken2,
       expectedCode: 200,
     });

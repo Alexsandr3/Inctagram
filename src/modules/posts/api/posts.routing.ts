@@ -7,5 +7,5 @@ export const postsEndpoints = {
   getPost: (postId: number) => `${baseUrlPost}/${postId}`,
   updatePost: (postId: number) => `${baseUrlPost}/${postId}`,
   deletePost: (postId: number) => `${baseUrlPost}/${postId}`,
-  getPosts: () => `${baseUrlPost}`,
+  getPosts: (userId: number) => `${baseUrlPost}/all/${userId}`,
 };
