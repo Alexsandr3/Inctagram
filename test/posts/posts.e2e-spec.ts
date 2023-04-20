@@ -405,7 +405,7 @@ describe('Posts flow - e2e', () => {
   });
 
   //Delete post
-  it('58 - / (DELETE) - should return 204 and delete post. Get deleted post should return 404', async () => {
+  it('57 - / (DELETE) - should return 204 and delete post. Get deleted post should return 404', async () => {
     await postsHelper.deletePost(post.id, {
       token: accessToken,
       expectedCode: 204,
