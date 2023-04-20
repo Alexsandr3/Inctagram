@@ -119,4 +119,23 @@ export class PostsHelper {
 
     return response.body;
   }
+
+  async getPosts(
+    userId: number,
+    query?: any,
+    config: {
+      token?: any;
+      expectedCode?: number;
+    } = {},
+  ) {
+    // default expected code is 204 or code mistake from config
+    const expectedCode = config.expectedCode ?? HTTP_Status.OK_200;
+    const response = await request(this.app.getHttpServer())
+      .get(postsEndpoints.getPosts(userId))
+      .auth(config.token, { type: 'bearer' })
+      // .query(query)
+      .expect(expectedCode);
+
+    return response.body;
+  }
 }

@@ -5,8 +5,9 @@ import { PostsHelper } from '../helpers/posts-helper';
 import { CreatePostInputDto } from '../../src/modules/posts/api/input-dto/create-post.input.dto';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
-import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
 import { UploadedImageViewModel } from '../../src/modules/posts/api/view-models/uploaded-image-view.dto';
+import { PaginationViewDto } from '../../src/modules/posts/api/input-dto/pagination-View.dto';
+import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
 
 jest.setTimeout(120000);
 describe('Posts flow - e2e', () => {
@@ -35,6 +36,7 @@ describe('Posts flow - e2e', () => {
   //created Post
   let post: PostViewModel;
   let post2: PostViewModel;
+  let post3: PostViewModel;
 
   // Registration and login 2 users
   it('01 - / (POST) - should create user and returned accessToken', async () => {
@@ -105,14 +107,15 @@ describe('Posts flow - e2e', () => {
     expect(responseBody.messages[0].message).toBe(`Post with id: ${postId} not found`);
   });
 
-  //Upload image post -  by FIRST user - correct data
+  //-----------Upload image for future post -  by FIRST user - correct data----------------
   //uploadId for first image--
   let uploadId1: string;
+  let uploadId1_1: string;
   //uploadId for second image--
   let uploadId2: string;
   //uploadId for third image--
   let uploadId3: string;
-  it('30 - / (POST) - should return 201 if all data is correct for upload image post', async () => {
+  it('30 - / (POST) - should return 201 if all data is correct for upload (1-photo) image post', async () => {
     let nameFile = '/images/1271х847_357kb.jpeg';
     const responseBody: UploadedImageViewModel = await postsHelper.uploadPhotoPost(nameFile, {
       token: accessToken,
@@ -133,7 +136,7 @@ describe('Posts flow - e2e', () => {
       ]),
     );
   });
-  it('31 - / (POST) - should return 201 if all data is correct for upload image post', async () => {
+  it('31 - / (POST) - should return 201 if all data is correct for upload (2-photo) image post', async () => {
     let nameFile = '/images/859x720_338kb.jpeg';
     const responseBody: UploadedImageViewModel = await postsHelper.uploadPhotoPost(nameFile, {
       token: accessToken,
@@ -142,19 +145,28 @@ describe('Posts flow - e2e', () => {
     uploadId2 = responseBody.images[0].uploadId;
     uploadId2 = responseBody.images[1].uploadId;
   });
-  it('32 - / (POST) - should return 201 if all data is correct for upload image post', async () => {
+  //When user rollback post,
+  it('32 - / (DELETE) - should return 204 if all data is correct for delete image post', async () => {
+    await postsHelper.deletePhotoPost(uploadId1, { token: accessToken, expectedCode: 204 });
+  });
+  it('33 - / (DELETE) - should return 204 if all data is correct for delete image post', async () => {
+    await postsHelper.deletePhotoPost(uploadId2, { token: accessToken, expectedCode: 204 });
+  });
+
+  //Create 2 posts - correct data - uploadId1 - for first user
+  it('34 - / (POST) - should return 201 if all data is correct for upload (1-photo) image post', async () => {
     let nameFile = '/images/667x1000_345kb.jpeg';
     const responseBody: UploadedImageViewModel = await postsHelper.uploadPhotoPost(nameFile, {
       token: accessToken,
       expectedCode: 201,
     });
-    uploadId3 = responseBody.images[0].uploadId;
-    uploadId3 = responseBody.images[1].uploadId;
+    uploadId1 = responseBody.images[0].uploadId;
+    uploadId1 = responseBody.images[1].uploadId;
   });
-  it('33 - / (POST) - should return 201 if all data is correct for create post', async () => {
+  it('35 - / (POST) - should return 201 if all data is correct for create post', async () => {
     const command: CreatePostInputDto = {
       description: 'Test post',
-      childrenMetadata: [{ uploadId: uploadId1 }, { uploadId: uploadId2 }, { uploadId: uploadId3 }],
+      childrenMetadata: [{ uploadId: uploadId1 }],
     };
     const responseBody: PostViewModel = await postsHelper.createPost(command, {
       token: accessToken,
@@ -176,47 +188,140 @@ describe('Posts flow - e2e', () => {
         },
       ]),
     });
-    expect(responseBody.images.length).toBe(6);
+    expect(responseBody.images[0].uploadId).toBe(responseBody.images[1].uploadId);
+    expect(responseBody.images.length).toBe(2);
     expect(responseBody).toBeDefined();
     post = responseBody;
   });
-  it('34_1 - / (DELETE) - should return 204 if all data is correct for delete image post', async () => {
-    await postsHelper.deletePhotoPost(uploadId1, { token: accessToken, expectedCode: 204 });
-  });
-  it('34_2 - / (DELETE) - should return 204 if all data is correct for delete image post', async () => {
-    await postsHelper.deletePhotoPost(uploadId2, { token: accessToken, expectedCode: 204 });
-  });
-  it('34_3 - / (DELETE) - should return 204 if all data is correct for delete image post', async () => {
-    await postsHelper.deletePhotoPost(uploadId3, { token: accessToken, expectedCode: 204 });
-  });
-  //Get post
-  it('35 - / (GET) - should return 200 with empty array images', async () => {
-    const foundPost: PostViewModel = await postsHelper.getPost(post.id, { token: accessToken, expectedCode: 200 });
-    expect(foundPost.images).toHaveLength(0);
-  });
-  //Upload image post -  by SECOND user - correct data
-  it('30 - / (POST) - should return 201 if all data is correct for upload image post', async () => {
-    let nameFile = '/images/1000x667_304kb.jpeg';
+  it('36 - / (POST) - should return 201 if all data is correct for upload (1_1-photo) image post', async () => {
+    let nameFile = '/images/667x1000_345kb.jpeg';
     const responseBody: UploadedImageViewModel = await postsHelper.uploadPhotoPost(nameFile, {
       token: accessToken,
       expectedCode: 201,
     });
-    expect(responseBody).toBeDefined();
-    expect(responseBody.images).toHaveLength(2);
-    uploadId1 = responseBody.images[0].uploadId;
-    expect(responseBody.images).toEqual(
-      expect.arrayContaining([
+    uploadId1_1 = responseBody.images[0].uploadId;
+    uploadId1_1 = responseBody.images[1].uploadId;
+  });
+  it('37 - / (POST) - should return 201 if all data is correct for create post', async () => {
+    const command: CreatePostInputDto = {
+      description: 'This post created for test, please, do not delete, thank you!',
+      childrenMetadata: [{ uploadId: uploadId1_1 }],
+    };
+    const responseBody: PostViewModel = await postsHelper.createPost(command, {
+      token: accessToken,
+      expectedCode: 201,
+    });
+    expect(responseBody).toEqual({
+      id: expect.any(Number),
+      description: command.description,
+      location: null,
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+      images: expect.arrayContaining([
         {
-          uploadId: expect.any(String),
-          fileSize: expect.any(Number),
-          height: expect.any(Number),
           url: expect.any(String),
           width: expect.any(Number),
+          height: expect.any(Number),
+          fileSize: expect.any(Number),
+          uploadId: expect.any(String),
         },
       ]),
-    );
+    });
+    expect(responseBody.images[0].uploadId).toBe(responseBody.images[1].uploadId);
+    expect(responseBody.images.length).toBe(2);
+    expect(responseBody).toBeDefined();
+    post2 = responseBody;
   });
-  it('33 - / (POST) - should return 201 if all data is correct for create post', async () => {
+
+  //Create post - correct data - uploadId2 and upload3 - for second user
+  it('38 - / (POST) - should return 201 if all data is correct for upload (2-photo) image post', async () => {
+    let nameFile = '/images/667x1000_345kb.jpeg';
+    const responseBody: UploadedImageViewModel = await postsHelper.uploadPhotoPost(nameFile, {
+      token: accessToken2,
+      expectedCode: 201,
+    });
+    uploadId2 = responseBody.images[0].uploadId;
+    uploadId2 = responseBody.images[1].uploadId;
+  });
+  it('39 - / (POST) - should return 201 if all data is correct for upload (3-photo) image post', async () => {
+    let nameFile = '/images/1271х847_357kb.jpeg';
+    const responseBody: UploadedImageViewModel = await postsHelper.uploadPhotoPost(nameFile, {
+      token: accessToken2,
+      expectedCode: 201,
+    });
+    uploadId3 = responseBody.images[0].uploadId;
+    uploadId3 = responseBody.images[1].uploadId;
+  });
+  it('40 - / (POST) - should return 201 if all data is correct for create post', async () => {
+    const command: CreatePostInputDto = {
+      description: 'Test post',
+      childrenMetadata: [{ uploadId: uploadId2 }, { uploadId: uploadId3 }],
+    };
+    const responseBody: PostViewModel = await postsHelper.createPost(command, {
+      token: accessToken2,
+      expectedCode: 201,
+    });
+    expect(responseBody).toEqual({
+      id: expect.any(Number),
+      description: command.description,
+      location: null,
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+      images: expect.arrayContaining([
+        {
+          url: expect.any(String),
+          width: expect.any(Number),
+          height: expect.any(Number),
+          fileSize: expect.any(Number),
+          uploadId: expect.any(String),
+        },
+      ]),
+    });
+    expect(responseBody.images.length).toBe(4);
+    expect(responseBody).toBeDefined();
+    post3 = responseBody;
+  });
+
+  //Get existing post
+  let userId: number;
+  let userId2: number;
+  it('41 - / (GET) - should return 200 and info about logged user', async () => {
+    const myInfo = await authHelper.me(accessToken);
+    const myInfo2 = await authHelper.me(accessToken2);
+    userId = myInfo.userId;
+    userId2 = myInfo2.userId;
+  });
+  it('42 - / (GET) - should return 200 posts with pagination for FIRST user', async () => {
+    const responseBody: PaginationViewDto<PostViewModel> = await postsHelper.getPosts(userId, null, {
+      token: accessToken,
+      expectedCode: 200,
+    });
+    expect(responseBody).toBeDefined();
+    expect(responseBody.items).toHaveLength(2);
+    expect(responseBody.items[0].id).toBe(post2.id);
+    expect(responseBody.items[1].id).toBe(post.id);
+    expect(responseBody.items[0].images).toHaveLength(2);
+    expect(responseBody.items[1].images).toHaveLength(2);
+  });
+  it('43 - / (GET) - should return 200 posts with pagination for SECOND user', async () => {
+    const responseBody: PaginationViewDto<PostViewModel> = await postsHelper.getPosts(userId2, null, {
+      token: accessToken2,
+      expectedCode: 200,
+    });
+    expect(responseBody).toBeDefined();
+    expect(responseBody.items).toHaveLength(1);
+    expect(responseBody.items[0].id).toBe(post3.id);
+    expect(responseBody.items[0].images).toHaveLength(4);
+  });
+
+  //Get post
+  it('50 - / (GET) - should return 200 with empty array images', async () => {
+    const foundPost: PostViewModel = await postsHelper.getPost(post.id, { token: accessToken, expectedCode: 200 });
+    expect(foundPost.images).toHaveLength(2);
+    expect(foundPost.id).toBe(post.id);
+  });
+
+  it('51 - / (POST) - should return 201 if all data is correct for create post', async () => {
     const command: CreatePostInputDto = {
       description: 'It is test post, please ignore it',
       childrenMetadata: [{ uploadId: uploadId1 }],
@@ -247,7 +352,7 @@ describe('Posts flow - e2e', () => {
   });
 
   //Get post
-  it('40 - / (GET) - should return 200 and post without deleted image', async () => {
+  it('52 - / (GET) - should return 200 and post without deleted image', async () => {
     const foundPost = await postsHelper.getPost(post.id, { token: accessToken, expectedCode: 200 });
     expect(foundPost).not.toEqual(post);
     expect(foundPost).toEqual({ ...post, updatedAt: expect.any(String), images: expect.anything() });
@@ -256,7 +361,7 @@ describe('Posts flow - e2e', () => {
   });
 
   //Update post
-  it('41 - / (PUT) - should return 204 and update post', async () => {
+  it('53 - / (PUT) - should return 204 and update post', async () => {
     let command: UpdatePostInputDto = { description: 'New super description' };
     await postsHelper.updatePost(post.id, command, { token: accessToken, expectedCode: 204 });
 
@@ -273,13 +378,13 @@ describe('Posts flow - e2e', () => {
     expect(foundPost).toEqual({ ...post, ...command, updatedAt: expect.any(String) });
     expect(foundPost.updatedAt).not.toBe(post.updatedAt);
   });
-  it('42 - / (PUT) - should return 400 for update post with bad data', async () => {
+  it('54 - / (PUT) - should return 400 for update post with bad data', async () => {
     const command: UpdatePostInputDto = { description: 'e'.repeat(501) };
     await postsHelper.updatePost(post.id, command, { token: accessToken, expectedCode: 400 });
 
     await postsHelper.updatePost(post.id, null, { token: accessToken, expectedCode: 400 });
   });
-  it('43 - / (PUT) - should return 403 if user isn`t owner of post', async () => {
+  it('55 - / (PUT) - should return 403 if user isn`t owner of post', async () => {
     let command: UpdatePostInputDto = { description: 'New super description' };
     const responseBody = await postsHelper.updatePost<ApiErrorResultDto>(post.id, command, {
       token: accessToken2,
@@ -290,7 +395,7 @@ describe('Posts flow - e2e', () => {
   });
 
   //Delete - incorrect data
-  it('50 - / (DELETE) - should return 403 if user isn`t owner of post', async () => {
+  it('56 - / (DELETE) - should return 403 if user isn`t owner of post', async () => {
     const responseBody = await postsHelper.deletePost<ApiErrorResultDto>(post.id, {
       token: accessToken2,
       expectedCode: 403,
@@ -300,7 +405,7 @@ describe('Posts flow - e2e', () => {
   });
 
   //Delete post
-  it('55 - / (DELETE) - should return 204 and delete post. Get deleted post should return 404', async () => {
+  it('58 - / (DELETE) - should return 204 and delete post. Get deleted post should return 404', async () => {
     await postsHelper.deletePost(post.id, {
       token: accessToken,
       expectedCode: 204,
