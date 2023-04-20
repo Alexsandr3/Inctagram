@@ -119,7 +119,7 @@ model PostImage {
   width      Int
   height     Int
   fileSize   Int
-  fieldId    String        @unique
+  fieldId    String
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
   post       Post?         @relation(fields: [postId], references: [id])
