@@ -9,7 +9,7 @@ import { ImagePostEntity } from '../domain/image-post.entity';
 export abstract class IPostsRepository {
   abstract createPost(instancePost: PostEntity): Promise<number>;
   abstract saveImages(image: ImagePostEntity[]): Promise<void>;
-  abstract updateImages(image: ImagePostEntity[]): Promise<void>;
+  abstract deleteImages(image: ImagePostEntity[]): Promise<void>;
   abstract findImageByOwnerIdAndResourceIds(
     userId: number,
     metadata: { uploadId: string }[],
@@ -19,6 +19,9 @@ export abstract class IPostsRepository {
   //two flow
   abstract savePost(post: PostEntity): Promise<void>;
   abstract findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }>;
+
+  //unused
+  abstract updateImages(image: ImagePostEntity[]): Promise<void>;
   abstract deletePostById(postId: number);
   abstract findPendingPostByUserId(userId: number): Promise<PostEntity>;
 }
@@ -77,23 +80,12 @@ export class PostsRepository implements IPostsRepository {
       data: postImages,
     });
   }
-  async updateImages(images: ImagePostEntity[]): Promise<void> {
+
+  async deleteImages(images: ImagePostEntity[]): Promise<void> {
     await this.prisma.$transaction(
       images.map(image =>
-        this.prisma.postImage.update({
+        this.prisma.postImage.delete({
           where: { id: image.id },
-          data: {
-            resourceId: image.resourceId,
-            postId: image.postId,
-            status: image.status,
-            imageType: image.imageType,
-            sizeType: image.sizeType,
-            url: image.url,
-            width: image.width,
-            height: image.height,
-            fileSize: image.fileSize,
-            fieldId: image.fieldId,
-          },
         }),
       ),
     );
@@ -168,6 +160,29 @@ export class PostsRepository implements IPostsRepository {
     const post = plainToInstance(PostEntity, postWithUser);
     const owner = plainToInstance(UserEntity, postWithUser.user);
     return { post: post, owner: owner };
+  }
+
+  //unused
+  async updateImages(images: ImagePostEntity[]): Promise<void> {
+    await this.prisma.$transaction(
+      images.map(image =>
+        this.prisma.postImage.update({
+          where: { id: image.id },
+          data: {
+            resourceId: image.resourceId,
+            postId: image.postId,
+            status: image.status,
+            imageType: image.imageType,
+            sizeType: image.sizeType,
+            url: image.url,
+            width: image.width,
+            height: image.height,
+            fileSize: image.fileSize,
+            fieldId: image.fieldId,
+          },
+        }),
+      ),
+    );
   }
   async deletePostById(postId: number) {
     await this.prisma.post.delete({

@@ -44,7 +44,7 @@ export class DeleteImagePostUseCase
       image.changeStatusToDeleted(uploadId);
       return image;
     });
-    //update images
-    await this.postsRepository.updateImages(images);
+    //delete images from db
+    await this.postsRepository.deleteImages(images);
   }
 }
