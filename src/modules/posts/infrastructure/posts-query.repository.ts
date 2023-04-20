@@ -41,9 +41,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
   async getUploadImages(resourceId: string): Promise<UploadedImageViewModel> {
     const images = await this.prisma.postImage.findMany({
       where: {
-        resourceId: {
-          in: [resourceId],
-        },
+        resourceId,
         status: PostStatus.PENDING,
       },
       orderBy: {

@@ -5,7 +5,6 @@ import { ImagesEditorService } from '../../../images/application/images-editor.s
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IPostsRepository } from '../../infrastructure/posts.repository';
-import { PostStatus } from '../../domain/post.entity';
 
 export class DeleteImagePostCommand {
   constructor(public readonly userId: number, public readonly uploadId: string) {}
@@ -28,18 +27,19 @@ export class DeleteImagePostUseCase
     //find user
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-    const metadata = [{ uploadId: uploadId }];
     //find images by uploadId and userId
-    const imagesForDelete = await this.postsRepository.findImageByOwnerIdAndResourceIds(
-      userId,
-      metadata,
-      PostStatus.PENDING,
-    );
+    const imagesForDelete = await this.postsRepository.findImagesByOwnerIdAndResourceIds(uploadId);
+    if (imagesForDelete.length === 0)
+      throw new NotificationException(
+        `Images with uploadId: ${uploadId} not found`,
+        'image',
+        NotificationCode.NOT_FOUND,
+      );
     //urls for delete
     const urlsForDelete = imagesForDelete.map(image => image.url);
     //delete image from aws
     await this.imagesEditor.deleteImageByUrl(urlsForDelete);
     //delete images from db
-    await this.postsRepository.deleteImages(imagesForDelete);
+    await this.postsRepository.deleteImages(uploadId);
   }
 }

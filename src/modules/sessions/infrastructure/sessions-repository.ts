@@ -1,11 +1,11 @@
 import { SessionEntity } from '../domain/session.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { plainToInstance } from 'class-transformer';
 
 export abstract class ISessionsRepository {
   abstract findSessionByDeviceId(deviceId: number): Promise<SessionEntity | null>;
   abstract saveSession(session: SessionEntity): Promise<void>;
-  abstract updateSession(session: SessionEntity): Promise<void>;
   abstract deleteSessionByDeviceId(deviceId: number): Promise<void>;
   abstract newDeviceId(): Promise<SessionEntity>;
 }
@@ -15,23 +15,8 @@ export class PrismaSessionsRepository implements ISessionsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findSessionByDeviceId(deviceId: number): Promise<SessionEntity | null> {
-    const session = await this.prisma.session.findUnique({
-      where: {
-        deviceId,
-      },
-      select: {
-        deviceId: true,
-        userId: true,
-        exp: true,
-        ip: true,
-        deviceName: true,
-        iat: true,
-      },
-    });
-    if (session) {
-      return SessionEntity.preparation(session);
-    }
-    return null;
+    const session = await this.prisma.session.findUnique({ where: { deviceId } });
+    return plainToInstance(SessionEntity, session);
   }
 
   async saveSession(session: SessionEntity): Promise<void> {
@@ -55,19 +40,6 @@ export class PrismaSessionsRepository implements ISessionsRepository {
     const session = await this.prisma.session.create({
       data: {},
     });
-    return SessionEntity.preparation(session);
-  }
-
-  async updateSession(session: SessionEntity): Promise<void> {
-    await this.prisma.session.update({
-      where: { deviceId: session.deviceId },
-      data: {
-        userId: session.userId,
-        exp: session.exp,
-        ip: session.ip,
-        deviceName: session.deviceName,
-        iat: session.iat,
-      },
-    });
+    return plainToInstance(SessionEntity, session);
   }
 }

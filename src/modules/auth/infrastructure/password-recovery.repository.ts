@@ -1,6 +1,7 @@
 import { PasswordRecoveryEntity } from '../domain/password-recovery.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { plainToInstance } from 'class-transformer';
 
 export abstract class IPasswordRecoveryRepository {
   abstract findPassRecovery(recoveryCode: string): Promise<PasswordRecoveryEntity | null>;
@@ -17,17 +18,8 @@ export class PrismaPasswordRecoveryRepository implements IPasswordRecoveryReposi
       where: {
         recoveryCode: recoveryCode,
       },
-      select: {
-        id: true,
-        recoveryCode: true,
-        expirationDate: true,
-        email: true,
-      },
     });
-    if (passRecovery) {
-      return PasswordRecoveryEntity.preparation(passRecovery);
-    }
-    return null;
+    return plainToInstance(PasswordRecoveryEntity, passRecovery);
   }
 
   async savePassRecovery(passRecovery: PasswordRecoveryEntity) {

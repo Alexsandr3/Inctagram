@@ -49,6 +49,10 @@ export class UploadImageAvatarUseCase
 
     const avatars = result.map(i => AvatarEntity.initCreate(userId, i));
     //result is array of instances images need to save
-    await Promise.all(avatars.map(avatar => this.usersRepository.saveImageProfile(avatar)));
+    if (!user.profile.avatars || user.profile.avatars.length === 0) {
+      await this.usersRepository.addAvatars(userId, avatars);
+    } else {
+      await this.usersRepository.updateAvatars(userId, avatars);
+    }
   }
 }

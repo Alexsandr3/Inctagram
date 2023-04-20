@@ -152,6 +152,13 @@ describe('Posts flow - e2e', () => {
   it('33 - / (DELETE) - should return 204 if all data is correct for delete image post', async () => {
     await postsHelper.deletePhotoPost(uploadId2, { token: accessToken, expectedCode: 204 });
   });
+  it('33.1 - / (DELETE) - should return 404 if deleted image not found', async () => {
+    const result: ApiErrorResultDto = await postsHelper.deletePhotoPost(uploadId2, {
+      token: accessToken,
+      expectedCode: 404,
+    });
+    expect(result.messages[0].field).toBe('image');
+  });
 
   //Create 2 posts - correct data - uploadId1 - for first user
   it('34 - / (POST) - should return 201 if all data is correct for upload (1-photo) image post', async () => {
