@@ -39,12 +39,7 @@ export class DeleteImagePostUseCase
     const urlsForDelete = imagesForDelete.map(image => image.url);
     //delete image from aws
     await this.imagesEditor.deleteImageByUrl(urlsForDelete);
-    //find images by resourceIds and userId and change status to deleted
-    const images = imagesForDelete.map(image => {
-      image.changeStatusToDeleted(uploadId);
-      return image;
-    });
     //delete images from db
-    await this.postsRepository.deleteImages(images);
+    await this.postsRepository.deleteImages(imagesForDelete);
   }
 }
