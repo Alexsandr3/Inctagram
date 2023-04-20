@@ -10,7 +10,7 @@ import { PaginationPostsInputDto } from '../api/input-dto/pagination-posts.input
 
 export abstract class IPostsQueryRepository {
   abstract getPost(postId: number, status: PostStatus): Promise<PostViewModel>;
-  abstract getUploadImages(data: { resourceId: string }[]): Promise<UploadedImageViewModel>;
+  abstract getUploadImages(resourceId: string): Promise<UploadedImageViewModel>;
 
   abstract getPosts(
     userId: number,
@@ -38,11 +38,11 @@ export class PostsQueryRepository implements IPostsQueryRepository {
     post.images.sort((a, b) => b.width - a.width);
     return new PostViewModel(post);
   }
-  async getUploadImages(data: { resourceId: string }[]): Promise<UploadedImageViewModel> {
+  async getUploadImages(resourceId: string): Promise<UploadedImageViewModel> {
     const images = await this.prisma.postImage.findMany({
       where: {
         resourceId: {
-          in: data.map(item => item.resourceId),
+          in: [resourceId],
         },
         status: PostStatus.PENDING,
       },

@@ -16,7 +16,7 @@ export class UploadImagePostCommand {
 
 @CommandHandler(UploadImagePostCommand)
 export class UploadImagePostUseCase
-  extends BaseNotificationUseCase<UploadImagePostCommand, { resourceId: string }[]>
+  extends BaseNotificationUseCase<UploadImagePostCommand, string>
   implements ICommandHandler<UploadImagePostCommand>
 {
   constructor(
@@ -26,7 +26,7 @@ export class UploadImagePostUseCase
   ) {
     super();
   }
-  async executeUseCase(command: UploadImagePostCommand): Promise<{ resourceId: string }[]> {
+  async executeUseCase(command: UploadImagePostCommand): Promise<string> {
     const { userId, photo, mimetype } = command;
     //find user
     const user = await this.usersRepository.findById(userId);
@@ -45,6 +45,7 @@ export class UploadImagePostUseCase
     const postImage = result.map(i => ImagePostEntity.initCreate(userId, i));
     //save images
     await this.postsRepository.saveImages(postImage);
-    return postImage.map(i => ({ resourceId: i.resourceId }));
+    //return resourceId for save in db instance images
+    return result[0].resourceId;
   }
 }
