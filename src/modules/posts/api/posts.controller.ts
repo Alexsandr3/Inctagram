@@ -62,10 +62,9 @@ export class PostsController {
     @UploadedFile(new ValidationTypeImagePipe(typeImagePost))
     file: Express.Multer.File,
   ): Promise<UploadedImageViewModel> {
-    const notification = await this.commandBus.execute<
-      UploadImagePostCommand,
-      ResultNotification<{ resourceId: string }[]>
-    >(new UploadImagePostCommand(userId, file.mimetype, file.buffer));
+    const notification = await this.commandBus.execute<UploadImagePostCommand, ResultNotification<string>>(
+      new UploadImagePostCommand(userId, file.mimetype, file.buffer),
+    );
     return this.postsQueryRepository.getUploadImages(notification.getData());
   }
 
@@ -89,7 +88,7 @@ export class PostsController {
   }
 
   @SwaggerDecoratorsByGetPost()
-  @Get('/:postId')
+  @Get('/p/:postId')
   @HttpCode(HTTP_Status.OK_200)
   async getPost(
     @CurrentUserId() userId: number,

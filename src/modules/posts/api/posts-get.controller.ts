@@ -18,7 +18,7 @@ export class PostsGetController {
 
   @SwaggerDecoratorsByGetPosts()
   @ApiOkResponsePaginated(PostViewModel)
-  @Get('all/:userId')
+  @Get('/:userId')
   @HttpCode(HTTP_Status.OK_200)
   async getPosts(
     // @CurrentUserId() userId: number,

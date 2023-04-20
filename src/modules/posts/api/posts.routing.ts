@@ -4,8 +4,8 @@ export const postsEndpoints = {
   uploadImagePost: () => `${baseUrlPost}/image`,
   deleteImagePost: (uploadId: string) => `${baseUrlPost}/image/${uploadId}`,
   createPost: () => `${baseUrlPost}`,
-  getPost: (postId: number) => `${baseUrlPost}/${postId}`,
+  getPost: (postId: number) => `${baseUrlPost}/p/${postId}`,
   updatePost: (postId: number) => `${baseUrlPost}/${postId}`,
   deletePost: (postId: number) => `${baseUrlPost}/${postId}`,
-  getPosts: (userId: number) => `${baseUrlPost}/all/${userId}`,
+  getPosts: (userId: number) => `${baseUrlPost}/${userId}`,
 };
