@@ -5,17 +5,15 @@ import { plainToInstance } from 'class-transformer';
 import { PostViewModel } from '../api/view-models/post-view.dto';
 import { Injectable } from '@nestjs/common';
 import { UploadedImageViewModel } from '../api/view-models/uploaded-image-view.dto';
-import { PaginationViewModel } from '../../../main/shared/pagination-view.dto';
 import { PaginationPostsInputDto } from '../api/input-dto/pagination-posts.input.dto';
+import { PostsWithPaginationViewDto } from '../api/view-models/posts-with-pagination-view.dto';
+import { Paginated } from '../../../main/shared/paginated';
 
 export abstract class IPostsQueryRepository {
   abstract getPost(postId: number, status: PostStatus): Promise<PostViewModel>;
   abstract getUploadImages(resourceId: string): Promise<UploadedImageViewModel>;
 
-  abstract getPosts(
-    userId: number,
-    paginationInputModel: PaginationPostsInputDto,
-  ): Promise<PaginationViewModel<PostViewModel>>;
+  abstract getPosts(userId: number, paginationInputModel: PaginationPostsInputDto): Promise<Paginated<PostViewModel[]>>;
 }
 
 @Injectable()
@@ -55,10 +53,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
     );
   }
 
-  async getPosts(
-    userId: number,
-    paginationInputModel: PaginationPostsInputDto,
-  ): Promise<PaginationViewModel<PostViewModel>> {
+  async getPosts(userId: number, paginationInputModel: PaginationPostsInputDto): Promise<Paginated<PostViewModel[]>> {
     const posts = await this.prisma.post.findMany({
       where: {
         ownerId: userId,
@@ -79,13 +74,11 @@ export class PostsQueryRepository implements IPostsQueryRepository {
         status: PostStatus.PUBLISHED,
       },
     });
-    const pagesCountRes = Math.ceil(total / paginationInputModel.getPageSize());
-    return new PaginationViewModel(
-      pagesCountRes,
-      paginationInputModel.getPageNumber(),
-      paginationInputModel.getPageSize(),
-      total,
-      posts.map(post => new PostViewModel(plainToInstance(PostEntity, post))),
-    );
+    return PostsWithPaginationViewDto.getPaginated({
+      items: posts.map(post => new PostViewModel(plainToInstance(PostEntity, post))),
+      page: paginationInputModel.getPageNumber(),
+      size: paginationInputModel.getPageSize(),
+      count: total,
+    });
   }
 }
