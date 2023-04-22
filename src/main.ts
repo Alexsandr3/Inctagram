@@ -4,6 +4,7 @@ import { appConfig } from './configuration/app.config';
 import { ApiConfigService } from './modules/api-config/api.config.service';
 import { swaggerConfig } from './configuration/swagger/swagger.config';
 import getLogLevels from './providers/logger/getLogLevels';
+import { connectToNgrok } from './configuration/connectToNgrok';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -19,5 +20,7 @@ async function bootstrap() {
   await createdApp.listen(PORT).then(async () => {
     console.log(`Server is listening on ${await app.getUrl()}`);
   });
+  //connect to ngrok for development
+  await connectToNgrok(createdApp);
 }
 bootstrap();
