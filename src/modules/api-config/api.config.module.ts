@@ -48,6 +48,9 @@ import Joi from 'joi';
         SA_PASSWORD: Joi.string().required(),
 
         RECAPTCHA_SECRET_KEY: Joi.string().required(),
+        RECAPTCHA_ENTERPRISE_API_KEY: Joi.string().required(),
+        RECAPTCHA_ENTERPRISE_PUBLIC_SITE_KEY: Joi.string().required(),
+        RECAPTCHA_ENTERPRISE_PROJECT_ID: Joi.string().required(),
 
         IP_RESTRICTION: Joi.boolean(),
       }),

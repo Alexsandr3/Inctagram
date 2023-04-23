@@ -111,6 +111,18 @@ export class ApiConfigService {
   }
 
   get RECAPTCHA_SECRET_KEY(): boolean {
-    return this.configService.get('RECAPTCHA_SECRET_KEY', { infer: true });
+    return this.configService.get('recaptcha.RECAPTCHA_SECRET_KEY', { infer: true });
+  }
+
+  get RECAPTCHA_ENTERPRISE_API_KEY(): boolean {
+    return this.configService.get('recaptcha.RECAPTCHA_ENTERPRISE_API_KEY', { infer: true });
+  }
+
+  get RECAPTCHA_ENTERPRISE_PUBLIC_SITE_KEY(): boolean {
+    return this.configService.get('recaptcha.RECAPTCHA_ENTERPRISE_PUBLIC_SITE_KEY', { infer: true });
+  }
+
+  get RECAPTCHA_ENTERPRISE_PROJECT_ID(): boolean {
+    return this.configService.get('recaptcha.RECAPTCHA_ENTERPRISE_PROJECT_ID', { infer: true });
   }
 }
