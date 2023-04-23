@@ -9,7 +9,7 @@ export const connectToNgrok = async (app: INestApplication) => {
   let baseUrl = app.get(ApiConfigService).CURRENT_APP_BASE_URL;
   const nodeEnv = app.get(ApiConfigService).NODE_ENV;
   //connect to ngrok for development
-  if (nodeEnv === 'provision') {
+  if (nodeEnv === 'test') {
     baseUrl = await ngrok.connect({ authtoken: token, addr: port });
     logger.log(`Server is listening port NGROK on__ ${baseUrl}`);
   }
