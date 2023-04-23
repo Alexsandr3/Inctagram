@@ -24,7 +24,7 @@ export class S3StorageAdapter {
     // Create an Amazon S3 service client object.
     this.s3Client = new S3Client({
       region: this.region,
-      endpoint: this.endpoint,
+      endpoint: this.endpoint === 'https://storage.yandexcloud.net' ? this.endpoint : null,
       credentials: {
         secretAccessKey: secretAccessKey,
         accessKeyId: accessKeyId,

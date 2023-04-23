@@ -31,7 +31,7 @@ import Joi from 'joi';
         AWS_SECRET_ACCESS_KEY: Joi.string().required(),
         AWS_ACCESS_KEY_ID: Joi.string().required(),
         AWS_BUCKET: Joi.string().required(),
-        AWS_ENDPOINT: Joi.string(),
+        AWS_ENDPOINT: Joi.string().required(),
         AWS_REGION: Joi.string().required(),
 
         GOOGLE_CLIENT_ID: Joi.string().required(),
