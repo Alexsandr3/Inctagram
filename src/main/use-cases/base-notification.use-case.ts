@@ -1,7 +1,9 @@
 import { ResultNotification } from '../validators/result-notification';
 import { CheckerNotificationErrors } from '../validators/checker-notification.errors';
+import { Logger } from '@nestjs/common';
 
 export abstract class BaseNotificationUseCase<TCommand, TResult> {
+  private readonly logger = new Logger(BaseNotificationUseCase.name);
   /**
    *
    * @param command
@@ -14,6 +16,8 @@ export abstract class BaseNotificationUseCase<TCommand, TResult> {
       if (result) notification.addData(result);
     } catch (e) {
       notification.addErrorFromNotificationException(e);
+      // console.log('BaseNotificationUseCase: ', e);
+      this.logger.error(e);
     }
 
     if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
