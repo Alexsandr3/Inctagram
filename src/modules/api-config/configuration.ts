@@ -31,6 +31,7 @@ export const configuration = () => ({
     AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
     AWS_BUCKET: process.env.AWS_BUCKET,
     AWS_ENDPOINT: process.env.AWS_ENDPOINT,
+    AWS_REGION: process.env.AWS_REGION,
   },
   google: {
     GOOGLE_CLIENT_ID: process.env.GOOGLE_CLIENT_ID,

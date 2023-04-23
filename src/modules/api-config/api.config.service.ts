@@ -66,8 +66,12 @@ export class ApiConfigService {
     return this.configService.get('awsStorage.AWS_BUCKET', { infer: true });
   }
 
-  get AWS_ENDPOINT(): string {
-    return this.configService.get('awsStorage.AWS_ENDPOINT', { infer: true });
+  get AWS_ENDPOINT(): string | null {
+    return this.configService.get('awsStorage.AWS_ENDPOINT', { infer: true }) || null;
+  }
+
+  get AWS_REGION(): string {
+    return this.configService.get('awsStorage.AWS_REGION', { infer: true });
   }
 
   get GOOGLE_CLIENT_ID(): string {

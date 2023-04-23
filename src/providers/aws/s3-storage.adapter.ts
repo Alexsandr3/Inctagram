@@ -13,18 +13,18 @@ export class S3StorageAdapter {
   private readonly s3Client: S3Client;
   private readonly bucket: string;
   private readonly endpoint: string;
+  private readonly region: string;
 
   constructor(private readonly configService: ApiConfigService) {
     const secretAccessKey = this.configService.AWS_SECRET_ACCESS_KEY;
     const accessKeyId = this.configService.AWS_ACCESS_KEY_ID;
     this.bucket = this.configService.AWS_BUCKET;
     this.endpoint = this.configService.AWS_ENDPOINT;
-    // Set the AWS Region.
-    const REGION = 'eu-central-1';
+    this.region = this.configService.AWS_REGION;
     // Create an Amazon S3 service client object.
     this.s3Client = new S3Client({
-      region: REGION,
-      // endpoint: 'https://bee-brick.s3.eu-central-1.amazonaws.com',
+      region: this.region,
+      endpoint: this.endpoint,
       credentials: {
         secretAccessKey: secretAccessKey,
         accessKeyId: accessKeyId,
