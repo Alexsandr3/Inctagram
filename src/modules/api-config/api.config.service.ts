@@ -82,10 +82,6 @@ export class ApiConfigService {
     return this.configService.get('google.GOOGLE_CALLBACK_URL', { infer: true });
   }
 
-  get TOKEN_NGROK(): string {
-    return this.configService.get('TOKEN_NGROK', { infer: true });
-  }
-
   get TOKEN_TELEGRAM(): number {
     return this.configService.get('TOKEN_TELEGRAM', { infer: true });
   }
@@ -124,5 +120,9 @@ export class ApiConfigService {
 
   get RECAPTCHA_ENTERPRISE_PROJECT_ID(): boolean {
     return this.configService.get('recaptcha.RECAPTCHA_ENTERPRISE_PROJECT_ID', { infer: true });
+  }
+
+  get TOKEN_NGROK(): string {
+    return this.configService.get('TOKEN_NGROK', { infer: true });
   }
 }

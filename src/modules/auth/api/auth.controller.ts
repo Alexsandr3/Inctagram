@@ -118,7 +118,7 @@ export class AuthController {
       new LoginCommand(userId, ip, deviceName),
     );
     const { accessToken, refreshToken } = notification.getData();
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'none' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
     return { accessToken };
   }
 

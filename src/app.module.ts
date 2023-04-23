@@ -11,6 +11,7 @@ import { LoggerModule } from './providers/logger/logger.module';
 import LogsMiddleware from './providers/logger/logs.middleware';
 import { PrismaModule } from './providers/prisma/prisma.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { GoogleAuthModule } from './providers/google-auth/google-auth.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { PostsModule } from './modules/posts/posts.module';
     LoggerModule,
     PrismaModule,
     PostsModule,
+    GoogleAuthModule,
   ],
   controllers: [AppController],
   providers: [],
