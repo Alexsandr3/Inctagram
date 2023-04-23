@@ -7,4 +7,4 @@ import { ApiConfigModule } from '../../modules/api-config/api.config.module';
   providers: [RecaptchaAdapter],
   exports: [RecaptchaAdapter],
 })
-export class RecaptchaModule {}
+export class GoogleRecaptchaModule {}

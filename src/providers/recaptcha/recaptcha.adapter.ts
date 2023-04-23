@@ -1,6 +1,7 @@
 import { ApiConfigService } from '../../modules/api-config/api.config.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { RecaptchaResponse } from './recaptcha-response.type';
+import axios from 'axios';
 
 @Injectable()
 export class RecaptchaAdapter {
@@ -8,12 +9,10 @@ export class RecaptchaAdapter {
   constructor(private readonly configService: ApiConfigService) {}
 
   async validateRecaptcha(recaptcha: string): Promise<RecaptchaResponse> {
-    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `secret=${this.configService.RECAPTCHA_SECRET_KEY}&response=${recaptcha}`,
-    });
-    this.logger.log('Recaptcha response: ' + response);
-    return response.json();
+    const response = await axios.post(
+      `https://www.google.com/recaptcha/api/siteverify?response=${recaptcha}&secret=${this.configService.RECAPTCHA_SECRET_KEY}`,
+    );
+    this.logger.log('Recaptcha response: ', response.data);
+    return response.data;
   }
 }

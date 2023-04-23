@@ -174,7 +174,14 @@ describe('Authorisation -  e2e', () => {
     expect(response.messages[0].field).toBe('recoveryCode');
   });
   //auth/logout
-  it('19 - / (POST) - should return 401 if user not unauthorized', async () => {});
+  it('19 - / (POST) - should return 401 if user not unauthorized', async () => {
+    const invalidToken =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ90.' +
+      'eyJ1c2VySWQiOjMwMiwiaWF0IjoxNjgwOTUzMDUzLCJleHAiOjE2ODEwMzk0NTN9.' +
+      '9k9OHxm74NydJP9XFLHMAZcu06-_KvN5YRcw-ASYgvk';
+    const response = await authHelper.logout({ expectedCode: 401, expectedBody: invalidToken });
+    expect(response.error).toBe('Unauthorized');
+  });
   //auth/refresh-token
   it('20 - / (POST) - should return 401 if user not unauthorized', async () => {
     const response: ApiErrorResultDto = await authHelper.refreshToken({ expectedCode: 401 });
@@ -233,16 +240,12 @@ describe('Authorisation -  e2e', () => {
   });
 
   //Logout correct data
-  it('33 - / (POST) - should return 401 if refreshToken not valid', async () => {
-    const invalidToken =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ90.' +
-      'eyJ1c2VySWQiOjMwMiwiaWF0IjoxNjgwOTUzMDUzLCJleHAiOjE2ODEwMzk0NTN9.' +
-      '9k9OHxm74NydJP9XFLHMAZcu06-_KvN5YRcw-ASYgvk';
-    const response = await authHelper.logout({ expectedCode: 401, expectedBody: invalidToken });
-    expect(response.error).toBe('Unauthorized');
-  });
   it('34 - / (POST) - should return 204 if user authorized', async () => {
     await authHelper.logout({ expectedCode: 204, expectedBody: refreshToken });
+  });
+  it('35 - / (POST) - should return 401 if user is already logout', async () => {
+    const response: ApiErrorResultDto = await authHelper.logout({ expectedCode: 401, expectedBody: refreshToken });
+    expect(response.error).toBe('Unauthorized');
   });
   //Password recovery
   let recoveryCode: string;

@@ -18,15 +18,11 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findUserById(id: number) {
-    return this.prisma.user.findFirst({
-      where: {
-        id,
-      },
-    });
+    return this.prisma.user.findFirst({ where: { id } });
   }
 
   async findUserProfile(userId: number): Promise<ProfileViewModel> {
-    const userWithProfile = await this.prisma.user.findFirst({
+    const userWithProfile = await this.prisma.user.findUnique({
       where: {
         id: userId,
       },

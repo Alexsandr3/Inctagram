@@ -7,7 +7,7 @@ import { PaginationPostsInputDto } from './input-dto/pagination-posts.input.dto'
 import { SwaggerDecoratorsByGetPosts } from '../swagger.posts.decorators';
 import { ApiOkResponsePaginated } from '../../../main/shared/api-ok-response-paginated';
 import { PostViewModel } from './view-models/post-view.dto';
-import { PaginationViewModel } from '../../../main/shared/pagination-view.dto';
+import { Paginated } from '../../../main/shared/paginated';
 
 // @ApiBearerAuth()
 @ApiTags('Posts')
@@ -24,7 +24,7 @@ export class PostsGetController {
     // @CurrentUserId() userId: number,
     @Param(`userId`, ParseIntPipe) userId: number,
     @Query() paginationInputModel: PaginationPostsInputDto,
-  ): Promise<PaginationViewModel<PostViewModel>> {
+  ): Promise<Paginated<PostViewModel[]>> {
     return this.postsQueryRepository.getPosts(userId, paginationInputModel);
   }
 }

@@ -310,7 +310,7 @@ describe('Update-profile -  e2e', () => {
 
   //Upload image profile - avatar by SECOND user - correct data
   it('37 - / (POST) - should return 201 if all data is correct for upload image', async () => {
-    let nameFile = '/images/859x720_338kb.jpeg';
+    let nameFile = '/images/940x432_63kb.jpeg';
     const responseBody: AvatarsViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       token: accessToken2,
       expectedCode: 201,

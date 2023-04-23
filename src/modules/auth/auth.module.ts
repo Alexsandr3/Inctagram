@@ -23,7 +23,6 @@ import {
 import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 import { GenerateNewTokensUseCase } from './application/use-cases/update-tokens.use-case';
-import { RecaptchaModule } from '../../providers/recaptcha/recaptcha.module';
 
 const useCases = [
   RegisterUserUseCase,
@@ -40,7 +39,7 @@ const useCases = [
 const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];
 
 @Module({
-  imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule, RecaptchaModule],
+  imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule],
   controllers: [AuthController],
   providers: [
     AuthService,
