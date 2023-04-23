@@ -44,6 +44,7 @@ import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MeViewDto } from './view-dto/me.view.dto';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';
+import { GoogleRecaptchaGuard } from '../../../providers/recaptcha/google-recaptcha.guard';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -117,7 +118,7 @@ export class AuthController {
       new LoginCommand(userId, ip, deviceName),
     );
     const { accessToken, refreshToken } = notification.getData();
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'none' });
     return { accessToken };
   }
 
@@ -130,7 +131,7 @@ export class AuthController {
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<null> {
     const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
-      new PasswordRecoveryCommand(body.email, false, body.recaptcha),
+      new PasswordRecoveryCommand(body.email),
     );
     return notification.getData();
   }
@@ -210,11 +211,12 @@ export class AuthController {
 
   //need for testing recaptcha --- > remove in production
   @ApiExcludeEndpoint()
+  @UseGuards(GoogleRecaptchaGuard)
   @Post('password-recovery-test')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto): Promise<null> {
     const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
-      new PasswordRecoveryCommand(body.email, true, body.recaptcha),
+      new PasswordRecoveryCommand(body.email),
     );
     return notification.getData();
   }
