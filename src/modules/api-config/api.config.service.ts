@@ -19,19 +19,19 @@ export class ApiConfigService {
   }
 
   get DATABASE_URL(): string {
-    return this.configService.get('DATABASE_URL', { infer: true });
+    return this.configService.get('database.DATABASE_URL', { infer: true });
   }
 
   get MAIL_USER(): string {
-    return this.configService.get('MAIL_USER', { infer: true });
+    return this.configService.get('mail.MAIL_USER', { infer: true });
   }
 
   get MAIL_PASSWORD(): string {
-    return this.configService.get('MAIL_PASSWORD', { infer: true });
+    return this.configService.get('mail.MAIL_PASSWORD', { infer: true });
   }
 
   get MAIL_FROM(): string {
-    return this.configService.get('MAIL_FROM', { infer: true });
+    return this.configService.get('mail.MAIL_FROM', { infer: true });
   }
 
   get CLIENT_URL(): string {
@@ -39,19 +39,19 @@ export class ApiConfigService {
   }
 
   get ACCESS_TOKEN_SECRET(): string {
-    return this.configService.get('ACCESS_TOKEN_SECRET', { infer: true });
+    return this.configService.get('auth.jwt.ACCESS_TOKEN_SECRET', { infer: true });
   }
 
   get EXPIRED_ACCESS(): string {
-    return this.configService.get('EXPIRED_ACCESS', { infer: true });
+    return this.configService.get('auth.jwt.EXPIRED_ACCESS', { infer: true });
   }
 
   get REFRESH_TOKEN_SECRET(): string {
-    return this.configService.get('REFRESH_TOKEN_SECRET', { infer: true });
+    return this.configService.get('auth.jwt.REFRESH_TOKEN_SECRET', { infer: true });
   }
 
   get EXPIRED_REFRESH(): string {
-    return this.configService.get('EXPIRED_REFRESH', { infer: true });
+    return this.configService.get('auth.jwt.EXPIRED_REFRESH', { infer: true });
   }
 
   get AWS_SECRET_ACCESS_KEY(): string {
@@ -75,27 +75,27 @@ export class ApiConfigService {
   }
 
   get GOOGLE_CLIENT_ID(): string {
-    return this.configService.get('google.GOOGLE_CLIENT_ID', { infer: true });
+    return this.configService.get('auth.google.GOOGLE_CLIENT_ID', { infer: true });
   }
 
   get GOOGLE_CLIENT_SECRET(): string {
-    return this.configService.get('google.GOOGLE_CLIENT_SECRET', { infer: true });
+    return this.configService.get('auth.google.GOOGLE_CLIENT_SECRET', { infer: true });
   }
 
   get GOOGLE_CALLBACK_URL(): string {
-    return this.configService.get('google.GOOGLE_CALLBACK_URL', { infer: true });
+    return this.configService.get('auth.google.GOOGLE_CALLBACK_URL', { infer: true });
   }
 
   get GITHUB_CLIENT_ID(): string {
-    return this.configService.get('github.GITHUB_CLIENT_ID', { infer: true });
+    return this.configService.get('auth.github.GITHUB_CLIENT_ID', { infer: true });
   }
 
   get GITHUB_CLIENT_SECRET(): string {
-    return this.configService.get('github.GITHUB_CLIENT_SECRET', { infer: true });
+    return this.configService.get('auth.github.GITHUB_CLIENT_SECRET', { infer: true });
   }
 
   get GITHUB_CALLBACK_URL(): string {
-    return this.configService.get('github.GITHUB_CALLBACK_URL', { infer: true });
+    return this.configService.get('auth.github.GITHUB_CALLBACK_URL', { infer: true });
   }
 
   get TOKEN_TELEGRAM(): number {
@@ -111,11 +111,11 @@ export class ApiConfigService {
   }
 
   get SA_LOGIN(): string {
-    return this.configService.get('SA_LOGIN', { infer: true });
+    return this.configService.get('auth.admin.SA_LOGIN', { infer: true });
   }
 
   get SA_PASSWORD(): string {
-    return this.configService.get('SA_PASSWORD', { infer: true });
+    return this.configService.get('auth.admin.SA_PASSWORD', { infer: true });
   }
 
   get IP_RESTRICTION(): boolean {
@@ -139,6 +139,6 @@ export class ApiConfigService {
   }
 
   get TOKEN_NGROK(): string {
-    return this.configService.get('TOKEN_NGROK', { infer: true });
+    return this.configService.get('dev.TOKEN_NGROK', { infer: true });
   }
 }
