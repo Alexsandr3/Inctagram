@@ -38,6 +38,10 @@ import Joi from 'joi';
         GOOGLE_CLIENT_SECRET: Joi.string().required(),
         GOOGLE_CALLBACK_URL: Joi.string().required(),
 
+        GITHUB_CLIENT_ID: Joi.string().required(),
+        GITHUB_CLIENT_SECRET: Joi.string().required(),
+        GITHUB_CALLBACK_URL: Joi.string().required(),
+
         TOKEN_NGROK: Joi.string(),
 
         //TOKEN_TELEGRAM: Joi.string(),

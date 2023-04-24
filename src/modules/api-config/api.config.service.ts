@@ -86,6 +86,18 @@ export class ApiConfigService {
     return this.configService.get('google.GOOGLE_CALLBACK_URL', { infer: true });
   }
 
+  get GITHUB_CLIENT_ID(): string {
+    return this.configService.get('github.GITHUB_CLIENT_ID', { infer: true });
+  }
+
+  get GITHUB_CLIENT_SECRET(): string {
+    return this.configService.get('github.GITHUB_CLIENT_SECRET', { infer: true });
+  }
+
+  get GITHUB_CALLBACK_URL(): string {
+    return this.configService.get('github.GITHUB_CALLBACK_URL', { infer: true });
+  }
+
   get TOKEN_TELEGRAM(): number {
     return this.configService.get('TOKEN_TELEGRAM', { infer: true });
   }

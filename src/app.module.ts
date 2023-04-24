@@ -11,7 +11,8 @@ import { LoggerModule } from './providers/logger/logger.module';
 import LogsMiddleware from './providers/logger/logs.middleware';
 import { PrismaModule } from './providers/prisma/prisma.module';
 import { PostsModule } from './modules/posts/posts.module';
-import { GoogleAuthModule } from './providers/google-auth/google-auth.module';
+import { GoogleOAuthModule } from './providers/google-oauth/google-oauth.module';
+import { GithubOauthModule } from './providers/github-oauth/github-oauth.module';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import { GoogleAuthModule } from './providers/google-auth/google-auth.module';
     LoggerModule,
     PrismaModule,
     PostsModule,
-    GoogleAuthModule,
+    GoogleOAuthModule,
+    GithubOauthModule,
   ],
   controllers: [AppController],
   providers: [],
