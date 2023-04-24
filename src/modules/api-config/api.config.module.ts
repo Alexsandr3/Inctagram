@@ -32,10 +32,15 @@ import Joi from 'joi';
         AWS_ACCESS_KEY_ID: Joi.string().required(),
         AWS_BUCKET: Joi.string().required(),
         AWS_ENDPOINT: Joi.string().required(),
+        AWS_REGION: Joi.string().required(),
 
         GOOGLE_CLIENT_ID: Joi.string().required(),
         GOOGLE_CLIENT_SECRET: Joi.string().required(),
         GOOGLE_CALLBACK_URL: Joi.string().required(),
+
+        GITHUB_CLIENT_ID: Joi.string().required(),
+        GITHUB_CLIENT_SECRET: Joi.string().required(),
+        GITHUB_CALLBACK_URL: Joi.string().required(),
 
         TOKEN_NGROK: Joi.string(),
 
@@ -48,6 +53,9 @@ import Joi from 'joi';
         SA_PASSWORD: Joi.string().required(),
 
         RECAPTCHA_SECRET_KEY: Joi.string().required(),
+        RECAPTCHA_ENTERPRISE_API_KEY: Joi.string().required(),
+        RECAPTCHA_ENTERPRISE_PUBLIC_SITE_KEY: Joi.string().required(),
+        RECAPTCHA_ENTERPRISE_PROJECT_ID: Joi.string().required(),
 
         IP_RESTRICTION: Joi.boolean(),
       }),

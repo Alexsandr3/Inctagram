@@ -18,7 +18,6 @@ import { CheckPasswordRecoveryCodeCommand } from '../application/use-cases/check
 import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
 import { ResendRegistrationEmailCommand } from '../application/use-cases/resend-registration-email.use-case';
 import { LoginCommand } from '../application/use-cases/login.use-case';
-import { PasswordRecoveryCommand } from '../application/use-cases/password-recovery.use-case';
 import { LogoutCommand } from '../application/use-cases/logout.use-case';
 import { ConfirmRegistrationCommand } from '../application/use-cases/confirm-registration.use-case';
 import { ResultNotification } from '../../../main/validators/result-notification';
@@ -44,7 +43,8 @@ import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MeViewDto } from './view-dto/me.view.dto';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';
-import { GoogleRecaptchaGuard } from '../../../providers/recaptcha/google-recaptcha.guard';
+import { GoogleEnterpriseRecaptchaGuard } from '../../../providers/recaptcha/google-enterprise-recaptcha.guard';
+import { PasswordRecoveryCommand } from '../application/use-cases/password-recovery.use-case';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -118,7 +118,7 @@ export class AuthController {
       new LoginCommand(userId, ip, deviceName),
     );
     const { accessToken, refreshToken } = notification.getData();
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: false, sameSite: 'none' });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
     return { accessToken };
   }
 
@@ -127,6 +127,7 @@ export class AuthController {
    * @param body
    */
   @SwaggerDecoratorsByPasswordRecovery()
+  // @UseGuards(GoogleEnterpriseRecaptchaGuard)
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<null> {
@@ -195,7 +196,7 @@ export class AuthController {
     );
 
     const { accessToken, refreshToken } = notification.getData();
-    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
 
     return { accessToken };
   }
@@ -211,7 +212,7 @@ export class AuthController {
 
   //need for testing recaptcha --- > remove in production
   @ApiExcludeEndpoint()
-  @UseGuards(GoogleRecaptchaGuard)
+  @UseGuards(GoogleEnterpriseRecaptchaGuard)
   @Post('password-recovery-test')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto): Promise<null> {

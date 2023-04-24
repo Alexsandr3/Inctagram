@@ -52,7 +52,7 @@ model PasswordRecovery {
   id             Int      @id @default(autoincrement())
   recoveryCode   String   @unique
   expirationDate DateTime
-  email          String   @unique
+  email          String
 
   @@map("PasswordRecovery")
 }
