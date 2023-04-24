@@ -2,12 +2,12 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { Injectable, Logger } from '@nestjs/common';
 import { ApiConfigService } from '../../../../modules/api-config/api.config.service';
-import { GoogleUserType } from '../../types/google-user.type';
+import { GoogleInputProfileType, GoogleUserType } from '../../types/google-user.type';
 import { IUsersRepository } from '../../../../modules/users/infrastructure/users.repository';
 
 @Injectable()
-export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
-  private readonly logger = new Logger(GoogleAuthStrategy.name);
+export class GoogleOAuthStrategy extends PassportStrategy(Strategy, 'google') {
+  private readonly logger = new Logger(GoogleOAuthStrategy.name);
   constructor(private apiConfigService: ApiConfigService, private readonly usersRepository: IUsersRepository) {
     super({
       clientID: apiConfigService.GOOGLE_CLIENT_ID,
@@ -16,7 +16,12 @@ export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
       scope: ['email', 'profile'],
     });
   }
-  async validate(accessToken: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
+  async validate(
+    accessToken: string,
+    _refreshToken: string,
+    profile: GoogleInputProfileType,
+    done: VerifyCallback,
+  ): Promise<any> {
     const { name, emails, photos } = profile;
     const foundUser = await this.usersRepository.findUserByEmail(emails[0].value);
     if (!foundUser) {
@@ -26,6 +31,7 @@ export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
     const user: GoogleUserType = {
       userId: foundUser.id,
       email: emails[0].value,
+      provider: profile.provider,
       firstName: name.givenName,
       lastName: name.familyName,
       picture: photos[0].value,

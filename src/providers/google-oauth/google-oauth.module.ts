@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
-import { GoogleAuthStrategy } from './api/strategy/google-auth.strategy';
+import { GoogleOAuthStrategy } from './api/strategy/google-oauth.strategy';
 import { ApiConfigModule } from '../../modules/api-config/api.config.module';
 import { CqrsModule } from '@nestjs/cqrs';
-import { GoogleAuthController } from './api/google-auth.controller';
+import { GoogleOAuthController } from './api/google-oauth.controller';
 import { UsersModule } from '../../modules/users/users.module';
-
-const strategies = [GoogleAuthStrategy];
 
 @Module({
   imports: [ApiConfigModule, CqrsModule, UsersModule],
-  controllers: [GoogleAuthController],
-  providers: [...strategies],
+  controllers: [GoogleOAuthController],
+  providers: [GoogleOAuthStrategy],
 })
-export class GoogleAuthModule {}
+export class GoogleOAuthModule {}
