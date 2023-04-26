@@ -1,5 +1,5 @@
 import { ProfileEntity } from './profile.entity';
-import { BaseDateEntity } from './base-date.entity';
+import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
 

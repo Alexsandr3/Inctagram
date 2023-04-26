@@ -1,9 +1,9 @@
 import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
-import { ApiErrorResultDto } from '../../main/validators/api-error-result.dto';
-import { HTTP_Status } from '../../main/enums/http-status.enum';
-import { ProfileViewModel } from './api/view-models/profile-view.dto';
-import { AvatarsViewModel } from './api/view-models/avatars-view.dto';
+import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
+import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { ProfileViewModel } from '../api/view-models/profile-view.dto';
+import { AvatarsViewModel } from '../api/view-models/avatars-view.dto';
 
 /**
  * @description Swagger decorators for upload image avatar

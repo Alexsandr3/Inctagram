@@ -27,10 +27,4 @@ export class ImagePostEntity extends BaseImageEntity {
     this.status = PostStatus.PUBLISHED;
     return this;
   }
-
-  changeStatusToDeleted(resourceId: string) {
-    if (this.resourceId !== resourceId) return;
-    this.status = PostStatus.DELETED;
-    return this;
-  }
 }

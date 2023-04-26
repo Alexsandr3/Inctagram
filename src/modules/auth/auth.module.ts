@@ -23,6 +23,10 @@ import {
 import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-password-recovery-code.use-case';
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 import { GenerateNewTokensUseCase } from './application/use-cases/update-tokens.use-case';
+import { GoogleOAuthController } from './api/google-oauth.controller';
+import { GoogleOAuthStrategy } from './api/strategies/google-oauth.strategy';
+import { GithubOauthController } from './api/github-oauth.controller';
+import { GithubOauthStrategy } from './api/strategies/github-oauth.strategy';
 
 const useCases = [
   RegisterUserUseCase,
@@ -36,11 +40,11 @@ const useCases = [
   CheckPasswordRecoveryCodeUseCase,
 ];
 
-const strategies = [BasicStrategy, LocalStrategy, JwtStrategy];
+const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, GoogleOAuthStrategy, GithubOauthStrategy];
 
 @Module({
   imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule],
-  controllers: [AuthController],
+  controllers: [AuthController, GoogleOAuthController, GithubOauthController],
   providers: [
     AuthService,
     {

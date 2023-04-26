@@ -48,8 +48,7 @@ export class PrismaUsersRepository implements IUsersRepository {
     const foundUser = await this.prisma.user.findFirst({
       where: {
         email: {
-          equals: email,
-          mode: 'insensitive', // установка нечувствительности к регистру для сравнения
+          equals: email.toLowerCase(),
         },
       },
       include: { profile: { include: { avatars: true } } },

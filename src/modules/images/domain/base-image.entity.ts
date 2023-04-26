@@ -1,4 +1,4 @@
-import { BaseDateEntity } from '../../users/domain/base-date.entity';
+import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { ImageSizeConfig } from '../image-size-config.type';
 import { ImageSizeType } from '../type/image-size.type';
 import { ImageType } from '../type/image.type';

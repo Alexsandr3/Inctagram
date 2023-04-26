@@ -18,7 +18,7 @@ import {
   SwaggerDecoratorsByGetProfile,
   SwaggerDecoratorsByUpdateProfile,
   SwaggerDecoratorsByUploadPhotoAvatar,
-} from '../swagger.users.decorators';
+} from '../swagger/swagger.users.decorators';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -43,6 +43,11 @@ import { IUsersQueryRepository } from '../infrastructure/users.query-repository'
 export class UsersController {
   constructor(private readonly commandBus: CommandBus, private readonly usersQueryRepository: IUsersQueryRepository) {}
 
+  /**
+   * @description Update profile user
+   * @param userId
+   * @param body
+   */
   @SwaggerDecoratorsByUpdateProfile()
   @Put('/profile')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
@@ -53,6 +58,10 @@ export class UsersController {
     return notification.getData();
   }
 
+  /**
+   * @description Get profile user
+   * @param userId
+   */
   @SwaggerDecoratorsByGetProfile()
   @Get(`/profile`)
   @HttpCode(HTTP_Status.OK_200)
@@ -89,6 +98,10 @@ export class UsersController {
     return this.usersQueryRepository.findUserAvatars(userId);
   }
 
+  /**
+   * @description Delete photo avatar for user
+   * @param userId
+   */
   @SwaggerDecoratorsByDeletePhotoAvatar()
   @Delete('/profile/avatar')
   @HttpCode(HTTP_Status.NO_CONTENT_204)

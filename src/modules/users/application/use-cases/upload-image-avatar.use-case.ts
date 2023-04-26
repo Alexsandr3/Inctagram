@@ -9,6 +9,9 @@ import { ImageType } from '../../../images/type/image.type';
 import { BaseImageEntity } from '../../../images/domain/base-image.entity';
 import { AvatarEntity } from '../../domain/avatar.entity';
 
+/**
+ * @description Upload image avatar profile command
+ */
 export class UploadImageAvatarCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}
 }

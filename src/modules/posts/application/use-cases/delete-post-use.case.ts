@@ -4,6 +4,9 @@ import { IUsersRepository } from '../../../users/infrastructure/users.repository
 import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { PostsService } from '../posts.service';
 
+/**
+ * Delete post command
+ */
 export class DeletePostCommand {
   constructor(public dto: { postId: number; userId: number }) {}
 }
@@ -21,6 +24,10 @@ export class DeletePostUseCase
     super();
   }
 
+  /**
+   * @description Checking the user's existence and deleting the post
+   * @param command
+   */
   async executeUseCase(command: DeletePostCommand): Promise<void> {
     const { userId, postId } = command.dto;
 

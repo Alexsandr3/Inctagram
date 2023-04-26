@@ -12,7 +12,7 @@ export const optionsImageAvatar: ImageValidationOptions = {
 };
 
 /**
- * Default type for images blog main
+ * Default type for images profile
  */
 export const typeImageAvatar: ImageValidationType = {
   contentTypes: ['image/png', 'image/jpg', 'image/jpeg'],

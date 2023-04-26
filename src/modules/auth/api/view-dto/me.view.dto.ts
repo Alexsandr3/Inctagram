@@ -1,5 +1,8 @@
 import { User } from '@prisma/client';
 
+/**
+ * Me View DTO
+ */
 export class MeViewDto {
   userId: number;
   userName: string;

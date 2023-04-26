@@ -129,6 +129,10 @@ export class ImagesEditorService {
     await this.storageS3.deleteManyFiles(keys);
   }
 
+  /**
+   * @description Delete image by url
+   * @param urlsForDelete
+   */
   async deleteImageByUrl(urlsForDelete: string[]) {
     await this.storageS3.deleteManyFiles(urlsForDelete);
   }

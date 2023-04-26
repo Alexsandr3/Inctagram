@@ -15,6 +15,9 @@ export class PasswordRecoveryInputDto {
   })
   email: string;
 
+  /**
+   * Recaptcha token
+   */
   @IsString()
   @IsNotEmpty()
   @IsOptional()

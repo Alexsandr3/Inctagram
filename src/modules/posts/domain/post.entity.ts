@@ -1,4 +1,4 @@
-import { BaseDateEntity } from '../../users/domain/base-date.entity';
+import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { ImagePostEntity } from './image-post.entity';
 import { Type } from 'class-transformer';
 
