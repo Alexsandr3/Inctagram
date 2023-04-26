@@ -1,12 +1,12 @@
 import { Controller, Get, Headers, Ip, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { GithubOauthGuard } from './guards/github-oauth.guard';
-import { LoginCommand } from '../../../modules/auth/application/use-cases/login.use-case';
+import { LoginCommand } from '../application/use-cases/login.use-case';
 import { ResultNotification } from '../../../main/validators/result-notification';
-import { TokensType } from '../../../modules/auth/application/types/types';
+import { TokensType } from '../application/types/types';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { CommandBus } from '@nestjs/cqrs';
-import { SwaggerDecoratorsByAuthGithub, SwaggerDecoratorsByLoginWithGithub } from '../swagger.github-oauth.decorators';
+import { SwaggerDecoratorsByAuthGithub, SwaggerDecoratorsByLoginWithGithub } from './swagger.github-oauth.decorators';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('OAuth2-login')

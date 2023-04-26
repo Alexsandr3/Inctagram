@@ -1,11 +1,11 @@
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
-import { HTTP_Status } from '../../main/enums/http-status.enum';
-import { TokenTypeSwaggerDto } from '../../configuration/swagger/helpers/token-type-swagger.dto';
+import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { TokenTypeSwaggerDto } from '../../../configuration/swagger/helpers/token-type-swagger.dto';
 
-export function SwaggerDecoratorsByLoginWithGithub(): MethodDecorator {
+export function SwaggerDecoratorsByLoginWithGoogle(): MethodDecorator {
   return applyDecorators(
-    ApiOperation({ summary: 'Try login user to the system with github' }),
+    ApiOperation({ summary: 'Try login user to the system with google' }),
     ApiResponse({
       status: HTTP_Status.OK_200,
       description: 'success, return access token (body) and refresh token(cookie)',
@@ -19,9 +19,9 @@ export function SwaggerDecoratorsByLoginWithGithub(): MethodDecorator {
   );
 }
 
-export function SwaggerDecoratorsByAuthGithub(): MethodDecorator {
+export function SwaggerDecoratorsByAuthGoogle(): MethodDecorator {
   return applyDecorators(
-    ApiOperation({ summary: 'Redirect to github auth' }),
+    ApiOperation({ summary: 'Redirect to google auth' }),
     ApiResponse({
       status: HTTP_Status.OK_200,
       description: 'success',
