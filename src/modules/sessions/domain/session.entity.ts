@@ -19,17 +19,6 @@ export class SessionEntity {
     this.iat = dto.iat;
   }
 
-  static preparation(session: any): SessionEntity {
-    const sessionEntity = new SessionEntity();
-    sessionEntity.deviceId = session.deviceId;
-    sessionEntity.userId = session.userId;
-    sessionEntity.exp = session.exp;
-    sessionEntity.ip = session.ip;
-    sessionEntity.deviceName = session.deviceName;
-    sessionEntity.iat = session.iat;
-    return sessionEntity;
-  }
-
   static initCreate(param: {
     ip: string;
     exp: number;

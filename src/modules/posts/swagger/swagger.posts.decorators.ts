@@ -1,9 +1,9 @@
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
-import { ApiErrorResultDto } from '../../main/validators/api-error-result.dto';
-import { HTTP_Status } from '../../main/enums/http-status.enum';
-import { UploadedImageViewModel } from './api/view-models/uploaded-image-view.dto';
-import { PostViewModel } from './api/view-models/post-view.dto';
+import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
+import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { UploadedImageViewModel } from '../api/view-models/uploaded-image-view.dto';
+import { PostViewModel } from '../api/view-models/post-view.dto';
 
 export function SwaggerDecoratorsByUploadImagePost(): MethodDecorator {
   return applyDecorators(

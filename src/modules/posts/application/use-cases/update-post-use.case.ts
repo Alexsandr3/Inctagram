@@ -5,6 +5,9 @@ import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { UpdatePostInputDto } from '../../api/input-dto/update-post.input.dto';
 import { PostsService } from '../posts.service';
 
+/**
+ * Update post command
+ */
 export class UpdatePostCommand {
   constructor(public dto: { postId: number; userId: number; body: UpdatePostInputDto }) {}
 }
@@ -21,6 +24,11 @@ export class UpdatePostUseCase
   ) {
     super();
   }
+
+  /**
+   * @description Checking the user's existence and updating the post
+   * @param command
+   */
   async executeUseCase(command: UpdatePostCommand): Promise<void> {
     const { userId, postId, body } = command.dto;
 

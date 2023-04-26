@@ -25,8 +25,8 @@ import {
   SwaggerDecoratorsByGetPost,
   SwaggerDecoratorsByUpdatePost,
   SwaggerDecoratorsByUploadImagePost,
-} from '../swagger.posts.decorators';
-import { SwaggerDecoratorsByFormData } from '../../users/swagger.users.decorators';
+} from '../swagger/swagger.posts.decorators';
+import { SwaggerDecoratorsByFormData } from '../../users/swagger/swagger.users.decorators';
 import { UpdatePostInputDto } from './input-dto/update-post.input.dto';
 import { UploadImagePostCommand } from '../application/use-cases/upload-image-post-use.case';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
@@ -52,6 +52,11 @@ import { UploadedImageViewModel } from './view-models/uploaded-image-view.dto';
 export class PostsController {
   constructor(private readonly commandBus: CommandBus, private readonly postsQueryRepository: IPostsQueryRepository) {}
 
+  /**
+   * Upload image post
+   * @param userId
+   * @param file
+   */
   @SwaggerDecoratorsByUploadImagePost()
   @SwaggerDecoratorsByFormData()
   @Post(`/image`)
@@ -68,6 +73,11 @@ export class PostsController {
     return this.postsQueryRepository.getUploadImages(notification.getData());
   }
 
+  /**
+   * Create post
+   * @param userId
+   * @param body
+   */
   @SwaggerDecoratorsByCreatePost()
   @Post()
   @HttpCode(HTTP_Status.CREATED_201)
@@ -78,6 +88,11 @@ export class PostsController {
     return this.postsQueryRepository.getPost(notification.getData(), PostStatus.PUBLISHED);
   }
 
+  /**
+   * Delete image post
+   * @param userId
+   * @param uploadId
+   */
   @SwaggerDecoratorsByDeleteImagePost()
   @Delete('/image/:uploadId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
@@ -87,6 +102,11 @@ export class PostsController {
     );
   }
 
+  /**
+   * Get post by id
+   * @param userId
+   * @param postId
+   */
   @SwaggerDecoratorsByGetPost()
   @Get('/p/:postId')
   @HttpCode(HTTP_Status.OK_200)
@@ -105,6 +125,12 @@ export class PostsController {
     return foundPost;
   }
 
+  /**
+   * Update post by id
+   * @param postId
+   * @param userId
+   * @param body
+   */
   @SwaggerDecoratorsByUpdatePost()
   @Put('/:postId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
@@ -118,6 +144,11 @@ export class PostsController {
     );
   }
 
+  /**
+   * Delete post by id
+   * @param userId
+   * @param postId
+   */
   @SwaggerDecoratorsByDeletePost()
   @Delete('/:postId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)

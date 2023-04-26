@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import fs from 'fs';
-import { postsEndpoints } from '../../src/modules/posts/api/posts.routing';
+import { postsEndpoints } from '../../src/modules/posts/api/routing/posts.routing';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';

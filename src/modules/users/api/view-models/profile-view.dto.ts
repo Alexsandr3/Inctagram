@@ -1,6 +1,9 @@
 import { ProfileEntity } from '../../domain/profile.entity';
 import { AvatarViewDto } from './avatar-view.dto';
 
+/**
+ * Profile view dto
+ */
 export class ProfileViewModel {
   id: number;
   userName: string;

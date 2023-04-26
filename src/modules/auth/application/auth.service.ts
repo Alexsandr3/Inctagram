@@ -10,6 +10,10 @@ export class AuthService {
 
   constructor(protected usersRepository: IUsersRepository) {}
 
+  /**
+   * Checks if the credentials of the user are correct
+   * @param dto
+   */
   async checkCredentialsOfUser(dto: LoginInputDto): Promise<number | null> {
     const foundUser = await this.usersRepository.findUserByEmail(dto.email);
 
@@ -18,6 +22,10 @@ export class AuthService {
     return foundUser.id;
   }
 
+  /**
+   * Checks if the credentials of the user are correct for OAuth2
+   * @param dto
+   */
   async checkCredentialsOfUserOAth2(dto: OAuth2InputDto): Promise<number | null> {
     const foundUser = await this.usersRepository.findUserByEmail(dto.email);
 
@@ -31,10 +39,20 @@ export class AuthService {
     return foundUser.id;
   }
 
+  /**
+   * Checks if the password is correct
+   * @param password
+   * @param passwordHash
+   * @private
+   */
   private async passwordIsCorrect(password: string, passwordHash: string) {
     return await bcrypt.compare(password, passwordHash);
   }
 
+  /**
+   * Returns the password hash
+   * @param password
+   */
   async getPasswordHash(password: string): Promise<string> {
     const passwordSalt = await bcrypt.genSalt(10);
     return bcrypt.hash(password, passwordSalt);

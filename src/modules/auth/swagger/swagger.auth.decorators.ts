@@ -3,8 +3,8 @@ import { applyDecorators } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
 import { TokenTypeSwaggerDto } from '../../../configuration/swagger/helpers/token-type-swagger.dto';
-import { PasswordRecoveryViewDto } from './view-dto/password-recovery-view.dto';
-import { MeViewDto } from './view-dto/me.view.dto';
+import { PasswordRecoveryViewDto } from '../api/view-dto/password-recovery-view.dto';
+import { MeViewDto } from '../api/view-dto/me.view.dto';
 
 export function SwaggerDecoratorsByRegistration(): MethodDecorator {
   return applyDecorators(

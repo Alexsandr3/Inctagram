@@ -6,6 +6,9 @@ import { NotificationException } from '../../../../main/validators/result-notifi
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IPostsRepository } from '../../infrastructure/posts.repository';
 
+/**
+ * Delete image command
+ */
 export class DeleteImagePostCommand {
   constructor(public readonly userId: number, public readonly uploadId: string) {}
 }
@@ -22,6 +25,11 @@ export class DeleteImagePostUseCase
   ) {
     super();
   }
+
+  /**
+   * @description Checking the user's existence and deleting the image
+   * @param command
+   */
   async executeUseCase(command: DeleteImagePostCommand): Promise<void> {
     const { userId, uploadId } = command;
     //find user

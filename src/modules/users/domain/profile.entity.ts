@@ -1,4 +1,4 @@
-import { BaseDateEntity } from './base-date.entity';
+import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
 import { AvatarEntity } from './avatar.entity';

@@ -6,7 +6,10 @@ import { ResultNotification } from '../../../main/validators/result-notification
 import { TokensType } from '../application/types/types';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { CommandBus } from '@nestjs/cqrs';
-import { SwaggerDecoratorsByAuthGithub, SwaggerDecoratorsByLoginWithGithub } from './swagger.github-oauth.decorators';
+import {
+  SwaggerDecoratorsByAuthGithub,
+  SwaggerDecoratorsByLoginWithGithub,
+} from '../swagger/swagger.github-oauth.decorators';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('OAuth2-login')

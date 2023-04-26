@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { RegisterInputDto } from '../../src/modules/auth/api/input-dto/register.input.dto';
 import request from 'supertest';
-import { authEndpoints } from '../../src/modules/auth/api/auth.routing';
+import { authEndpoints } from '../../src/modules/auth/api/routing/auth.routing';
 import { RegistrationEmailResendingInputDto } from '../../src/modules/auth/api/input-dto/registration-email-resending.input.dto';
 import { ConfirmationCodeInputDto } from '../../src/modules/auth/api/input-dto/confirmation-code.input.dto';
 import { LoginInputDto } from '../../src/modules/auth/api/input-dto/login.input.dto';

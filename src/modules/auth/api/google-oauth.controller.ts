@@ -2,7 +2,10 @@ import { Controller, Get, Headers, Ip, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { GoogleOAuthGuard } from './guards/google-oauth.guard';
-import { SwaggerDecoratorsByAuthGoogle, SwaggerDecoratorsByLoginWithGoogle } from './swagger.google-oauth.decorators';
+import {
+  SwaggerDecoratorsByAuthGoogle,
+  SwaggerDecoratorsByLoginWithGoogle,
+} from '../swagger/swagger.google-oauth.decorators';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { LoginCommand } from '../application/use-cases/login.use-case';
 import { ResultNotification } from '../../../main/validators/result-notification';

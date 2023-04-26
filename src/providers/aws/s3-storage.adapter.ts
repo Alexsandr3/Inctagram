@@ -97,6 +97,10 @@ export class S3StorageAdapter {
     }
   }
 
+  /**
+   * Delete file from S3
+   * @param key
+   */
   async deleteFile(key: string) {
     // Remove endpoint from key
     if (key.includes(this.endpoint)) {

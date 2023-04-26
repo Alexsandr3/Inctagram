@@ -10,6 +10,9 @@ import { BaseImageEntity } from '../../../images/domain/base-image.entity';
 import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { ImagePostEntity } from '../../domain/image-post.entity';
 
+/**
+ * Upload image post command
+ */
 export class UploadImagePostCommand {
   constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}
 }
@@ -26,6 +29,11 @@ export class UploadImagePostUseCase
   ) {
     super();
   }
+
+  /**
+   * @description Checking the user's existence and upload image
+   * @param command
+   */
   async executeUseCase(command: UploadImagePostCommand): Promise<string> {
     const { userId, photo, mimetype } = command;
     //find user
