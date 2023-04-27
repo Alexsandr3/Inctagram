@@ -14,7 +14,7 @@ describe('Update-profile -  e2e', () => {
   let usersHelper: UsersHelper;
 
   beforeAll(async () => {
-    app = await getAppForE2ETesting(false);
+    app = await getAppForE2ETesting({ mailerOn: false, recaptchaOn: false });
     authHelper = new AuthHelper(app);
     usersHelper = new UsersHelper(app);
   });

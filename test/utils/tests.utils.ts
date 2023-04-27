@@ -4,6 +4,8 @@ import { baseAppConfig } from '../../src/configuration/app.config';
 import { DataSource } from 'typeorm';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { PrismaClient } from '@prisma/client';
+import { GoogleEnterpriseRecaptchaGuard } from '../../src/providers/recaptcha/google-enterprise-recaptcha.guard';
+import { MockGoogleEnterpriseRecaptchaGuard } from '../mock-services/mock-recaptcha-guard';
 
 async function truncateDBTablesPrisma(prisma: PrismaClient): Promise<void> {
   const models = Object.keys(prisma)
@@ -29,14 +31,16 @@ export async function truncateDBTables(connection: DataSource): Promise<void> {
 const prisma = new PrismaClient();
 
 export const getAppForE2ETesting = async (
-  mailerOn: boolean,
+  mocks?: { mailerOn: boolean; recaptchaOn: false },
   setupModuleBuilder?: (appModuleBuilder: TestingModuleBuilder) => void,
 ) => {
   let appModule: TestingModuleBuilder = await Test.createTestingModule({
     imports: [AppModule],
   });
   if (setupModuleBuilder) setupModuleBuilder(appModule);
-  if (!mailerOn) appModule.overrideProvider(EmailAdapter).useValue({ sendEmail: () => 'SENT EMAIL' });
+  if (!mocks.mailerOn) appModule.overrideProvider(EmailAdapter).useValue({ sendEmail: () => 'SENT EMAIL' });
+  if (!mocks.recaptchaOn)
+    appModule.overrideProvider(GoogleEnterpriseRecaptchaGuard).useClass(MockGoogleEnterpriseRecaptchaGuard);
   const appCompile = await appModule.compile();
   const app = appCompile.createNestApplication();
   baseAppConfig(app);
