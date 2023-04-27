@@ -53,18 +53,15 @@ export class ImagesEditorService {
       return [ImageSizeType.MEDIUM, ImageSizeType.THUMBNAIL];
     }
     const aspectRatio = await this.calculateAspectRatio(image);
-    function findImageSizesByAspectRatio(aspectRatio) {
-      const keys = Object.keys(ImageSizeConfig);
-      const result = [];
-      for (let i = 0; i < keys.length; i++) {
-        const size = ImageSizeConfig[keys[i]];
-        if (size.key === aspectRatio) {
-          result.push(keys[i]);
-        }
+    const keys = Object.keys(ImageSizeConfig);
+    const result = [];
+    for (let i = 0; i < keys.length; i++) {
+      const size = ImageSizeConfig[keys[i]];
+      if (size.key === aspectRatio) {
+        result.push(keys[i]);
       }
-      return result;
     }
-    return findImageSizesByAspectRatio(aspectRatio);
+    return result;
   }
 
   /**
