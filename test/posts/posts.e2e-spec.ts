@@ -16,7 +16,7 @@ describe('Posts flow - e2e', () => {
   let postsHelper: PostsHelper;
 
   beforeAll(async () => {
-    app = await getAppForE2ETesting({ mailerOn: false, recaptchaOn: false });
+    app = await getAppForE2ETesting();
     authHelper = new AuthHelper(app);
     postsHelper = new PostsHelper(app);
   });

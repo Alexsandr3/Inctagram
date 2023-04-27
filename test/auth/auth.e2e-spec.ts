@@ -13,7 +13,7 @@ describe('Authorisation -  e2e', () => {
   // let mailManager: MailManager;
 
   beforeAll(async () => {
-    app = await getAppForE2ETesting(false);
+    app = await getAppForE2ETesting();
     authHelper = new AuthHelper(app);
   });
 
@@ -369,5 +369,27 @@ describe('Authorisation -  e2e', () => {
     await authHelper.registrationEmailResending({ email: correctEmail });
     const confirmationCode2 = sendEmailConfirmationMessage.mock.lastCall[1];
     expect(confirmationCode2).not.toBe(confirmationCode1);
+  });
+});
+describe('Recaptcha -  e2e', () => {
+  let app: INestApplication;
+  let authHelper: AuthHelper;
+  // let mailManager: MailManager;
+
+  beforeAll(async () => {
+    app = await getAppForE2ETesting({ recaptchaOn: true });
+    authHelper = new AuthHelper(app);
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  //auth/password-recovery with recaptcha
+  it('01 - / (POST) - should return 400 if email is incorrect', async () => {
+    const command = { email: 'validva@lidamail.tr', recaptcha: '12345678' };
+    const response: ApiErrorResultDto = await authHelper.passwordRecovery(command, { expectedCode: 400 });
+    expect(response.messages).toHaveLength(1);
+    expect(response.messages[0].field).toBe('recaptcha');
   });
 });
