@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import sharp from 'sharp';
+import sharp, { Metadata } from 'sharp';
 import { BaseImageEntity } from '../domain/base-image.entity';
 import { S3StorageAdapter } from '../../../providers/aws/s3-storage.adapter';
 import { ImageSizeConfig } from '../image-size-config.type';
@@ -19,10 +19,52 @@ export class ImagesEditorService {
    */
   async reSizeImage(inputPath: Buffer, width: number, height: number): Promise<Buffer> {
     try {
-      return await sharp(inputPath).resize(width, height).toBuffer();
+      return await sharp(inputPath).resize(width, height, { fit: 'cover', position: 'center' }).toBuffer();
     } catch (e) {
       console.error(`Error resizing image: ${e}`);
     }
+  }
+
+  /**
+   * @description Calculate aspect ratio
+   * @param image
+   * @private
+   */
+  private async calculateAspectRatio(image: Buffer): Promise<string> {
+    const metadata: Metadata = await sharp(image.buffer).metadata();
+    const aspectRatio: number = metadata.width / metadata.height;
+    if (aspectRatio === 1) {
+      return '1:1';
+    } else if (aspectRatio > 1) {
+      return '16:9';
+    } else {
+      return '4:5';
+    }
+  }
+
+  /**
+   * @description Generate keys for images
+   * @param image
+   * @param type
+   * @private
+   */
+  private async sizeGenerator(image: Buffer, type: ImageType): Promise<string[]> {
+    if (type === ImageType.AVATAR) {
+      return [ImageSizeType.MEDIUM, ImageSizeType.THUMBNAIL];
+    }
+    const aspectRatio = await this.calculateAspectRatio(image);
+    function findImageSizesByAspectRatio(aspectRatio) {
+      const keys = Object.keys(ImageSizeConfig);
+      const result = [];
+      for (let i = 0; i < keys.length; i++) {
+        const size = ImageSizeConfig[keys[i]];
+        if (size.key === aspectRatio) {
+          result.push(keys[i]);
+        }
+      }
+      return result;
+    }
+    return findImageSizesByAspectRatio(aspectRatio);
   }
 
   /**
@@ -79,15 +121,15 @@ export class ImagesEditorService {
    * @param photo
    * @param type
    * @param mimetype
-   * @param sizes
    */
   async generatorKeysWithSaveImagesAndCreateImages(
     userId: number,
     photo: Buffer,
     type: ImageType,
     mimetype: string,
-    sizes: string[],
   ): Promise<BaseImageEntity[]> {
+    //generate sizes for images
+    const sizes = await this.sizeGenerator(photo, type);
     //generate keys for images
     const keys: string[] = [];
     const resourceId = randomUUID();

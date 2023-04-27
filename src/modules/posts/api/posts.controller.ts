@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
-import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { CreatePostInputDto } from './input-dto/create-post.input.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -28,7 +27,6 @@ import {
 } from '../swagger/swagger.posts.decorators';
 import { SwaggerDecoratorsByFormData } from '../../users/swagger/swagger.users.decorators';
 import { UpdatePostInputDto } from './input-dto/update-post.input.dto';
-import { UploadImagePostCommand } from '../application/use-cases/upload-image-post-use.case';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
 import { typeImagePost } from '../default-options-for-validate-images-post';
 import { IPostsQueryRepository } from '../infrastructure/posts-query.repository';
@@ -44,6 +42,8 @@ import { DeletePostCommand } from '../application/use-cases/delete-post-use.case
 import { PostStatus } from '../domain/post.entity';
 import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
 import { UploadedImageViewModel } from './view-models/uploaded-image-view.dto';
+import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
+import { UploadImagePostCommand } from '../application/use-cases/upload-image-post-use.case';
 
 @ApiBearerAuth()
 @ApiTags('Posts')

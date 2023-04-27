@@ -4,7 +4,6 @@ import { NotificationException } from '../../../../main/validators/result-notifi
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { ImagesEditorService } from '../../../images/application/images-editor.service';
-import { ImageSizeType } from '../../../images/type/image-size.type';
 import { ImageType } from '../../../images/type/image.type';
 import { BaseImageEntity } from '../../../images/domain/base-image.entity';
 import { AvatarEntity } from '../../domain/avatar.entity';
@@ -37,9 +36,8 @@ export class UploadImageAvatarUseCase
     if (!user.isOwner(userId))
       throw new NotificationException(`Account is not yours`, 'user', NotificationCode.FORBIDDEN);
 
-    //set type and sizes for images
+    //set type for images
     const type = ImageType.AVATAR;
-    const sizes = [ImageSizeType.MEDIUM, ImageSizeType.THUMBNAIL];
 
     //generate keys for images and save images on s3 storage and create instances images
     const result: BaseImageEntity[] = await this.imagesEditor.generatorKeysWithSaveImagesAndCreateImages(
@@ -47,9 +45,7 @@ export class UploadImageAvatarUseCase
       photo,
       type,
       mimetype,
-      sizes,
     );
-
     const avatars = result.map(i => AvatarEntity.initCreate(userId, i));
     //result is array of instances images need to save
     if (!user.profile.avatars || user.profile.avatars.length === 0) {
