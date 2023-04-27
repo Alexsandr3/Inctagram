@@ -17,6 +17,7 @@ export abstract class BaseNotificationUseCase<TCommand, TResult> {
     } catch (e) {
       notification.addErrorFromNotificationException(e);
       // console.log('BaseNotificationUseCase: ', e);
+      this.logger.log('BaseNotificationUseCase: ' + JSON.stringify(command));
       this.logger.error(e);
     }
 
