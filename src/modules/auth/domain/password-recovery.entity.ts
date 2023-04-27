@@ -1,7 +1,8 @@
 import { add } from 'date-fns';
 import { randomUUID } from 'crypto';
+import { PasswordRecovery } from '@prisma/client';
 
-export class PasswordRecoveryEntity {
+export class PasswordRecoveryEntity implements PasswordRecovery {
   id: number;
   recoveryCode: string;
   expirationDate: Date;

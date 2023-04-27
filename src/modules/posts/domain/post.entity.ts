@@ -1,6 +1,7 @@
 import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { ImagePostEntity } from './image-post.entity';
 import { Type } from 'class-transformer';
+import { Post } from '@prisma/client';
 
 export enum PostStatus {
   PUBLISHED = 'PUBLISHED',
@@ -8,11 +9,12 @@ export enum PostStatus {
   PENDING = 'PENDING',
 }
 
-export class PostEntity extends BaseDateEntity {
+export class PostEntity extends BaseDateEntity implements Post {
   id: number;
   ownerId: number;
   description: string;
   location: string;
+
   status: PostStatus;
   @Type(() => ImagePostEntity)
   images: ImagePostEntity[];

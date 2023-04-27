@@ -1,6 +1,7 @@
 import { BaseImageEntity } from '../../images/domain/base-image.entity';
+import { AvatarImage } from '@prisma/client';
 
-export class AvatarEntity extends BaseImageEntity {
+export class AvatarEntity extends BaseImageEntity implements AvatarImage {
   profileId: number;
   constructor() {
     super();

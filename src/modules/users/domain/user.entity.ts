@@ -2,8 +2,9 @@ import { ProfileEntity } from './profile.entity';
 import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
+import { User } from '@prisma/client';
 
-export class UserEntity extends BaseDateEntity {
+export class UserEntity extends BaseDateEntity implements User {
   id: number;
   userName: string;
   email: string;

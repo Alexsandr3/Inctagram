@@ -1,7 +1,8 @@
 import { BaseImageEntity } from '../../images/domain/base-image.entity';
 import { PostStatus } from './post.entity';
+import { PostImage } from '@prisma/client';
 
-export class ImagePostEntity extends BaseImageEntity {
+export class ImagePostEntity extends BaseImageEntity implements PostImage {
   postId: number;
   status: PostStatus;
   constructor() {

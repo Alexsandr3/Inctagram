@@ -1,7 +1,8 @@
 import { SessionExtendedDto } from '../application/dto/SessionExtendedDto';
 import { UserEntity } from '../../users/domain/user.entity';
+import { Session } from '@prisma/client';
 
-export class SessionEntity {
+export class SessionEntity implements Session {
   deviceId: number;
   userId: number;
   exp: number;

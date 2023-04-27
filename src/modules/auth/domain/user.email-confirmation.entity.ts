@@ -1,7 +1,8 @@
 import { randomUUID } from 'crypto';
 import { add } from 'date-fns';
+import { EmailConfirmation } from '@prisma/client';
 
-export class EmailConfirmationEntity {
+export class EmailConfirmationEntity implements EmailConfirmation {
   userId: number;
   confirmationCode: string;
   codeExpirationDate: Date;
