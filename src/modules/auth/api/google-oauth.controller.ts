@@ -55,7 +55,7 @@ export class GoogleOAuthController {
   @UseGuards(GoogleRegistrationGuard)
   async googleRegistrationHandler(@PayloadData() registerInputDto: RegisterInputDto): Promise<null> {
     const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
-      new RegisterUserCommand(registerInputDto),
+      new RegisterUserCommand(registerInputDto, true),
     );
     return notification.getData();
   }

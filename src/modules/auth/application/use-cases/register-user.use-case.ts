@@ -13,7 +13,7 @@ import { EmailConfirmationEntity } from '../../domain/user.email-confirmation.en
  * @description create new user and send email for confirmation
  */
 export class RegisterUserCommand {
-  constructor(public readonly userInputModel: RegisterInputDto) {}
+  constructor(public readonly userInputModel: RegisterInputDto, public enableAutoUserNameCorrection: boolean) {}
 }
 
 @CommandHandler(RegisterUserCommand)
@@ -36,14 +36,26 @@ export class RegisterUserUseCase
 
   async executeUseCase(command: RegisterUserCommand) {
     //prepare a notification for result
-    const { userName, email, password } = command.userInputModel;
+    const { email, password } = command.userInputModel;
+    let userName = command.userInputModel.userName;
 
-    const foundUser = await this.usersRepository.findUserByNameOrEmail(userName, email);
+    let foundUser = await this.usersRepository.findUserByEmail(email);
+    if (foundUser)
+      throw new NotificationException(
+        `User with this ${email} is already exist`,
+        'email',
+        NotificationCode.BAD_REQUEST,
+      );
 
-    if (foundUser) {
-      const field = foundUser.userName.toLowerCase() === userName.toLowerCase() ? 'name' : 'email';
-      throw new NotificationException(`User with this ${field} is already exist`, field, NotificationCode.BAD_REQUEST);
-    }
+    foundUser = await this.usersRepository.findUserByUserName(userName);
+    if (foundUser && !command.enableAutoUserNameCorrection)
+      throw new NotificationException(
+        `User with this ${userName} is already exist`,
+        'userName',
+        NotificationCode.BAD_REQUEST,
+      );
+
+    if (foundUser) userName = await this.getUniqueName(userName);
 
     //generate password hash
     const passwordHash = await this.authService.getPasswordHash(password);
@@ -56,5 +68,17 @@ export class RegisterUserUseCase
     await this.usersRepository.saveUserWithEmailConfirmation(user, emailConfirmation);
 
     await this.mailService.sendUserConfirmation(email, emailConfirmation.confirmationCode);
+  }
+
+  private async getUniqueName(userName: string) {
+    userName = userName + '_';
+    let foundUser;
+    let addedValue = 0;
+
+    do {
+      foundUser = await this.usersRepository.findUserByUserName(userName + ++addedValue);
+    } while (foundUser);
+
+    return userName + addedValue;
   }
 }
