@@ -24,9 +24,11 @@ import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 import { GenerateNewTokensUseCase } from './application/use-cases/update-tokens.use-case';
 import { GoogleOAuthController } from './api/google-oauth.controller';
-import { GoogleOAuthStrategy } from './api/strategies/google-oauth.strategy';
+import { GoogleAuthorizationStrategy } from './api/strategies/google-authorization-strategy.service';
 import { GithubOauthController } from './api/github-oauth.controller';
 import { GithubOauthStrategy } from './api/strategies/github-oauth.strategy';
+import { GoogleRegistrationStrategy } from './api/strategies/google-registration.strategy';
+import { ValidatorService } from '../../providers/validation/validator.service';
 
 const useCases = [
   RegisterUserUseCase,
@@ -40,7 +42,14 @@ const useCases = [
   CheckPasswordRecoveryCodeUseCase,
 ];
 
-const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, GoogleOAuthStrategy, GithubOauthStrategy];
+const strategies = [
+  BasicStrategy,
+  LocalStrategy,
+  JwtStrategy,
+  GoogleAuthorizationStrategy,
+  GithubOauthStrategy,
+  GoogleRegistrationStrategy,
+];
 
 @Module({
   imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule],
@@ -53,6 +62,7 @@ const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, GoogleOAuthStrate
     },
     ...useCases,
     ...strategies,
+    ValidatorService,
   ],
   exports: [AuthService],
 })

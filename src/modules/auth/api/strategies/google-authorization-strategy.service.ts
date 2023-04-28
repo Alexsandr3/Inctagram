@@ -5,12 +5,12 @@ import { ApiConfigService } from '../../../api-config/api.config.service';
 import { AuthService } from '../../application/auth.service';
 
 @Injectable()
-export class GoogleOAuthStrategy extends PassportStrategy(Strategy, 'google') {
+export class GoogleAuthorizationStrategy extends PassportStrategy(Strategy, 'google-authorization') {
   constructor(private apiConfigService: ApiConfigService, private readonly authService: AuthService) {
     super({
       clientID: apiConfigService.GOOGLE_CLIENT_ID,
       clientSecret: apiConfigService.GOOGLE_CLIENT_SECRET,
-      callbackURL: apiConfigService.GOOGLE_CALLBACK_URL,
+      callbackURL: apiConfigService.GOOGLE_AUTHORIZATION_CALLBACK_URL,
       scope: ['email', 'profile'],
     });
   }
@@ -19,6 +19,7 @@ export class GoogleOAuthStrategy extends PassportStrategy(Strategy, 'google') {
     const email = profile.emails[0];
 
     const userId = await this.authService.checkCredentialsOfUserOAth2({ email: email.value });
+
     if (!userId) throw new UnauthorizedException();
 
     return { userId };

@@ -82,8 +82,12 @@ export class ApiConfigService {
     return this.configService.get('auth.google.GOOGLE_CLIENT_SECRET', { infer: true });
   }
 
-  get GOOGLE_CALLBACK_URL(): string {
-    return this.configService.get('auth.google.GOOGLE_CALLBACK_URL', { infer: true });
+  get GOOGLE_AUTHORIZATION_CALLBACK_URL(): string {
+    return this.configService.get('auth.google.GOOGLE_AUTHORIZATION_CALLBACK_URL', { infer: true });
+  }
+
+  get GOOGLE_REGISTRATION_CALLBACK_URL(): string {
+    return this.configService.get('auth.google.GOOGLE_REGISTRATION_CALLBACK_URL', { infer: true });
   }
 
   get GITHUB_CLIENT_ID(): string {
