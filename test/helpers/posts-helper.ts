@@ -62,7 +62,7 @@ export class PostsHelper {
       .post(postsEndpoints.uploadImagePost())
       .auth(config.token, { type: 'bearer' })
       .set('content-type', 'multipart/form-data')
-      .attach('files', file, nameFile)
+      .attach('file', file, nameFile)
       .expect(expectedCode);
 
     return response.body;

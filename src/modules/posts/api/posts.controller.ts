@@ -70,9 +70,7 @@ export class PostsController {
     const notification = await this.commandBus.execute<UploadImagePostCommand, ResultNotification<string>>(
       new UploadImagePostCommand(userId, file),
     );
-    const re = await this.postsQueryRepository.getUploadImages(notification.getData());
-    console.log(re);
-    return re;
+    return this.postsQueryRepository.getUploadImages(notification.getData());
   }
 
   /**

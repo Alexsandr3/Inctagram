@@ -78,7 +78,7 @@ describe('Authorisation -  e2e', () => {
     await authHelper.registrationUser(command, { expectedCode: 204 });
     const response2: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
     expect(response2.messages).toHaveLength(1);
-    expect(response2.messages[0].field).toBe('name');
+    expect(response2.messages[0].field).toBe('userName');
     const command3 = { password: '12345678', email: 'correct@eamil.co', userName: 'CatName' };
     const response3: ApiErrorResultDto = await authHelper.registrationUser(command3, { expectedCode: 400 });
     expect(response3.messages).toHaveLength(1);
