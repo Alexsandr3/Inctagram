@@ -19,15 +19,16 @@ import { ValidationArrayImagePipe } from '../../../main/validators/validation-ar
 import { typeImagePost } from '../default-options-for-validate-images-post';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
-import { TempDeleteImagePostCommand } from './temp-delete-image-post-use.case';
 import {
   SwaggerDecoratorsByCreatePostWithUploadImages,
   SwaggerDecoratorsByDeleteImagePost,
   SwaggerDecoratorsByFormDataForArrayFileWith,
 } from './temp.swagger.posts.decorators';
-import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { TempCreatePostCommand } from './temp-create-post-use.case';
 import { PostStatus } from '../domain/post.entity';
+import { CustomParseIntPipe } from '../../../main/validators/custom-parse-to-number.pipe';
+import { TempDeleteImagePostCommand } from './temp-delete-image-post-use.case';
+import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 
 @ApiBearerAuth()
 @ApiTags('Alternative variant of creating a post')
@@ -58,7 +59,7 @@ export class TempPostsController {
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async deleteImagePost(
     @CurrentUserId() userId: number,
-    @Param('postId') postId: number,
+    @Param('postId', CustomParseIntPipe) postId: number,
     @Param('uploadId') uploadId: string,
   ) {
     await this.commandBus.execute<TempDeleteImagePostCommand, ResultNotification>(
