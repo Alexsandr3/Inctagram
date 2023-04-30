@@ -42,7 +42,7 @@ import { DeletePostCommand } from '../application/use-cases/delete-post-use.case
 import { PostStatus } from '../domain/post.entity';
 import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
 import { UploadedImageViewModel } from './view-models/uploaded-image-view.dto';
-import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
+import { ValidationImagePipe } from '../../../main/validators/validation-image.pipe';
 import { UploadImagePostCommand } from '../application/use-cases/upload-image-post-use.case';
 
 @ApiBearerAuth()
@@ -64,13 +64,15 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadImagePost(
     @CurrentUserId() userId: number,
-    @UploadedFile(new ValidationTypeImagePipe(typeImagePost))
+    @UploadedFile(new ValidationImagePipe(typeImagePost))
     file: Express.Multer.File,
   ): Promise<UploadedImageViewModel> {
     const notification = await this.commandBus.execute<UploadImagePostCommand, ResultNotification<string>>(
-      new UploadImagePostCommand(userId, file.mimetype, file.buffer),
+      new UploadImagePostCommand(userId, file),
     );
-    return this.postsQueryRepository.getUploadImages(notification.getData());
+    const re = await this.postsQueryRepository.getUploadImages(notification.getData());
+    console.log(re);
+    return re;
   }
 
   /**

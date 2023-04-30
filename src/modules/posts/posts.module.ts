@@ -13,6 +13,9 @@ import { DeletePostUseCase } from './application/use-cases/delete-post-use.case'
 import { UpdatePostUseCase } from './application/use-cases/update-post-use.case';
 import { PostsService } from './application/posts.service';
 import { PostsGetController } from './api/posts-get.controller';
+import { TempPostsController } from './temp/temp-posts.controller';
+import { TempCreatePostUseCase } from './temp/temp-create-post-use.case';
+import { TempDeleteImagePostUseCase } from './temp/temp-delete-image-post-use.case';
 
 const useCases = [
   UploadImagePostUseCase,
@@ -20,11 +23,14 @@ const useCases = [
   DeleteImagePostUseCase,
   DeletePostUseCase,
   UpdatePostUseCase,
+  //temp
+  TempCreatePostUseCase,
+  TempDeleteImagePostUseCase,
 ];
 
 @Module({
   imports: [CqrsModule, ImagesModule, UsersModule, PrismaModule],
-  controllers: [PostsController, PostsGetController],
+  controllers: [PostsController, PostsGetController, TempPostsController],
   providers: [
     PostsService,
     ...useCases,

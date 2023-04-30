@@ -17,7 +17,7 @@ export class ImagesEditorService {
    * @param width
    * @param height
    */
-  async reSizeImage(inputPath: Buffer, width: number, height: number): Promise<Buffer> {
+  private async reSizeImage(inputPath: Buffer, width: number, height: number): Promise<Buffer> {
     try {
       return await sharp(inputPath).resize(width, height, { fit: 'cover', position: 'center' }).toBuffer();
     } catch (e) {
@@ -115,49 +115,56 @@ export class ImagesEditorService {
   /**
    * @description Generate keys for images and save images on s3 storage
    * @param userId
-   * @param photo
+   * @param files
    * @param type
-   * @param mimetype
    */
-  async generatorKeysWithSaveImagesAndCreateImages(
+  async generateAndSaveImages(
     userId: number,
-    photo: Buffer,
+    files: Express.Multer.File[],
     type: ImageType,
-    mimetype: string,
   ): Promise<BaseImageEntity[]> {
-    //generate sizes for images
-    const sizes = await this.sizeGenerator(photo, type);
-    //generate keys for images
-    const keys: string[] = [];
-    const resourceId = randomUUID();
-    if (this.imageKeyGenerators[type]) {
-      const keysGenerator = await this.imageKeyGenerators[type](userId, sizes, resourceId);
-      keys.push(...keysGenerator);
-    }
-    //changing size image
-    const changeSizeImage = [];
-    for (const size of sizes) {
-      if (size === ImageSizeType[size]) {
-        const resizedImage = await this.reSizeImage(
-          photo,
-          ImageSizeConfig[size].defaultWidth,
-          ImageSizeConfig[size].defaultHeight,
-        );
-        changeSizeImage.push(resizedImage);
-      }
-    }
-    //delete old image
-    await this.storageS3.deleteManyFiles(keys);
-
-    //save on s3 storage and create instances images
+    // save on s3 storage and create instances images
     const instancesImages = [];
-    for (let i = 0; i < keys.length; i++) {
-      const keyImage = keys[i];
-      const imageToSave = changeSizeImage[i];
-      const urlImage = await this.storageS3.saveFile(userId, imageToSave, keyImage, mimetype);
-      const size = sizes[i];
-      const imageEntity = BaseImageEntity.initCreateImageEntity(size, type, urlImage, imageToSave, resourceId);
-      instancesImages.push(imageEntity);
+
+    for (const file of files) {
+      const resourceId = randomUUID();
+      const { buffer: photo, mimetype } = file;
+
+      // generate sizes for images
+      const sizes = await this.sizeGenerator(photo, type);
+
+      // generate keys for images
+      const keys: string[] = [];
+      if (this.imageKeyGenerators[type]) {
+        const keysGenerator = await this.imageKeyGenerators[type](userId, sizes, resourceId);
+        keys.push(...keysGenerator);
+      }
+
+      // changing size image
+      const changeSizeImage = [];
+      for (const size of sizes) {
+        if (size === ImageSizeType[size]) {
+          const resizedImage = await this.reSizeImage(
+            photo,
+            ImageSizeConfig[size].defaultWidth,
+            ImageSizeConfig[size].defaultHeight,
+          );
+          changeSizeImage.push(resizedImage);
+        }
+      }
+
+      // delete old image
+      await this.storageS3.deleteManyFiles(keys);
+
+      // save on s3 storage and create instances images
+      for (let i = 0; i < keys.length; i++) {
+        const keyImage = keys[i];
+        const imageToSave = changeSizeImage[i];
+        const urlImage = await this.storageS3.saveFile(userId, imageToSave, keyImage, mimetype);
+        const size = sizes[i];
+        const imageEntity = BaseImageEntity.initCreateImageEntity(size, type, urlImage, imageToSave, resourceId);
+        instancesImages.push(imageEntity);
+      }
     }
 
     return instancesImages;
@@ -176,3 +183,55 @@ export class ImagesEditorService {
     await this.storageS3.deleteManyFiles(urlsForDelete);
   }
 }
+
+/*
+
+/!**
+ * @description Generate keys for images and save images on s3 storage
+ * @param userId
+ * @param file
+ * @param type
+ *!/
+async generatorKeysWithSaveImagesAndCreateImages(
+  userId: number,
+  file: Express.Multer.File,
+  type: ImageType,
+): Promise<BaseImageEntity[]> {
+  const { buffer: photo, mimetype } = file;
+  //generate sizes for images
+  const sizes = await this.sizeGenerator(photo, type);
+  //generate keys for images
+  const keys: string[] = [];
+const resourceId = randomUUID();
+if (this.imageKeyGenerators[type]) {
+  const keysGenerator = await this.imageKeyGenerators[type](userId, sizes, resourceId);
+  keys.push(...keysGenerator);
+}
+//changing size image
+const changeSizeImage = [];
+for (const size of sizes) {
+  if (size === ImageSizeType[size]) {
+    const resizedImage = await this.reSizeImage(
+      photo,
+      ImageSizeConfig[size].defaultWidth,
+      ImageSizeConfig[size].defaultHeight,
+    );
+    changeSizeImage.push(resizedImage);
+  }
+}
+//delete old image
+await this.storageS3.deleteManyFiles(keys);
+
+//save on s3 storage and create instances images
+const instancesImages = [];
+for (let i = 0; i < keys.length; i++) {
+  const keyImage = keys[i];
+  const imageToSave = changeSizeImage[i];
+  const urlImage = await this.storageS3.saveFile(userId, imageToSave, keyImage, mimetype);
+  const size = sizes[i];
+  const imageEntity = BaseImageEntity.initCreateImageEntity(size, type, urlImage, imageToSave, resourceId);
+  instancesImages.push(imageEntity);
+}
+
+return instancesImages;
+}*/

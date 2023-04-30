@@ -40,7 +40,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
     const images = await this.prisma.postImage.findMany({
       where: {
         resourceId,
-        status: PostStatus.PENDING,
+        status: PostStatus.PUBLISHED,
       },
       orderBy: {
         createdAt: 'desc',

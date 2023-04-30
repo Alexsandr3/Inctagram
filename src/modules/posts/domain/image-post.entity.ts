@@ -12,7 +12,7 @@ export class ImagePostEntity extends BaseImageEntity implements PostImage {
   static initCreate(userId: number, baseImage: BaseImageEntity): ImagePostEntity {
     const imagePost = new ImagePostEntity();
     imagePost.postId = null;
-    imagePost.status = PostStatus.PENDING;
+    imagePost.status = PostStatus.PUBLISHED;
     imagePost.imageType = baseImage.imageType;
     imagePost.sizeType = baseImage.sizeType;
     imagePost.url = baseImage.url;
@@ -27,5 +27,20 @@ export class ImagePostEntity extends BaseImageEntity implements PostImage {
   changeStatusToPublished(): ImagePostEntity {
     this.status = PostStatus.PUBLISHED;
     return this;
+  }
+
+  changeStatusToDeleted(uploadId: string) {
+    if (this.resourceId === uploadId) {
+      this.status = PostStatus.DELETED;
+    }
+    return this;
+  }
+
+  isPublished() {
+    return this.status === PostStatus.PUBLISHED;
+  }
+
+  isHugeSize() {
+    return this.sizeType === 'HUGE_HD1_1' || this.sizeType === 'HUGE_HD16_9' || this.sizeType === 'HUGE_HD4_5';
   }
 }
