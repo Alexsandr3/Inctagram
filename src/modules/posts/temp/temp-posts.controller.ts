@@ -17,12 +17,17 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { TempCreatePostInputDto } from './temp-create-post.input.dto';
 import { ValidationArrayImagePipe } from '../../../main/validators/validation-array-image.pipe';
 import { typeImagePost } from '../default-options-for-validate-images-post';
-import { TempCreatePostCommand } from './temp-create-post-use.case';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
-import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
-import { PostStatus } from '../domain/post.entity';
 import { TempDeleteImagePostCommand } from './temp-delete-image-post-use.case';
+import {
+  SwaggerDecoratorsByCreatePostWithUploadImages,
+  SwaggerDecoratorsByDeleteImagePost,
+  SwaggerDecoratorsByFormDataForArrayFileWith,
+} from './temp.swagger.posts.decorators';
+import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
+import { TempCreatePostCommand } from './temp-create-post-use.case';
+import { PostStatus } from '../domain/post.entity';
 
 @ApiBearerAuth()
 @ApiTags('Posts')
@@ -31,6 +36,8 @@ import { TempDeleteImagePostCommand } from './temp-delete-image-post-use.case';
 export class TempPostsController {
   constructor(private readonly commandBus: CommandBus, private readonly postsQueryRepository: IPostsQueryRepository) {}
 
+  @SwaggerDecoratorsByCreatePostWithUploadImages()
+  @SwaggerDecoratorsByFormDataForArrayFileWith()
   @Post(`posts/images`)
   @HttpCode(HTTP_Status.CREATED_201)
   @UseInterceptors(FilesInterceptor('files', 10))
@@ -46,6 +53,7 @@ export class TempPostsController {
     return this.postsQueryRepository.getPost(notification.getData(), PostStatus.PUBLISHED);
   }
 
+  @SwaggerDecoratorsByDeleteImagePost()
   @Delete('posts/:postId/images/:uploadId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async deleteImagePost(
