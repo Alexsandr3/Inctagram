@@ -5,6 +5,7 @@ import { postsEndpoints } from '../../src/modules/posts/api/routing/posts.routin
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
+import { tempPostsEndpoints } from '../../src/modules/posts/temp/temp-posts.routing';
 
 export class PostsHelper {
   constructor(private readonly app: INestApplication) {}
@@ -61,7 +62,7 @@ export class PostsHelper {
       .post(postsEndpoints.uploadImagePost())
       .auth(config.token, { type: 'bearer' })
       .set('content-type', 'multipart/form-data')
-      .attach('file', file, nameFile)
+      .attach('files', file, nameFile)
       .expect(expectedCode);
 
     return response.body;
@@ -134,6 +135,48 @@ export class PostsHelper {
       .get(postsEndpoints.getPosts(userId))
       .auth(config.token, { type: 'bearer' })
       // .query(query)
+      .expect(expectedCode);
+
+    return response.body;
+  }
+
+  async uploadImagesAndCreatePost<T = PostViewModel>(
+    body: {
+      description: string;
+      nameFile: string[];
+    },
+    config: {
+      token?: string;
+      expectedCode?: number;
+    } = {},
+  ): Promise<T> {
+    // default expected code is 201 or code mistake from config
+    const expectedCode = config.expectedCode ?? HTTP_Status.CREATED_201;
+    // create file
+    const files = [];
+    for (const file of body.nameFile) {
+      files.push(fs.createReadStream(__dirname + '/../' + file));
+    }
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .post(tempPostsEndpoints.uploadImagePost())
+      .auth(config.token, { type: 'bearer' })
+      .field('description', body.description)
+      .set('content-type', 'multipart/form-data')
+      .attach('files', files[0], body.nameFile[0])
+      .attach('files', files[1], body.nameFile[1])
+      .attach('files', files[2], body.nameFile[2])
+      .expect(expectedCode);
+
+    return response.body;
+  }
+
+  async deleteImage(query: { uploadId: string; postId: number }, config: { expectedCode: number; token: string }) {
+    const expectedCode = config.expectedCode ?? HTTP_Status.NO_CONTENT_204;
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .delete(tempPostsEndpoints.deleteImagePost(query.postId, query.uploadId))
+      .auth(config.token, { type: 'bearer' })
       .expect(expectedCode);
 
     return response.body;
