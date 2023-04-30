@@ -13,7 +13,7 @@ import { ImagePostEntity } from '../../domain/image-post.entity';
  * Upload image post command
  */
 export class UploadImagePostCommand {
-  constructor(public readonly userId: number, public readonly mimetype: string, public readonly photo: Buffer) {}
+  constructor(public readonly userId: number, public readonly file: Express.Multer.File) {}
 }
 
 @CommandHandler(UploadImagePostCommand)
@@ -34,19 +34,14 @@ export class UploadImagePostUseCase
    * @param command
    */
   async executeUseCase(command: UploadImagePostCommand): Promise<string> {
-    const { userId, photo, mimetype } = command;
+    const { userId, file } = command;
     //find user
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
     //set type  for images
     const type = ImageType.POST;
     //generate keys for images and save images on s3 storage and create instances images
-    const result: BaseImageEntity[] = await this.imagesEditor.generatorKeysWithSaveImagesAndCreateImages(
-      user.id,
-      photo,
-      type,
-      mimetype,
-    );
+    const result: BaseImageEntity[] = await this.imagesEditor.generateAndSaveImages(user.id, [file], type);
     const postImage = result.map(i => ImagePostEntity.initCreate(userId, i));
     //save images
     await this.postsRepository.saveImages(postImage);

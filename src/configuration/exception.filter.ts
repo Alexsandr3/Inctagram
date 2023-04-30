@@ -27,7 +27,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const errorResult = new ApiErrorResultDto();
     errorResult.statusCode = status;
-    this.logger.error(exception);
+    // this.logger.error(exception);
+    this.logger.error(JSON.stringify(responseBody));
     if (status === 401) {
       errorResult.messages = [{ message: 'Authorization error', field: 'authorization' }];
       errorResult.error = 'Unauthorized';

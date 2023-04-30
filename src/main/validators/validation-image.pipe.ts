@@ -1,16 +1,10 @@
 import { BadRequestException, PipeTransform } from '@nestjs/common';
-
-/**
- * @description This interface is used to type image
- */
-export interface ImageValidationType {
-  contentTypes: string[];
-}
+import { BaseParametersImageValidation } from './image-validation.type';
 
 /**
  * @description This pipe is used to validate images
  */
-export class ValidationTypeImagePipe<T extends ImageValidationType>
+export class ValidationImagePipe<T extends BaseParametersImageValidation>
   implements PipeTransform<Express.Multer.File, Promise<Express.Multer.File>>
 {
   constructor(private readonly options: T) {}
@@ -26,17 +20,3 @@ export class ValidationTypeImagePipe<T extends ImageValidationType>
     return image;
   }
 }
-
-// const imageFilter = (
-//   req: Request,
-//   file: Express.Multer.File,
-//   callback: (error: Error, acceptFile: boolean) => void,
-// ) => {
-//   console.log(file.mimetype, 'file.mimetype');
-//   if (!Boolean(file.mimetype.match(/(jpg|jpeg|png|gif)/))) callback(null, false);
-//   callback(null, true);
-// };
-// export const imageOptions: MulterOptions = {
-//   limits: { fileSize: 5242880 },
-//   fileFilter: imageFilter,
-// };

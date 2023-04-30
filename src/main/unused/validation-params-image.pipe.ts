@@ -1,20 +1,11 @@
 import { BadRequestException, PipeTransform } from '@nestjs/common';
 import sharp, { Metadata } from 'sharp';
-
-/**
- * @description This interface is used to type image
- */
-export interface ImageValidationOptions {
-  defaultSize: number;
-  contentTypes: string[];
-  defaultWidth: number;
-  defaultHeight: number;
-}
+import { ParametersImageValidation } from '../validators/parameters-image.validation';
 
 /**
  * @description This pipe is used to validate images
  */
-export class ValidationParamsImagePipe<T extends ImageValidationOptions>
+export class ValidationParamsImagePipe<T extends ParametersImageValidation>
   implements PipeTransform<Express.Multer.File, Promise<Express.Multer.File>>
 {
   constructor(private readonly options: T) {}

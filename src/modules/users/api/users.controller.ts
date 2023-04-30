@@ -31,7 +31,7 @@ import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { UpdateProfileCommand } from '../application/use-cases/update-profile.use-case';
 import { NotificationCode } from '../../../configuration/exception.filter';
 import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
-import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
+import { ValidationImagePipe } from '../../../main/validators/validation-image.pipe';
 import { DeleteImageAvatarCommand } from '../application/use-cases/delete-image-avatar.use-case';
 import { AvatarsViewModel } from './view-models/avatars-view.dto';
 import { IUsersQueryRepository } from '../infrastructure/users.query-repository';
@@ -89,11 +89,11 @@ export class UsersController {
   @SwaggerDecoratorsByFormData()
   async uploadPhotoAvatar(
     @CurrentUserId() userId: number,
-    @UploadedFile(new ValidationTypeImagePipe(typeImageAvatar))
+    @UploadedFile(new ValidationImagePipe(typeImageAvatar))
     file: Express.Multer.File,
   ): Promise<AvatarsViewModel> {
     await this.commandBus.execute<UploadImageAvatarCommand, ResultNotification<null>>(
-      new UploadImageAvatarCommand(userId, file.mimetype, file.buffer),
+      new UploadImageAvatarCommand(userId, file),
     );
     return this.usersQueryRepository.findUserAvatars(userId);
   }

@@ -41,7 +41,7 @@ export class RegisterUserUseCase
     const foundUser = await this.usersRepository.findUserByNameOrEmail(userName, email);
 
     if (foundUser) {
-      const field = foundUser.userName.toLowerCase() === userName.toLowerCase() ? 'name' : 'email';
+      const field = foundUser.userName.toLowerCase() === userName.toLowerCase() ? 'userName' : 'email';
       throw new NotificationException(`User with this ${field} is already exist`, field, NotificationCode.BAD_REQUEST);
     }
 
