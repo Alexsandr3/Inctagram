@@ -30,7 +30,7 @@ import { TempCreatePostCommand } from './temp-create-post-use.case';
 import { PostStatus } from '../domain/post.entity';
 
 @ApiBearerAuth()
-@ApiTags('Alternative the Post creation')
+@ApiTags('Alternative variant of creating a post')
 @UseGuards(JwtAuthGuard)
 @Controller('test')
 export class TempPostsController {
