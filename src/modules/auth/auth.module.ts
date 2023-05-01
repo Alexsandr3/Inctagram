@@ -24,11 +24,12 @@ import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 import { GenerateNewTokensUseCase } from './application/use-cases/update-tokens.use-case';
 import { GoogleOAuthController } from './api/google-oauth.controller';
-import { GoogleAuthorizationStrategy } from './api/strategies/google-authorization-strategy.service';
-import { GithubOauthController } from './api/github-oauth.controller';
-import { GithubOauthStrategy } from './api/strategies/github-oauth.strategy';
+import { GoogleAuthorizationStrategy } from './api/strategies/google-authorization.strategy';
+import { GitHubOauthController } from './api/github-oauth.controller';
+import { GithubAuthorizationStrategy } from './api/strategies/github-authorization.strategy';
 import { GoogleRegistrationStrategy } from './api/strategies/google-registration.strategy';
 import { ValidatorService } from '../../providers/validation/validator.service';
+import { GitHubRegistrationStrategy } from './api/strategies/github-registration.strategy';
 
 const useCases = [
   RegisterUserUseCase,
@@ -47,13 +48,14 @@ const strategies = [
   LocalStrategy,
   JwtStrategy,
   GoogleAuthorizationStrategy,
-  GithubOauthStrategy,
   GoogleRegistrationStrategy,
+  GithubAuthorizationStrategy,
+  GitHubRegistrationStrategy,
 ];
 
 @Module({
   imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule],
-  controllers: [AuthController, GoogleOAuthController, GithubOauthController],
+  controllers: [AuthController, GoogleOAuthController, GitHubOauthController],
   providers: [
     AuthService,
     {

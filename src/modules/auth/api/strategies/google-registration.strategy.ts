@@ -3,8 +3,8 @@ import { Profile, Strategy } from 'passport-google-oauth20';
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '../../../api-config/api.config.service';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
-import { RegisterFromGoogleInputDto } from '../input-dto/register-from-google.input.dto';
 import { Request } from 'express';
+import { RegisterFromGoogleOrGitHubInputDto } from '../input-dto/register-from-google-or-github.input.dto';
 
 @Injectable()
 export class GoogleRegistrationStrategy extends PassportStrategy(Strategy, 'google-registration') {
@@ -19,7 +19,7 @@ export class GoogleRegistrationStrategy extends PassportStrategy(Strategy, 'goog
   }
 
   async validate(req: Request, accessToken: string, _refreshToken: string, profile: Profile) {
-    const registerInputDto = RegisterFromGoogleInputDto.create(profile);
+    const registerInputDto = RegisterFromGoogleOrGitHubInputDto.create(profile);
     await this.validatorService.ValidateInstanceAndThrowError(registerInputDto);
 
     req.payLoad = registerInputDto;

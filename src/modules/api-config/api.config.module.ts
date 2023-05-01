@@ -41,7 +41,8 @@ import Joi from 'joi';
 
         GITHUB_CLIENT_ID: Joi.string().required(),
         GITHUB_CLIENT_SECRET: Joi.string().required(),
-        GITHUB_CALLBACK_URL: Joi.string().required(),
+        GITHUB_AUTHORIZATION_CALLBACK_URL: Joi.string().required(),
+        GITHUB_REGISTRATION_CALLBACK_URL: Joi.string().required(),
 
         TOKEN_NGROK: Joi.string(),
 

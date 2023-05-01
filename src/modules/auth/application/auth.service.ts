@@ -26,7 +26,7 @@ export class AuthService {
    * Checks if the credentials of the user are correct for OAuth2
    * @param dto
    */
-  async checkCredentialsOfUserOAth2(dto: OAuth2InputDto): Promise<number | null> {
+  async checkCredentialsOfUserOAuth2(dto: OAuth2InputDto): Promise<number | null> {
     const foundUser = await this.usersRepository.findUserByEmail(dto.email);
 
     if (!foundUser) {

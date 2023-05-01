@@ -98,8 +98,12 @@ export class ApiConfigService {
     return this.configService.get('auth.github.GITHUB_CLIENT_SECRET', { infer: true });
   }
 
-  get GITHUB_CALLBACK_URL(): string {
-    return this.configService.get('auth.github.GITHUB_CALLBACK_URL', { infer: true });
+  get GITHUB_AUTHORIZATION_CALLBACK_URL(): string {
+    return this.configService.get('auth.github.GITHUB_AUTHORIZATION_CALLBACK_URL', { infer: true });
+  }
+
+  get GITHUB_REGISTRATION_CALLBACK_URL(): string {
+    return this.configService.get('auth.github.GITHUB_REGISTRATION_CALLBACK_URL', { infer: true });
   }
 
   get TOKEN_TELEGRAM(): number {
