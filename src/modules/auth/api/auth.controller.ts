@@ -60,7 +60,7 @@ export class AuthController {
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async registration(@Body() body: RegisterInputDto): Promise<null> {
     const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
-      new RegisterUserCommand(body, false),
+      new RegisterUserCommand(body),
     );
     //notification.setCode(HTTP_Status.CREATED_201);
     return notification.getData();

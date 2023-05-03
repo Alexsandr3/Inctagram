@@ -22,6 +22,12 @@ export abstract class IUsersRepository {
   abstract addAvatars(userId: number, avatars: AvatarEntity[]);
 
   abstract updateAvatars(userId: number, avatars: AvatarEntity[]);
+
+  abstract findUserByProviderId(googleId: string): Promise<UserEntity | null>;
+
+  abstract countUsers(): Promise<number>;
+
+  abstract saveUser(user: UserEntity);
 }
 
 @Injectable()
@@ -90,6 +96,7 @@ export class PrismaUsersRepository implements IUsersRepository {
         emailConfirmation: {
           create: emailConfirmation,
         },
+        externalAccounts: {},
         profile: {
           create: {},
         }, //{ create: { ...user.profile, images: { create: user.profile.images } } },
@@ -142,6 +149,7 @@ export class PrismaUsersRepository implements IUsersRepository {
         isConfirmed: user.isConfirmed,
         emailConfirmation: updEmailConfirmation,
         profile: updProfile,
+        externalAccounts: { create: user.externalAccounts },
       },
     });
   }
@@ -211,6 +219,33 @@ export class PrismaUsersRepository implements IUsersRepository {
       },
       data: {
         profile: { update: { avatars: { updateMany: updateAvatarsConfig } } },
+      },
+    });
+  }
+
+  async findUserByProviderId(providerId: string): Promise<UserEntity | null> {
+    const foundUser = await this.prisma.user.findFirst({
+      where: { externalAccounts: { some: { providerId } } },
+      include: { profile: { include: { avatars: true } }, externalAccounts: true },
+    });
+
+    return plainToInstance(UserEntity, foundUser);
+  }
+
+  async countUsers(): Promise<number> {
+    return this.prisma.user.count();
+  }
+
+  async saveUser(user: UserEntity) {
+    await this.prisma.user.create({
+      data: {
+        ...user,
+        externalAccounts: {
+          create: user.externalAccounts,
+        },
+        profile: {
+          create: {},
+        },
       },
     });
   }

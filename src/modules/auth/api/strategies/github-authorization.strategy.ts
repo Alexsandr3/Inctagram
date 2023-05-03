@@ -18,9 +18,8 @@ export class GithubAuthorizationStrategy extends PassportStrategy(Strategy, 'git
   }
 
   async validate(accessToken: string, _refreshToken: string, profile: Profile): Promise<any> {
-    const email = profile.emails[0];
+    const userId = await this.authService.checkCredentialsOfUserOAuth2({ providerId: profile.id });
 
-    const userId = await this.authService.checkCredentialsOfUserOAuth2({ email: email.value });
     if (!userId) throw new UnauthorizedException();
 
     return { userId };

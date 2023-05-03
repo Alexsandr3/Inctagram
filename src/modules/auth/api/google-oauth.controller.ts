@@ -14,9 +14,9 @@ import { ResultNotification } from '../../../main/validators/result-notification
 import { TokensType } from '../application/types/types';
 import { Response } from 'express';
 import { GoogleRegistrationGuard } from './guards/google-registration.guard';
-import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { PayloadData } from '../../../main/decorators/payload-data.decorator';
-import { RegisterInputDto } from './input-dto/register.input.dto';
+import { RegisterUserFromExternalAccountCommand } from '../application/use-cases/register-user-from-external-account.use-case';
+import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
 
 @ApiTags('Google-OAuth2')
 @Controller('auth/google')
@@ -53,9 +53,9 @@ export class GoogleOAuthController {
   @SwaggerDecoratorsByGoogleRegistrationHandler()
   @Get('registration/redirect')
   @UseGuards(GoogleRegistrationGuard)
-  async googleRegistrationHandler(@PayloadData() registerInputDto: RegisterInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
-      new RegisterUserCommand(registerInputDto, true),
+  async googleRegistrationHandler(@PayloadData() dto: RegisterUserFromExternalAccountInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<RegisterUserFromExternalAccountCommand, ResultNotification>(
+      new RegisterUserFromExternalAccountCommand(dto),
     );
     return notification.getData();
   }

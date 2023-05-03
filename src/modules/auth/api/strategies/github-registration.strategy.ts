@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-github2';
 import { ApiConfigService } from '../../../api-config/api.config.service';
 import { Profile } from 'passport-google-oauth20';
 import { Request } from 'express';
-import { RegisterFromGoogleOrGitHubInputDto } from '../input-dto/register-from-google-or-github.input.dto';
+import { RegisterUserFromExternalAccountInputDto } from '../input-dto/register-user-from-external-account-input.dto';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
 
 @Injectable()
@@ -20,11 +20,36 @@ export class GitHubRegistrationStrategy extends PassportStrategy(Strategy, 'gith
     });
   }
 
-  async validate(req: Request, accessToken: string, _refreshToken: string, profile: Profile): Promise<any> {
-    const registerInputDto = RegisterFromGoogleOrGitHubInputDto.create(profile);
-    await this.validatorService.ValidateInstanceAndThrowError(registerInputDto);
+  async validate(req: Request, accessToken: string, _refreshToken: string, profile: Profile) {
+    if (!profile.emails || profile.emails.length === 0 || !profile.emails[0].value)
+      throw new BadRequestException([
+        {
+          message: 'Can`t register user without email. Don`t get email from GitHub',
+          field: 'email',
+        },
+      ]);
 
-    req.payLoad = registerInputDto;
+    if (!profile.id)
+      throw new BadRequestException([
+        {
+          message: 'Can`t register user without GitHub id. Don`t get id from GitHub',
+          field: 'GitHub id',
+        },
+      ]);
+
+    const userId = await this.usersRepository.findUserByProviderId(profile.id);
+    if (userId)
+      throw new BadRequestException([
+        {
+          message: `User with GitHub id: ${profile.id} is already register`,
+          field: 'GitHub id',
+        },
+      ]);
+
+    const registerUserFromExternalAccountInputDto = RegisterUserFromExternalAccountInputDto.create(profile);
+    await this.validatorService.ValidateInstanceAndThrowError(registerUserFromExternalAccountInputDto);
+
+    req.payLoad = registerUserFromExternalAccountInputDto;
     return true;
   }
 }

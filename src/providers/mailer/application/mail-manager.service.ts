@@ -29,4 +29,11 @@ export class MailManager {
     const template = `./recovery.html`;
     await this.emailAdapter.sendEmail(email, url, subject, template);
   }
+
+  async sendMailWithSuccessRegistration(email: string) {
+    const url = ``;
+    const subject = 'Your registration is success';
+    const template = `./confirmation.html`;
+    await this.emailAdapter.sendEmail(email, url, subject, template);
+  }
 }

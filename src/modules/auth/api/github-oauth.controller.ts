@@ -14,9 +14,9 @@ import {
 } from '../swagger/swagger.github-oauth.decorators';
 import { ApiTags } from '@nestjs/swagger';
 import { PayloadData } from '../../../main/decorators/payload-data.decorator';
-import { RegisterInputDto } from './input-dto/register.input.dto';
-import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
 import { GitHubRegistrationGuard } from './guards/github-registration.guard';
+import { RegisterUserFromExternalAccountCommand } from '../application/use-cases/register-user-from-external-account.use-case';
+import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
 
 @ApiTags('GitHub-OAuth2')
 @Controller('auth/github')
@@ -53,9 +53,9 @@ export class GitHubOauthController {
   @SwaggerDecoratorsByGitHubRegistrationHandler()
   @Get('registration/redirect')
   @UseGuards(GitHubRegistrationGuard)
-  async githubRegistrationHandler(@PayloadData() registerInputDto: RegisterInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<RegisterUserCommand, ResultNotification<null>>(
-      new RegisterUserCommand(registerInputDto, true),
+  async githubRegistrationHandler(@PayloadData() dto: RegisterUserFromExternalAccountInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<RegisterUserFromExternalAccountCommand, ResultNotification>(
+      new RegisterUserFromExternalAccountCommand(dto),
     );
     return notification.getData();
   }
