@@ -467,7 +467,6 @@ describe('Testing new flow upload files and create post -  e2e', () => {
       expectedCode: 201,
     });
     post = responseBody;
-    console.log(post);
     uploadId1 = responseBody.images[0].uploadId;
     uploadId2 = responseBody.images[1].uploadId;
     uploadId3 = responseBody.images[2].uploadId;

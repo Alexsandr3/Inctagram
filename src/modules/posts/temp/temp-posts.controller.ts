@@ -4,6 +4,7 @@ import {
   Delete,
   HttpCode,
   Param,
+  ParseIntPipe,
   Post,
   UploadedFiles,
   UseGuards,
@@ -26,7 +27,6 @@ import {
 } from './temp.swagger.posts.decorators';
 import { TempCreatePostCommand } from './temp-create-post-use.case';
 import { PostStatus } from '../domain/post.entity';
-import { CustomParseIntPipe } from '../../../main/validators/custom-parse-to-number.pipe';
 import { TempDeleteImagePostCommand } from './temp-delete-image-post-use.case';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 
@@ -59,7 +59,7 @@ export class TempPostsController {
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async deleteImagePost(
     @CurrentUserId() userId: number,
-    @Param('postId', CustomParseIntPipe) postId: number,
+    @Param('postId', ParseIntPipe) postId: number,
     @Param('uploadId') uploadId: string,
   ) {
     await this.commandBus.execute<TempDeleteImagePostCommand, ResultNotification>(
