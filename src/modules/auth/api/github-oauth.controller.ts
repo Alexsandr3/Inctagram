@@ -1,31 +1,37 @@
 import { Controller, Get, Headers, Ip, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
-import { GithubOauthGuard } from './guards/github-oauth.guard';
+import { GitHubAuthorizationGuard } from './guards/github-authorization.guard';
 import { LoginCommand } from '../application/use-cases/login.use-case';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { TokensType } from '../application/types/types';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { CommandBus } from '@nestjs/cqrs';
 import {
-  SwaggerDecoratorsByAuthGithub,
-  SwaggerDecoratorsByLoginWithGithub,
+  SwaggerDecoratorsByGitHubAuthorization,
+  SwaggerDecoratorsByGitHubAuthorizationHandler,
+  SwaggerDecoratorsByGitHubRegistration,
+  SwaggerDecoratorsByGitHubRegistrationHandler,
 } from '../swagger/swagger.github-oauth.decorators';
 import { ApiTags } from '@nestjs/swagger';
+import { PayloadData } from '../../../main/decorators/payload-data.decorator';
+import { GitHubRegistrationGuard } from './guards/github-registration.guard';
+import { RegisterUserFromExternalAccountCommand } from '../application/use-cases/register-user-from-external-account.use-case';
+import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
 
-@ApiTags('OAuth2-login')
+@ApiTags('GitHub-OAuth2')
 @Controller('auth/github')
-export class GithubOauthController {
+export class GitHubOauthController {
   constructor(private readonly commandBus: CommandBus) {}
 
-  @SwaggerDecoratorsByAuthGithub()
-  @Get()
-  @UseGuards(GithubOauthGuard)
-  async githubAuth() {}
+  @SwaggerDecoratorsByGitHubAuthorization()
+  @Get('authorization')
+  @UseGuards(GitHubAuthorizationGuard)
+  async githubAuthorization() {}
 
-  @SwaggerDecoratorsByLoginWithGithub()
-  @Get('redirect')
-  @UseGuards(GithubOauthGuard)
-  async githubAuthCallback(
+  @SwaggerDecoratorsByGitHubAuthorizationHandler()
+  @Get('authorization/redirect')
+  @UseGuards(GitHubAuthorizationGuard)
+  async githubAuthorizationHandler(
     @Ip() ip: string,
     @Headers('user-agent') deviceName = 'unknown',
     @Res({ passthrough: true }) res: Response,
@@ -37,5 +43,20 @@ export class GithubOauthController {
     const { accessToken, refreshToken } = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
     return { accessToken };
+  }
+
+  @SwaggerDecoratorsByGitHubRegistration()
+  @Get('registration')
+  @UseGuards(GitHubRegistrationGuard)
+  async githubRegistration() {}
+
+  @SwaggerDecoratorsByGitHubRegistrationHandler()
+  @Get('registration/redirect')
+  @UseGuards(GitHubRegistrationGuard)
+  async githubRegistrationHandler(@PayloadData() dto: RegisterUserFromExternalAccountInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<RegisterUserFromExternalAccountCommand, ResultNotification>(
+      new RegisterUserFromExternalAccountCommand(dto),
+    );
+    return notification.getData();
   }
 }

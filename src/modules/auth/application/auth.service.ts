@@ -26,16 +26,19 @@ export class AuthService {
    * Checks if the credentials of the user are correct for OAuth2
    * @param dto
    */
-  async checkCredentialsOfUserOAth2(dto: OAuth2InputDto): Promise<number | null> {
-    const foundUser = await this.usersRepository.findUserByEmail(dto.email);
-
+  async checkCredentialsOfUserOAuth2(dto: OAuth2InputDto): Promise<number | null> {
+    const foundUser = await this.usersRepository.findUserByProviderId(dto.providerId);
     if (!foundUser) {
-      this.logger.log(`User with email ${dto.email} not found`);
-      return null;
-    } else if (!foundUser.isConfirmed) {
-      this.logger.log(`Email ${dto.email} is not confirmed`);
+      this.logger.log(`User with providerId ${dto.providerId} not found`);
       return null;
     }
+
+    const externalAccount = foundUser.externalAccounts.find(a => a.providerId === dto.providerId);
+    if (!externalAccount.isConfirmed) {
+      this.logger.log(`Account with providerId ${dto.providerId} is not confirmed`);
+      return null;
+    }
+
     return foundUser.id;
   }
 

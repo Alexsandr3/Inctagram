@@ -36,11 +36,13 @@ import Joi from 'joi';
 
         GOOGLE_CLIENT_ID: Joi.string().required(),
         GOOGLE_CLIENT_SECRET: Joi.string().required(),
-        GOOGLE_CALLBACK_URL: Joi.string().required(),
+        GOOGLE_AUTHORIZATION_CALLBACK_URL: Joi.string().required(),
+        GOOGLE_REGISTRATION_CALLBACK_URL: Joi.string().required(),
 
         GITHUB_CLIENT_ID: Joi.string().required(),
         GITHUB_CLIENT_SECRET: Joi.string().required(),
-        GITHUB_CALLBACK_URL: Joi.string().required(),
+        GITHUB_AUTHORIZATION_CALLBACK_URL: Joi.string().required(),
+        GITHUB_REGISTRATION_CALLBACK_URL: Joi.string().required(),
 
         TOKEN_NGROK: Joi.string(),
 

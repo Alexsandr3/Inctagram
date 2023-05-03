@@ -24,9 +24,13 @@ import { CheckPasswordRecoveryCodeUseCase } from './application/use-cases/check-
 import { RegisterUserUseCase } from './application/use-cases/register-user.use-case';
 import { GenerateNewTokensUseCase } from './application/use-cases/update-tokens.use-case';
 import { GoogleOAuthController } from './api/google-oauth.controller';
-import { GoogleOAuthStrategy } from './api/strategies/google-oauth.strategy';
-import { GithubOauthController } from './api/github-oauth.controller';
-import { GithubOauthStrategy } from './api/strategies/github-oauth.strategy';
+import { GoogleAuthorizationStrategy } from './api/strategies/google-authorization.strategy';
+import { GitHubOauthController } from './api/github-oauth.controller';
+import { GithubAuthorizationStrategy } from './api/strategies/github-authorization.strategy';
+import { GoogleRegistrationStrategy } from './api/strategies/google-registration.strategy';
+import { ValidatorService } from '../../providers/validation/validator.service';
+import { GitHubRegistrationStrategy } from './api/strategies/github-registration.strategy';
+import { RegisterUserFromExternalAccountUseCase } from './application/use-cases/register-user-from-external-account.use-case';
 
 const useCases = [
   RegisterUserUseCase,
@@ -38,13 +42,22 @@ const useCases = [
   GenerateNewTokensUseCase,
   LogoutUseCase,
   CheckPasswordRecoveryCodeUseCase,
+  RegisterUserFromExternalAccountUseCase,
 ];
 
-const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, GoogleOAuthStrategy, GithubOauthStrategy];
+const strategies = [
+  BasicStrategy,
+  LocalStrategy,
+  JwtStrategy,
+  GoogleAuthorizationStrategy,
+  GoogleRegistrationStrategy,
+  GithubAuthorizationStrategy,
+  GitHubRegistrationStrategy,
+];
 
 @Module({
   imports: [CqrsModule, ApiConfigModule, ApiJwtModule, SessionsModule, PassportModule, UsersModule],
-  controllers: [AuthController, GoogleOAuthController, GithubOauthController],
+  controllers: [AuthController, GoogleOAuthController, GitHubOauthController],
   providers: [
     AuthService,
     {
@@ -53,6 +66,7 @@ const strategies = [BasicStrategy, LocalStrategy, JwtStrategy, GoogleOAuthStrate
     },
     ...useCases,
     ...strategies,
+    ValidatorService,
   ],
   exports: [AuthService],
 })

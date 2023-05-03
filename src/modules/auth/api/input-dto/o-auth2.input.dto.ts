@@ -1,13 +1,13 @@
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 /**
  * Login User with OAuth2
  */
 export class OAuth2InputDto {
   /**
-   * Email  -  User
+   * profile id from OAuth2 provider
    */
   @IsNotEmpty()
-  @IsEmail()
-  email: string;
+  @IsString()
+  providerId: string;
 }
