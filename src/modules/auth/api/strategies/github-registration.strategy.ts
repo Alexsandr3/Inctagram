@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-github2';
 import { ApiConfigService } from '../../../api-config/api.config.service';
@@ -6,10 +6,15 @@ import { Profile } from 'passport-google-oauth20';
 import { Request } from 'express';
 import { RegisterUserFromExternalAccountInputDto } from '../input-dto/register-user-from-external-account-input.dto';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
+import { AuthService } from '../../application/auth.service';
 
 @Injectable()
 export class GitHubRegistrationStrategy extends PassportStrategy(Strategy, 'github-registration') {
-  constructor(private apiConfigService: ApiConfigService, private readonly validatorService: ValidatorService) {
+  constructor(
+    private apiConfigService: ApiConfigService,
+    private readonly validatorService: ValidatorService,
+    private readonly authService: AuthService,
+  ) {
     super({
       clientID: apiConfigService.GITHUB_CLIENT_ID,
       clientSecret: apiConfigService.GITHUB_CLIENT_SECRET,
@@ -20,35 +25,21 @@ export class GitHubRegistrationStrategy extends PassportStrategy(Strategy, 'gith
     });
   }
 
+  /**
+   * Check incoming data from external accounts and find user by providerId (GitHub)
+   * and create input dto for register user from external account
+   * @param req
+   * @param accessToken
+   * @param _refreshToken
+   * @param profile
+   */
   async validate(req: Request, accessToken: string, _refreshToken: string, profile: Profile) {
-    if (!profile.emails || profile.emails.length === 0 || !profile.emails[0].value)
-      throw new BadRequestException([
-        {
-          message: 'Can`t register user without email. Don`t get email from GitHub',
-          field: 'email',
-        },
-      ]);
-
-    if (!profile.id)
-      throw new BadRequestException([
-        {
-          message: 'Can`t register user without GitHub id. Don`t get id from GitHub',
-          field: 'GitHub id',
-        },
-      ]);
-
-    const userId = await this.usersRepository.findUserByProviderId(profile.id);
-    if (userId)
-      throw new BadRequestException([
-        {
-          message: `User with GitHub id: ${profile.id} is already register`,
-          field: 'GitHub id',
-        },
-      ]);
-
+    //Checking incoming data from external accounts and find user by providerId (GitHub)
+    await this.authService.checkIncomingDataFromExternalAccountAndFindUserByProviderId(profile, 'GitHub');
+    //create input dto for register user from external account
     const registerUserFromExternalAccountInputDto = RegisterUserFromExternalAccountInputDto.create(profile);
     await this.validatorService.ValidateInstanceAndThrowError(registerUserFromExternalAccountInputDto);
-
+    //set payload to request
     req.payLoad = registerUserFromExternalAccountInputDto;
     return true;
   }
