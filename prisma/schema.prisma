@@ -133,7 +133,7 @@ enum Status {
 
 model PostImage {
   id         Int           @id @default(autoincrement())
-  postId     Int
+  postId     Int?
   resourceId String
   status     Status        @default(PENDING)
   imageType  ImageType
@@ -145,7 +145,7 @@ model PostImage {
   fieldId    String
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  post       Post          @relation(fields: [postId], references: [id])
+  post       Post?          @relation(fields: [postId], references: [id])
 
   @@map("PostImage")
 }
