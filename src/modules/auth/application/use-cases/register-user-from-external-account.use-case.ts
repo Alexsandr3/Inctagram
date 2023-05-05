@@ -31,12 +31,12 @@ export class RegisterUserFromExternalAccountUseCase
   }
 
   /**
-   * Execute the command action for RegisterUserFromExternalAccountCommand
+   * Execute the command action for Register User From External Account (Google, GitHub, etc.)
    * @param command
    */
   async executeUseCase(command: RegisterUserFromExternalAccountCommand): Promise<void> {
     const { dto } = command;
-
+    //check if user with this external account is already register
     const userId = await this.usersRepository.findUserByProviderId(String(dto.providerId));
     if (userId)
       throw new NotificationException(
@@ -44,12 +44,13 @@ export class RegisterUserFromExternalAccountUseCase
         `${dto.provider} id`,
         NotificationCode.BAD_REQUEST,
       );
-
+    //check if user with this email is already register
     let user = await this.usersRepository.findUserByEmail(dto.email);
     if (!user) {
-      //create user
+      //create user from external account
       user = await this.createUserByExternalAccount(dto);
       await this.usersRepository.saveUser(user);
+      //send email with success registration without confirmation
       await this.mailService.sendMailWithSuccessRegistration(dto.email);
     } else {
       //add external account to user
@@ -57,6 +58,7 @@ export class RegisterUserFromExternalAccountUseCase
       //create confirmation for external account with code
       const confirmationOfExternalAccount = ConfirmationOfExternalAccountEntity.initCreate(dto.providerId);
       await this.usersRepository.addExternalAccountToUser(user, confirmationOfExternalAccount);
+      //send email with confirmation code for external account
       await this.mailService.sendUserConfirmationCodeForExternalAccount(
         dto.email,
         confirmationOfExternalAccount.confirmationCode,
