@@ -5,6 +5,13 @@ import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dt
 import { MailManager } from '../../src/providers/mailer/application/mail-manager.service';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { GoogleRegistrationGuard } from '../../src/modules/auth/api/guards/google-registration.guard';
+import { RegisterUserFromExternalAccountInputDto } from '../../src/modules/auth/api/input-dto/register-user-from-external-account-input.dto';
+import { Provider } from '../../src/modules/users/domain/ExternalAccountEntity';
+import { GoogleAuthorizationGuard } from '../../src/modules/auth/api/guards/google-authorization.guard';
+import { IUsersRepository } from '../../src/modules/users/infrastructure/users.repository';
+import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';
+import { GitHubAuthorizationGuard } from '../../src/modules/auth/api/guards/github-authorization.guard';
 
 jest.setTimeout(120000);
 describe('Authorisation -  e2e', () => {
@@ -370,26 +377,360 @@ describe('Authorisation -  e2e', () => {
     const confirmationCode2 = sendEmailConfirmationMessage.mock.lastCall[1];
     expect(confirmationCode2).not.toBe(confirmationCode1);
   });
+
+  describe('Recaptcha -  e2e', () => {
+    let app: INestApplication;
+    let authHelper: AuthHelper;
+    // let mailManager: MailManager;
+
+    beforeAll(async () => {
+      app = await getAppForE2ETesting({ recaptchaOn: true });
+      authHelper = new AuthHelper(app);
+    });
+
+    afterAll(async () => {
+      await app.close();
+    });
+
+    //auth/password-recovery with recaptcha
+    it('01 - / (POST) - should return 400 if email is incorrect', async () => {
+      const command = { email: 'validva@lidamail.tr', recaptcha: '12345678' };
+      const response: ApiErrorResultDto = await authHelper.passwordRecovery(command, { expectedCode: 400 });
+      expect(response.messages).toHaveLength(1);
+      expect(response.messages[0].field).toBe('recaptcha');
+    });
+  });
 });
-describe('Recaptcha -  e2e', () => {
+
+describe('OAuth2 -  e2e', () => {
   let app: INestApplication;
   let authHelper: AuthHelper;
-  // let mailManager: MailManager;
+  let userId: number;
+  let refreshToken: string;
+  let accessToken: string;
+  let confirmationCode: string;
+
+  const googleDto: RegisterUserFromExternalAccountInputDto = {
+    displayName: 'Cho-o-nya',
+    email: 'test@test.goo',
+    provider: Provider.GOOGLE,
+    providerId: '12345',
+  };
+  const gitHubDto: RegisterUserFromExternalAccountInputDto = {
+    displayName: 'Hru-nya',
+    email: 'test@test.git',
+    provider: Provider.GITHUB,
+    providerId: 'gh12345',
+  };
+  let googleRegistrationGuard: GoogleRegistrationGuard;
+  let gitHubRegistrationGuard: GitHubRegistrationGuard;
+  let prismaUsersRepository: IUsersRepository;
+  let mailManager: MailManager;
+  let emailAdapter: EmailAdapter;
 
   beforeAll(async () => {
     app = await getAppForE2ETesting({ recaptchaOn: true });
     authHelper = new AuthHelper(app);
+    googleRegistrationGuard = app.get<GoogleRegistrationGuard>(GoogleRegistrationGuard);
+    gitHubRegistrationGuard = app.get<GitHubRegistrationGuard>(GitHubRegistrationGuard);
+    prismaUsersRepository = app.get<IUsersRepository>(IUsersRepository);
+    mailManager = app.get<MailManager>(MailManager);
+    emailAdapter = app.get<EmailAdapter>(EmailAdapter);
   });
 
   afterAll(async () => {
     await app.close();
   });
 
+  /**
+   * @description mock GoogleRegistrationGuard
+   * @param dto payLoad value
+   */
+  const mockGuardForGoogleRegistration = (dto: any) => {
+    jest.spyOn(googleRegistrationGuard, 'canActivate').mockImplementation(args => {
+      const req = args.switchToHttp().getRequest();
+      req.payLoad = dto;
+      return true;
+    });
+  };
+  const mockGuardForGitHubRegistration = (dto: any) => {
+    jest.spyOn(gitHubRegistrationGuard, 'canActivate').mockImplementation(args => {
+      const req = args.switchToHttp().getRequest();
+      req.payLoad = dto;
+      return true;
+    });
+  };
+
   //auth/password-recovery with recaptcha
-  it('01 - / (POST) - should return 400 if email is incorrect', async () => {
-    const command = { email: 'validva@lidamail.tr', recaptcha: '12345678' };
-    const response: ApiErrorResultDto = await authHelper.passwordRecovery(command, { expectedCode: 400 });
-    expect(response.messages).toHaveLength(1);
-    expect(response.messages[0].field).toBe('recaptcha');
+
+  // Registration by Google account
+  it('50 - / (GET) - should return 204 and register user by Google account', async () => {
+    mockGuardForGoogleRegistration(googleDto);
+    jest.spyOn(emailAdapter, 'sendEmail');
+
+    await authHelper.googleRegistration();
+
+    const user = await prismaUsersRepository.findUserByEmail(googleDto.email);
+    userId = user.id;
+
+    expect(user.userName).toBe(googleDto.displayName);
+    expect(user.email).toBe(googleDto.email);
+    expect(user.isConfirmed).toBe(true);
+    expect(user.externalAccounts.length).toBe(1);
+    expect(user.externalAccounts[0].provider).toBe(googleDto.provider);
+    expect(user.externalAccounts[0].providerId).toBe(googleDto.providerId);
+    expect(emailAdapter.sendEmail).toBeCalled();
+  });
+  it('51 - / (GET) - should return 204 and register user by Google account with correcting the name', async () => {
+    const dto2: RegisterUserFromExternalAccountInputDto = {
+      displayName: 'Cho',
+      email: 'test2@test.goo',
+      provider: Provider.GOOGLE,
+      providerId: '12345_2',
+    };
+    mockGuardForGoogleRegistration(dto2);
+
+    await authHelper.googleRegistration();
+    const user2 = await prismaUsersRepository.findUserByEmail(dto2.email);
+    expect(user2.userName).toBe(dto2.displayName + '_00');
+    expect(user2.email).toBe(dto2.email);
+    expect(user2.isConfirmed).toBe(true);
+    expect(user2.externalAccounts.length).toBe(1);
+    expect(user2.externalAccounts[0].provider).toBe(dto2.provider);
+    expect(user2.externalAccounts[0].providerId).toBe(dto2.providerId);
+
+    //new test
+    const dto3: RegisterUserFromExternalAccountInputDto = {
+      displayName: user2.userName,
+      email: 'test3@test.goo',
+      provider: Provider.GOOGLE,
+      providerId: '12345_3',
+    };
+    mockGuardForGoogleRegistration(dto3);
+
+    await authHelper.googleRegistration();
+    const user3 = await prismaUsersRepository.findUserByEmail(dto3.email);
+    expect(user3.userName).toBe(dto2.displayName + '_10');
+
+    //new test
+    const dto4: RegisterUserFromExternalAccountInputDto = {
+      displayName: 'very_very_very_very_big_userName',
+      email: 'test4@test.goo',
+      provider: Provider.GOOGLE,
+      providerId: '12345_4',
+    };
+    mockGuardForGoogleRegistration(dto4);
+
+    await authHelper.googleRegistration();
+    const user4 = await prismaUsersRepository.findUserByEmail(dto4.email);
+    expect(user4.userName).toBe('user_4');
+
+    //new test
+    const dto5: RegisterUserFromExternalAccountInputDto = {
+      displayName: 'user_name',
+      email: 'test5@test.goo',
+      provider: Provider.GOOGLE,
+      providerId: '12345_5',
+    };
+    mockGuardForGoogleRegistration(dto5);
+
+    await authHelper.googleRegistration();
+    const user5 = await prismaUsersRepository.findUserByEmail(dto5.email);
+    expect(user5.userName).toBe(dto5.displayName);
+
+    //new test
+    const dto6: RegisterUserFromExternalAccountInputDto = {
+      displayName: dto5.displayName,
+      email: 'test6@test.goo',
+      provider: Provider.GOOGLE,
+      providerId: '12345_6',
+    };
+    mockGuardForGoogleRegistration(dto6);
+
+    await authHelper.googleRegistration();
+    const user6 = await prismaUsersRepository.findUserByEmail(dto6.email);
+    expect(user6.userName).toBe(dto6.displayName + '_0');
+  });
+  it('52 - / (GET) - should return 400 if user is already registered', async () => {
+    mockGuardForGoogleRegistration(googleDto);
+
+    await authHelper.googleRegistration({ expectedCode: HTTP_Status.BAD_REQUEST_400 });
+  });
+  // Authorization by Google account
+  it('53 - / (GET) - should return 204 and authorize user by Google account', async () => {
+    const dto = {
+      userId,
+    };
+    const googleAuthorizationGuard = app.get<GoogleAuthorizationGuard>(GoogleAuthorizationGuard);
+    jest.spyOn(googleAuthorizationGuard, 'canActivate').mockImplementation(args => {
+      const req = args.switchToHttp().getRequest();
+      req.user = dto;
+      return true;
+    });
+
+    const response = await authHelper.googleAuthorization();
+
+    refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.body).toEqual({ accessToken: expect.any(String) });
+    accessToken = response.body.accessToken;
+    expect(response.headers['set-cookie']).toBeDefined();
+    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
+    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
+    expect(response.headers['set-cookie'][0]).toContain('Path=/');
+    expect(response.headers['set-cookie'][0]).toContain('Secure');
+  });
+  // Add Google account to existing user
+  it('54 - / (GET) - should return 204 and add Google account to existing user', async () => {
+    const dto: RegisterUserFromExternalAccountInputDto = {
+      displayName: 'Cho-o-nya_Best',
+      email: 'TEST@TESt.goo',
+      provider: Provider.GOOGLE,
+      providerId: '12345___1',
+    };
+    mockGuardForGoogleRegistration(dto);
+
+    jest.spyOn(emailAdapter, 'sendEmail');
+    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmation');
+
+    await authHelper.googleRegistration();
+
+    const user = await prismaUsersRepository.findUserByEmail(dto.email);
+
+    expect(user.userName).not.toBe(dto.displayName);
+    expect(user.email).toBe(dto.email.toLowerCase());
+    expect(user.isConfirmed).toBe(true);
+    expect(user.externalAccounts.length).toBe(2);
+    const addedExternalAccount = user.externalAccounts.find(a => a.providerId === dto.providerId);
+    expect(addedExternalAccount.displayName).toBe(dto.displayName);
+    expect(addedExternalAccount.email).toBe(dto.email.toLowerCase());
+    expect(addedExternalAccount.provider).toBe(dto.provider);
+    expect(addedExternalAccount.providerId).toBe(dto.providerId);
+    expect(addedExternalAccount.isConfirmed).toBe(false);
+
+    confirmationCode = sendEmailConfirmationMessage.mock.lastCall[1];
+    expect(emailAdapter.sendEmail).toBeCalled();
+  });
+  // Registration by GitHub account
+  it('55 - / (GET) - should return 204 and register user by GitHub account', async () => {
+    mockGuardForGitHubRegistration(gitHubDto);
+
+    await authHelper.gitHubRegistration();
+
+    const user = await prismaUsersRepository.findUserByEmail(gitHubDto.email);
+    userId = user.id;
+
+    expect(user.userName).toBe(gitHubDto.displayName);
+    expect(user.email).toBe(gitHubDto.email);
+    expect(user.isConfirmed).toBe(true);
+    expect(user.externalAccounts.length).toBe(1);
+    expect(user.externalAccounts[0].provider).toBe(gitHubDto.provider);
+    expect(user.externalAccounts[0].providerId).toBe(gitHubDto.providerId);
+    expect(emailAdapter.sendEmail).toBeCalled();
+  });
+  // Authorization by GitHub account
+  it('56 - / (GET) - should return 204 and authorize user by GitHub account', async () => {
+    const dto = {
+      userId,
+    };
+    const gitHubAuthorizationGuard = app.get<GitHubAuthorizationGuard>(GitHubAuthorizationGuard);
+    jest.spyOn(gitHubAuthorizationGuard, 'canActivate').mockImplementation(args => {
+      const req = args.switchToHttp().getRequest();
+      req.user = dto;
+      return true;
+    });
+
+    const response = await authHelper.githubAuthorization();
+
+    refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.body).toEqual({ accessToken: expect.any(String) });
+    accessToken = response.body.accessToken;
+    expect(response.headers['set-cookie']).toBeDefined();
+    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
+    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
+    expect(response.headers['set-cookie'][0]).toContain('Path=/');
+    expect(response.headers['set-cookie'][0]).toContain('Secure');
+  });
+  // Add GitHub account to existing user
+  it('57 - / (GET) - should return 204 and add GitHub account to existing user', async () => {
+    const dto: RegisterUserFromExternalAccountInputDto = {
+      displayName: 'Hru-nya_Best',
+      email: 'TEST@TESt.git',
+      provider: Provider.GITHUB,
+      providerId: 'gh12345___1',
+    };
+    mockGuardForGitHubRegistration(dto);
+
+    await authHelper.gitHubRegistration();
+
+    const user = await prismaUsersRepository.findUserByEmail(dto.email);
+
+    expect(user.userName).not.toBe(dto.displayName);
+    expect(user.email).toBe(dto.email.toLowerCase());
+    expect(user.isConfirmed).toBe(true);
+    expect(user.externalAccounts.length).toBe(2);
+    const addedExternalAccount = user.externalAccounts.find(a => a.providerId === dto.providerId);
+    expect(addedExternalAccount.displayName).toBe(dto.displayName);
+    expect(addedExternalAccount.email).toBe(dto.email.toLowerCase());
+    expect(addedExternalAccount.provider).toBe(dto.provider);
+    expect(addedExternalAccount.providerId).toBe(dto.providerId);
+    expect(addedExternalAccount.isConfirmed).toBe(false);
+  });
+  // Confirm adding external account to user
+  it('60 - / (POST) - should return 204 if confirmationCode is correct', async () => {
+    const command = { confirmationCode: confirmationCode };
+    await authHelper.confirmAddingExternalAccount(command);
+  });
+  it('61 - / (POST) - should return 400 if adding external account is already confirmed', async () => {
+    const command = { confirmationCode: confirmationCode };
+    await authHelper.confirmAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+  });
+  it('62 - / (POST) - should return 400 if confirmationCode is incorrect', async () => {
+    let command = { confirmationCode: 'confirmationCode' };
+    await authHelper.confirmAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+    command = { confirmationCode: null };
+    await authHelper.confirmAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+    command = null;
+    await authHelper.confirmAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+    command = undefined;
+    await authHelper.confirmAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+  });
+  // Reject adding external account to user
+  it('63 - / (POST) - should return 400 if try reject of adding external account which is already confirmed', async () => {
+    const command = { confirmationCode: confirmationCode };
+    await authHelper.rejectAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+  });
+  it('64 - / (POST) - should return 204 if confirmationCode is correct (include: Add Google account to existing user)', async () => {
+    const dto: RegisterUserFromExternalAccountInputDto = {
+      displayName: 'Cho-o-nya_Best2',
+      email: 'test@test.git',
+      provider: Provider.GOOGLE,
+      providerId: '12345___2',
+    };
+    mockGuardForGoogleRegistration(dto);
+    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmation');
+
+    await authHelper.googleRegistration();
+    const user = await prismaUsersRepository.findUserByEmail(dto.email);
+    expect(user.externalAccounts.length).toBe(3);
+    const addedExternalAccount = user.externalAccounts.find(a => a.providerId === dto.providerId);
+    expect(addedExternalAccount.isConfirmed).toBe(false);
+    confirmationCode = sendEmailConfirmationMessage.mock.lastCall[1];
+
+    const command = { confirmationCode: confirmationCode };
+    await authHelper.rejectAddingExternalAccount(command);
+  });
+  it('65 - / (POST) - should return 400 if confirmationCode is incorrect', async () => {
+    let command = { confirmationCode: 'confirmationCode' };
+    await authHelper.rejectAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+    command = { confirmationCode: null };
+    await authHelper.rejectAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+    command = null;
+    await authHelper.rejectAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
+    command = undefined;
+    await authHelper.rejectAddingExternalAccount(command, { expectedCode: HTTP_Status.BAD_REQUEST_400 });
   });
 });

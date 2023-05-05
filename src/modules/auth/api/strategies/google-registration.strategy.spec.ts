@@ -1,14 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GoogleAuthorizationStrategy } from '../src/modules/auth/api/strategies/google-authorization.strategy';
-import { AuthService } from '../src/modules/auth/application/auth.service';
-import { ApiConfigModule } from '../src/modules/api-config/api.config.module';
-import { IUsersRepository, PrismaUsersRepository } from '../src/modules/users/infrastructure/users.repository';
-import { Profile } from 'passport-google-oauth20';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
-import { GoogleRegistrationStrategy } from '../src/modules/auth/api/strategies/google-registration.strategy';
-import { ValidatorService } from '../src/providers/validation/validator.service';
-import { UserEntity } from '../src/modules/users/domain/user.entity';
-import { PrismaService } from '../src/providers/prisma/prisma.service';
+import { ApiConfigModule } from '../../../api-config/api.config.module';
+import { BadRequestException } from '@nestjs/common';
+import { GoogleRegistrationStrategy } from './google-registration.strategy';
+import { ValidatorService } from '../../../../providers/validation/validator.service';
+import { PrismaService } from '../../../../providers/prisma/prisma.service';
 
 describe('test GoogleRegistrationStrategy', () => {
   let googleRegistrationStrategy: GoogleRegistrationStrategy;
@@ -16,7 +11,7 @@ describe('test GoogleRegistrationStrategy', () => {
   const profile: any = {
     id: '1234567890',
     displayName: 'SuperTester',
-    emails: [{ value: 'test@test.tst', verified: 'true' }],
+    emails: [{ value: 'test@int.tst', verified: 'true' }],
     provider: 'google',
     profileUrl: 'https://example.com/profile',
     _raw: 'raw string',
@@ -34,12 +29,7 @@ describe('test GoogleRegistrationStrategy', () => {
     app = await Test.createTestingModule({
       imports: [ApiConfigModule],
       controllers: [],
-      providers: [
-        GoogleRegistrationStrategy,
-        ValidatorService,
-        PrismaService,
-        { provide: IUsersRepository, useClass: PrismaUsersRepository },
-      ],
+      providers: [GoogleRegistrationStrategy, ValidatorService, PrismaService],
     }).compile();
 
     googleRegistrationStrategy = app.get<GoogleRegistrationStrategy>(GoogleRegistrationStrategy);
@@ -97,13 +87,7 @@ describe('test GoogleRegistrationStrategy', () => {
       BadRequestException,
     );
   });
-  it('shouldn`t pass strategy if user is already registered', async () => {
-    jest
-      .spyOn(googleRegistrationStrategy['usersRepository'], 'findUserByProviderId')
-      .mockResolvedValueOnce(new UserEntity());
-    await expect(googleRegistrationStrategy.validate(req, '', '', profile)).rejects.toThrow(BadRequestException);
-  });
-  it('should pass strategy if user not register early', async () => {
+  it('should pass strategy with full data', async () => {
     const result = await googleRegistrationStrategy.validate(req, '', '', profile);
 
     expect(req.payLoad).toEqual({
@@ -131,7 +115,7 @@ describe('test GoogleRegistrationStrategy', () => {
   it('should pass strategy if user not register early and don`t get displayName', async () => {
     const profile: any = {
       id: '1234567890',
-      emails: [{ value: 'test@test.tst', verified: 'true' }],
+      emails: [{ value: 'test@int.tst', verified: 'true' }],
       provider: 'google',
       profileUrl: 'https://example.com/profile',
       _raw: 'raw string',
@@ -152,57 +136,5 @@ describe('test GoogleRegistrationStrategy', () => {
       email: profile.emails[0].value,
     });
     expect(result).toEqual(true);
-  });
-});
-
-describe('GoogleAuthorizationStrategy', () => {
-  let app: TestingModule;
-  let strategy: GoogleAuthorizationStrategy;
-  const profile: Profile = {
-    id: '1234567890',
-    displayName: 'SuperTester',
-    emails: [{ value: 'test@test.tst', verified: 'true' }],
-    provider: 'google',
-    profileUrl: null,
-    _raw: null,
-    _json: null,
-  };
-
-  beforeAll(async () => {
-    app = await Test.createTestingModule({
-      imports: [ApiConfigModule],
-      providers: [GoogleAuthorizationStrategy, AuthService],
-    })
-      .overrideProvider(AuthService)
-      .useValue({
-        checkCredentialsOfUserOAuth2: () => 1,
-      })
-      .compile();
-
-    strategy = app.get<GoogleAuthorizationStrategy>(GoogleAuthorizationStrategy);
-  });
-  afterAll(async () => {
-    await app.close();
-  });
-
-  it('should be defined', () => {
-    expect(strategy).toBeDefined();
-  });
-
-  it('should validate the user with valid access token, refreshToken and profile', async () => {
-    const mockUserId = 1;
-    jest.spyOn(strategy['authService'], 'checkCredentialsOfUserOAuth2').mockResolvedValueOnce(mockUserId);
-    const result = await strategy.validate('validAccessToken', 'validRefreshToken', profile);
-    expect(result).toEqual({ userId: mockUserId });
-  });
-  it('should throw UnauthorizedException when user is not valid', async () => {
-    jest.spyOn(strategy['authService'], 'checkCredentialsOfUserOAuth2').mockResolvedValueOnce(null);
-    await expect(strategy.validate('invalidAccessToken', 'invalidRefreshToken', profile)).rejects.toThrow(
-      UnauthorizedException,
-    );
-  });
-
-  it('should throw UnauthorizedException when accessToken, refreshToken and profile are not present', async () => {
-    await expect(strategy.validate(null, null, null)).rejects.toThrow(TypeError);
   });
 });
