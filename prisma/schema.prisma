@@ -29,16 +29,17 @@ model User {
 }
 
 model ExternalAccount {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  provider    Provider
-  providerId  String   @unique
-  displayName String?
-  email       String
-  isConfirmed Boolean
-  createdAt   DateTime @default(now()) //, map: "created_at::timestamptz"
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
+  id                            Int                            @id @default(autoincrement())
+  userId                        Int
+  provider                      Provider
+  providerId                    String                         @unique
+  displayName                   String?
+  email                         String
+  isConfirmed                   Boolean
+  createdAt                     DateTime                       @default(now()) //, map: "created_at::timestamptz"
+  updatedAt                     DateTime                       @updatedAt
+  user                          User                           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  confirmationOfExternalAccount ConfirmationOfExternalAccount?
 }
 
 enum Provider {
@@ -53,6 +54,15 @@ model EmailConfirmation {
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("EmailConfirmation")
+}
+
+model ConfirmationOfExternalAccount {
+  providerId         String          @unique
+  confirmationCode   String?
+  codeExpirationDate DateTime?
+  externalAccount    ExternalAccount @relation(fields: [providerId], references: [providerId], onDelete: Cascade)
+
+  @@map("ConfirmationOfExternalAccount")
 }
 
 model Session {
@@ -133,7 +143,7 @@ enum Status {
 
 model PostImage {
   id         Int           @id @default(autoincrement())
-  postId     Int
+  postId     Int?
   resourceId String
   status     Status        @default(PENDING)
   imageType  ImageType
@@ -145,7 +155,7 @@ model PostImage {
   fieldId    String
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  post       Post          @relation(fields: [postId], references: [id])
+  post       Post?         @relation(fields: [postId], references: [id])
 
   @@map("PostImage")
 }
