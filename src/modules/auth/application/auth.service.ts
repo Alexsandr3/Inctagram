@@ -3,6 +3,9 @@ import { Injectable, Logger } from '@nestjs/common';
 import { LoginInputDto } from '../api/input-dto/login.input.dto';
 import { IUsersRepository } from '../../users/infrastructure/users.repository';
 import { OAuth2InputDto } from '../api/input-dto/o-auth2.input.dto';
+import { NotificationException } from '../../../main/validators/result-notification';
+import { NotificationCode } from '../../../configuration/exception.filter';
+import { UserEntity } from '../../users/domain/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -59,5 +62,26 @@ export class AuthService {
   async getPasswordHash(password: string): Promise<string> {
     const passwordSalt = await bcrypt.genSalt(10);
     return bcrypt.hash(password, passwordSalt);
+  }
+
+  async checkConfirmationCodeForAddingExternalAccount(
+    confirmationCode: string,
+  ): Promise<{ foundUser: UserEntity; providerId: string }> {
+    const { foundUser, foundConfirmationOfExternalAccount } =
+      await this.usersRepository.findUserWithConfirmationOfExternalAccountByConfirmationCode(confirmationCode);
+    if (!foundUser) throw new NotificationException('User not found', null, NotificationCode.NOT_FOUND);
+
+    const externalAccount = foundUser.externalAccounts.find(
+      a => a.providerId === foundConfirmationOfExternalAccount.providerId,
+    );
+
+    if (
+      externalAccount.isConfirmed ||
+      foundConfirmationOfExternalAccount.codeExpirationDate < new Date() ||
+      foundConfirmationOfExternalAccount.confirmationCode !== confirmationCode
+    ) {
+      throw new NotificationException('Confirmation code is invalid', 'code', NotificationCode.BAD_REQUEST);
+    }
+    return { foundUser: foundUser, providerId: foundConfirmationOfExternalAccount.providerId };
   }
 }

@@ -6,6 +6,9 @@ import { RegisterUserFromExternalAccountInputDto } from '../../api/input-dto/reg
 import { UserEntity, userFieldParameters } from '../../../users/domain/user.entity';
 import { randomUUID } from 'crypto';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
+import { ConfirmationOfExternalAccountEntity } from '../../domain/confirmation-of-external-account.entity';
+import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationCode } from '../../../../configuration/exception.filter';
 
 export class RegisterUserFromExternalAccountCommand {
   constructor(public dto: RegisterUserFromExternalAccountInputDto) {}
@@ -25,17 +28,26 @@ export class RegisterUserFromExternalAccountUseCase
   }
 
   async executeUseCase(command: RegisterUserFromExternalAccountCommand): Promise<void> {
-    let user = await this.usersRepository.findUserByEmail(command.dto.email);
-    if (!user) {
-      user = await this.createUserByExternalAccount(command.dto);
-      await this.usersRepository.saveUser(user);
-      await this.mailService.sendMailWithSuccessRegistration(command.dto.email); //todo
-    } else {
-      user.addExternalAccountToUser(command.dto);
-      await this.usersRepository.updateUser(user);
+    const { dto } = command;
+    const userId = await this.usersRepository.findUserByProviderId(String(dto.providerId));
+    if (userId)
+      throw new NotificationException(
+        `User with ${dto.provider} id: ${dto.providerId} is already register`,
+        `${dto.provider} id`,
+        NotificationCode.BAD_REQUEST,
+      );
 
-      const code = randomUUID(); //todo - add confirmation code for adding ExternalAccountToUser
-      await this.mailService.sendUserConfirmation(command.dto.email, code); //todo
+    let user = await this.usersRepository.findUserByEmail(dto.email);
+    if (!user) {
+      user = await this.createUserByExternalAccount(dto);
+      await this.usersRepository.saveUser(user);
+      await this.mailService.sendMailWithSuccessRegistration(dto.email); //todo
+    } else {
+      user.addExternalAccountToUser(dto);
+      const confirmationOfExternalAccount = ConfirmationOfExternalAccountEntity.initCreate(dto.providerId);
+      await this.usersRepository.addExternalAccountToUser(user, confirmationOfExternalAccount);
+
+      await this.mailService.sendUserConfirmation(dto.email, confirmationOfExternalAccount.confirmationCode); //todo
     }
   }
 
@@ -61,7 +73,11 @@ export class RegisterUserFromExternalAccountUseCase
 
     do {
       foundUser = await this.usersRepository.findUserByUserName(userName);
-      if (foundUser) userName = this.correctUserName(userName);
+      if (foundUser) {
+        do {
+          userName = this.correctUserName(userName);
+        } while (userName.length < userFieldParameters.userNameLength.min);
+      }
       if (userName.length > userFieldParameters.userNameLength.max) userName = await this.generateUserName();
     } while (foundUser);
 

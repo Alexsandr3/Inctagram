@@ -21,7 +21,7 @@ export class ExternalAccountEntity extends BaseDateEntity implements ExternalAcc
     instanceExternalAccount.provider = dto.provider;
     instanceExternalAccount.providerId = dto.providerId;
     instanceExternalAccount.displayName = dto.displayName;
-    instanceExternalAccount.email = dto.email;
+    instanceExternalAccount.email = dto.email.toLowerCase();
     instanceExternalAccount.isConfirmed = false;
     return instanceExternalAccount;
   }
@@ -30,5 +30,9 @@ export class ExternalAccountEntity extends BaseDateEntity implements ExternalAcc
     const instanceExternalAccount = this.initCreate(dto);
     instanceExternalAccount.isConfirmed = true;
     return instanceExternalAccount;
+  }
+
+  confirmAccount() {
+    this.isConfirmed = true;
   }
 }

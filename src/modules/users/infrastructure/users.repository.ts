@@ -2,8 +2,9 @@ import { UserEntity } from '../domain/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
-import { EmailConfirmationEntity } from '../../auth/domain/user.email-confirmation.entity';
+import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
 import { AvatarEntity } from '../domain/avatar.entity';
+import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
 
 export abstract class IUsersRepository {
   abstract findById(userId: number): Promise<UserEntity | null>;
@@ -28,6 +29,19 @@ export abstract class IUsersRepository {
   abstract countUsers(): Promise<number>;
 
   abstract saveUser(user: UserEntity);
+
+  abstract addExternalAccountToUser(
+    user: UserEntity,
+    confirmationOfExternalAccount: ConfirmationOfExternalAccountEntity,
+  );
+
+  abstract findUserWithConfirmationOfExternalAccountByConfirmationCode(
+    confirmationCode: string,
+  ): Promise<{ foundUser: UserEntity; foundConfirmationOfExternalAccount: ConfirmationOfExternalAccountEntity } | null>;
+
+  abstract updateUserExternalAccount(user: UserEntity);
+
+  abstract deleteUserExternalAccount(foundUser: UserEntity, providerId: string);
 }
 
 @Injectable()
@@ -57,7 +71,7 @@ export class PrismaUsersRepository implements IUsersRepository {
           equals: email.toLowerCase(),
         },
       },
-      include: { profile: { include: { avatars: true } } },
+      include: { profile: { include: { avatars: true } }, externalAccounts: true },
     });
     return plainToInstance(UserEntity, foundUser);
   }
@@ -248,5 +262,79 @@ export class PrismaUsersRepository implements IUsersRepository {
         },
       },
     });
+  }
+
+  async addExternalAccountToUser(user: UserEntity, confirmationOfExternalAccount: ConfirmationOfExternalAccountEntity) {
+    const createExternalAccounts = user.externalAccounts.find(a => !a.id);
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        externalAccounts: {
+          create: {
+            ...createExternalAccounts,
+            confirmationOfExternalAccount: {
+              create: {
+                confirmationCode: confirmationOfExternalAccount.confirmationCode,
+                codeExpirationDate: confirmationOfExternalAccount.codeExpirationDate,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async findUserWithConfirmationOfExternalAccountByConfirmationCode(confirmationCode: string): Promise<{
+    foundUser: UserEntity;
+    foundConfirmationOfExternalAccount: ConfirmationOfExternalAccountEntity;
+  } | null> {
+    const foundUserWithConfirmation = await this.prisma.user.findFirst({
+      where: { externalAccounts: { some: { confirmationOfExternalAccount: { confirmationCode } } } },
+      include: { externalAccounts: { include: { confirmationOfExternalAccount: true } } },
+    });
+    const { confirmationOfExternalAccount } = foundUserWithConfirmation.externalAccounts.find(
+      a => a.confirmationOfExternalAccount && a.confirmationOfExternalAccount.confirmationCode === confirmationCode,
+    );
+
+    const userInstance = plainToInstance(UserEntity, foundUserWithConfirmation);
+    const confirmationOfExternalAccountInstance = plainToInstance(
+      ConfirmationOfExternalAccountEntity,
+      confirmationOfExternalAccount,
+    );
+    return { foundUser: userInstance, foundConfirmationOfExternalAccount: confirmationOfExternalAccountInstance };
+  }
+
+  async updateUserExternalAccount(user: UserEntity) {
+    const updExternalAccounts = user.externalAccounts.map(a => {
+      return {
+        where: {
+          id: a.id,
+        },
+        data: {
+          isConfirmed: a.isConfirmed,
+          provider: a.provider,
+          displayName: a.displayName,
+          email: a.email,
+        },
+      };
+    });
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        externalAccounts: {
+          updateMany: updExternalAccounts,
+        },
+      },
+    });
+  }
+
+  async deleteUserExternalAccount(user: UserEntity, providerId: string) {
+    await this.prisma.user.update({ where: { id: user.id }, data: { externalAccounts: { delete: { providerId } } } });
   }
 }

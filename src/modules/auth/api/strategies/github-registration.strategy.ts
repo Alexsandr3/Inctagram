@@ -37,15 +37,6 @@ export class GitHubRegistrationStrategy extends PassportStrategy(Strategy, 'gith
         },
       ]);
 
-    const userId = await this.usersRepository.findUserByProviderId(profile.id);
-    if (userId)
-      throw new BadRequestException([
-        {
-          message: `User with GitHub id: ${profile.id} is already register`,
-          field: 'GitHub id',
-        },
-      ]);
-
     const registerUserFromExternalAccountInputDto = RegisterUserFromExternalAccountInputDto.create(profile);
     await this.validatorService.ValidateInstanceAndThrowError(registerUserFromExternalAccountInputDto);
 

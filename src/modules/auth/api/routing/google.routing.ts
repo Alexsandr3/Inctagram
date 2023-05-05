@@ -2,7 +2,7 @@ export const baseUrlGoogle = '/auth/google';
 
 export const googleEndpoints = {
   googleAuthorization: () => `${baseUrlGoogle}/authorization`,
-  googleAuthorizationHandler: (code: string) => `${baseUrlGoogle}/authorization/redirect?code=${code}`,
+  googleAuthorizationHandler: () => `${baseUrlGoogle}/authorization/redirect`,
   googleRegistration: () => `${baseUrlGoogle}/registration`,
-  googleRegistrationHandler: (code: string) => `${baseUrlGoogle}/registration/redirect?code=${code}`,
+  googleRegistrationHandler: () => `${baseUrlGoogle}/registration/redirect`,
 };

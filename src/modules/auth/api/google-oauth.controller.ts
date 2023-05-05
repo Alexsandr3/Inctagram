@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, Ip, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Headers, HttpCode, Ip, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { GoogleAuthorizationGuard } from './guards/google-authorization.guard';
@@ -17,6 +17,7 @@ import { GoogleRegistrationGuard } from './guards/google-registration.guard';
 import { PayloadData } from '../../../main/decorators/payload-data.decorator';
 import { RegisterUserFromExternalAccountCommand } from '../application/use-cases/register-user-from-external-account.use-case';
 import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
+import { HTTP_Status } from '../../../main/enums/http-status.enum';
 
 @ApiTags('Google-OAuth2')
 @Controller('auth/google')
@@ -53,6 +54,7 @@ export class GoogleOAuthController {
   @SwaggerDecoratorsByGoogleRegistrationHandler()
   @Get('registration/redirect')
   @UseGuards(GoogleRegistrationGuard)
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
   async googleRegistrationHandler(@PayloadData() dto: RegisterUserFromExternalAccountInputDto): Promise<null> {
     const notification = await this.commandBus.execute<RegisterUserFromExternalAccountCommand, ResultNotification>(
       new RegisterUserFromExternalAccountCommand(dto),

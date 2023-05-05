@@ -44,6 +44,42 @@ export function SwaggerDecoratorsByConfirmationRegistration(): MethodDecorator {
     }),
   );
 }
+export function SwaggerDecoratorsByConfirmAddingExternalAccount(): MethodDecorator {
+  return applyDecorators(
+    ApiOperation({ summary: 'Confirm adding external account' }),
+    ApiResponse({
+      status: HTTP_Status.NO_CONTENT_204,
+      description: 'Email was verified. Account was added',
+    }),
+    ApiResponse({
+      status: HTTP_Status.BAD_REQUEST_400,
+      description: 'Incorrect input data',
+      type: ApiErrorResultDto,
+    }),
+    ApiResponse({
+      status: HTTP_Status.TOO_MANY_REQUESTS_429,
+      description: 'More than 5 attempts from one IP-address during 10 seconds',
+    }),
+  );
+}
+export function SwaggerDecoratorsByRejectAddingExternalAccount(): MethodDecorator {
+  return applyDecorators(
+    ApiOperation({ summary: 'Reject adding external account' }),
+    ApiResponse({
+      status: HTTP_Status.NO_CONTENT_204,
+      description: 'Adding account was rejected',
+    }),
+    ApiResponse({
+      status: HTTP_Status.BAD_REQUEST_400,
+      description: 'Incorrect input data',
+      type: ApiErrorResultDto,
+    }),
+    ApiResponse({
+      status: HTTP_Status.TOO_MANY_REQUESTS_429,
+      description: 'More than 5 attempts from one IP-address during 10 seconds',
+    }),
+  );
+}
 export function SwaggerDecoratorsByRegistrationEmailResending(): MethodDecorator {
   return applyDecorators(
     ApiOperation({
