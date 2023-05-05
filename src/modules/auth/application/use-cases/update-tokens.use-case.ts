@@ -36,6 +36,10 @@ export class GenerateNewTokensUseCase
     return tokens;
   }
 
+  /**
+   * Updates session
+   * @param dto
+   */
   async updateSession(dto: SessionExtendedDto) {
     const foundSession = await this.sessionsRepository.findSessionByDeviceId(dto.deviceId);
 

@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
-import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { CreatePostInputDto } from './input-dto/create-post.input.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -25,10 +24,9 @@ import {
   SwaggerDecoratorsByGetPost,
   SwaggerDecoratorsByUpdatePost,
   SwaggerDecoratorsByUploadImagePost,
-} from '../swagger.posts.decorators';
-import { SwaggerDecoratorsByFormData } from '../../users/swagger.users.decorators';
+} from '../swagger/swagger.posts.decorators';
+import { SwaggerDecoratorsByFormData } from '../../users/swagger/swagger.users.decorators';
 import { UpdatePostInputDto } from './input-dto/update-post.input.dto';
-import { UploadImagePostCommand } from '../application/use-cases/upload-image-post-use.case';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
 import { typeImagePost } from '../default-options-for-validate-images-post';
 import { IPostsQueryRepository } from '../infrastructure/posts-query.repository';
@@ -44,6 +42,8 @@ import { DeletePostCommand } from '../application/use-cases/delete-post-use.case
 import { PostStatus } from '../domain/post.entity';
 import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
 import { UploadedImageViewModel } from './view-models/uploaded-image-view.dto';
+import { ValidationImagePipe } from '../../../main/validators/validation-image.pipe';
+import { UploadImagePostCommand } from '../application/use-cases/upload-image-post-use.case';
 
 @ApiBearerAuth()
 @ApiTags('Posts')
@@ -52,6 +52,11 @@ import { UploadedImageViewModel } from './view-models/uploaded-image-view.dto';
 export class PostsController {
   constructor(private readonly commandBus: CommandBus, private readonly postsQueryRepository: IPostsQueryRepository) {}
 
+  /**
+   * Upload image post
+   * @param userId
+   * @param file
+   */
   @SwaggerDecoratorsByUploadImagePost()
   @SwaggerDecoratorsByFormData()
   @Post(`/image`)
@@ -59,15 +64,20 @@ export class PostsController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadImagePost(
     @CurrentUserId() userId: number,
-    @UploadedFile(new ValidationTypeImagePipe(typeImagePost))
+    @UploadedFile(new ValidationImagePipe(typeImagePost))
     file: Express.Multer.File,
   ): Promise<UploadedImageViewModel> {
     const notification = await this.commandBus.execute<UploadImagePostCommand, ResultNotification<string>>(
-      new UploadImagePostCommand(userId, file.mimetype, file.buffer),
+      new UploadImagePostCommand(userId, file),
     );
     return this.postsQueryRepository.getUploadImages(notification.getData());
   }
 
+  /**
+   * Create post
+   * @param userId
+   * @param body
+   */
   @SwaggerDecoratorsByCreatePost()
   @Post()
   @HttpCode(HTTP_Status.CREATED_201)
@@ -78,6 +88,11 @@ export class PostsController {
     return this.postsQueryRepository.getPost(notification.getData(), PostStatus.PUBLISHED);
   }
 
+  /**
+   * Delete image post
+   * @param userId
+   * @param uploadId
+   */
   @SwaggerDecoratorsByDeleteImagePost()
   @Delete('/image/:uploadId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
@@ -87,6 +102,11 @@ export class PostsController {
     );
   }
 
+  /**
+   * Get post by id
+   * @param userId
+   * @param postId
+   */
   @SwaggerDecoratorsByGetPost()
   @Get('/p/:postId')
   @HttpCode(HTTP_Status.OK_200)
@@ -105,6 +125,12 @@ export class PostsController {
     return foundPost;
   }
 
+  /**
+   * Update post by id
+   * @param postId
+   * @param userId
+   * @param body
+   */
   @SwaggerDecoratorsByUpdatePost()
   @Put('/:postId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
@@ -118,6 +144,11 @@ export class PostsController {
     );
   }
 
+  /**
+   * Delete post by id
+   * @param userId
+   * @param postId
+   */
   @SwaggerDecoratorsByDeletePost()
   @Delete('/:postId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)

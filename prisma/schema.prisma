@@ -21,10 +21,30 @@ model User {
   updatedAt         DateTime           @updatedAt
   emailConfirmation EmailConfirmation?
   profile           Profile?
-  Session           Session[]
+  sessions          Session[]
   posts             Post[]
+  externalAccounts  ExternalAccount[]
 
   @@map("User")
+}
+
+model ExternalAccount {
+  id                            Int                            @id @default(autoincrement())
+  userId                        Int
+  provider                      Provider
+  providerId                    String                         @unique
+  displayName                   String?
+  email                         String
+  isConfirmed                   Boolean
+  createdAt                     DateTime                       @default(now()) //, map: "created_at::timestamptz"
+  updatedAt                     DateTime                       @updatedAt
+  user                          User                           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  confirmationOfExternalAccount ConfirmationOfExternalAccount?
+}
+
+enum Provider {
+  GOOGLE
+  GITHUB
 }
 
 model EmailConfirmation {
@@ -34,6 +54,15 @@ model EmailConfirmation {
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("EmailConfirmation")
+}
+
+model ConfirmationOfExternalAccount {
+  providerId         String          @unique
+  confirmationCode   String?
+  codeExpirationDate DateTime?
+  externalAccount    ExternalAccount @relation(fields: [providerId], references: [providerId], onDelete: Cascade)
+
+  @@map("ConfirmationOfExternalAccount")
 }
 
 model Session {
@@ -76,8 +105,12 @@ enum ImageSizeType {
   THUMBNAIL // 45x45
   SMALL
   MEDIUM // 192x192
-  LARGE
-  HUGE_HD
+  LARGE1_1 // 360x360
+  LARGE4_5 // 360x450
+  LARGE16_9 // 360x202
+  HUGE_HD1_1 // 1440x1440
+  HUGE_HD4_5 // 1152x1440
+  HUGE_HD16_9 // 1440x810
 }
 
 enum ImageType {
@@ -97,7 +130,7 @@ model AvatarImage {
   fieldId   String
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
-  profile   Profile?      @relation(fields: [profileId], references: [userId])
+  profile   Profile       @relation(fields: [profileId], references: [userId])
 
   @@map("AvatarImage")
 }
@@ -122,7 +155,7 @@ model PostImage {
   fieldId    String
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  post       Post?         @relation(fields: [postId], references: [id])
+  post       Post?          @relation(fields: [postId], references: [id])
 
   @@map("PostImage")
 }

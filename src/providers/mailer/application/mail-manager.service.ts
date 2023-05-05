@@ -29,4 +29,23 @@ export class MailManager {
     const template = `./recovery.html`;
     await this.emailAdapter.sendEmail(email, url, subject, template);
   }
+
+  async sendMailWithSuccessRegistration(email: string) {
+    const url = `${this.configService.CLIENT_URL}`;
+    const subject = '>Welcome to Inctagram: Your Registration is Complete';
+    const template = `./finished-registration.html`;
+    await this.emailAdapter.sendEmail(email, url, subject, template);
+  }
+
+  /**
+   * Send email to user with confirmation code for adding external account
+   * @param email
+   * @param code
+   */
+  async sendUserConfirmationCodeForExternalAccount(email: string, code: string) {
+    const url = `${this.configService.CLIENT_URL}/auth/registration-confirmation-external-account?code=${code}`;
+    const subject = 'Finish registration';
+    const template = `./confirmation.html`;
+    await this.emailAdapter.sendEmail(email, url, subject, template);
+  }
 }

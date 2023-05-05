@@ -1,6 +1,7 @@
 import { IsEmail, IsString, Length, Matches } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
+import { userFieldParameters } from '../../../users/domain/user.entity';
 
 export class RegisterInputDto {
   /**
@@ -9,7 +10,7 @@ export class RegisterInputDto {
 
   @ApiProperty({ pattern: '^[a-zA-Z0-9_-]*$', example: 'string' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
-  @Length(6, 30)
+  @Length(userFieldParameters.userNameLength.min, userFieldParameters.userNameLength.max)
   @IsString()
   @Matches('^[a-zA-Z0-9_-]*$')
   userName: string;

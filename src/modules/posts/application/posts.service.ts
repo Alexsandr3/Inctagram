@@ -9,6 +9,11 @@ import { Injectable } from '@nestjs/common';
 export class PostsService {
   constructor(private readonly usersRepository: IUsersRepository, private readonly postsRepository: IPostsRepository) {}
 
+  /**
+   * Find post and check user for owner
+   * @param userId
+   * @param postId
+   */
   async findPostAndCheckUserForOwner(userId: number, postId: number): Promise<PostEntity> {
     //find post with owner
     const { post, owner } = await this.postsRepository.findPostWithOwnerById(postId);

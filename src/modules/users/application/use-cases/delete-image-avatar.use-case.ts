@@ -5,6 +5,9 @@ import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { ImagesEditorService } from '../../../images/application/images-editor.service';
 
+/**
+ * Delete photo avatar for user command
+ */
 export class DeleteImageAvatarCommand {
   constructor(public readonly userId: number) {}
 }
@@ -19,7 +22,7 @@ export class DeleteImageAvatarUseCase
   }
 
   /**
-   * @description Delete photo avatar for user
+   * @description Checking the user's existence and deleting the avatar
    * @param command
    */
   async executeUseCase(command: DeleteImageAvatarCommand): Promise<void> {

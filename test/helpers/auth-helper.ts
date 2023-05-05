@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { RegisterInputDto } from '../../src/modules/auth/api/input-dto/register.input.dto';
 import request from 'supertest';
-import { authEndpoints } from '../../src/modules/auth/api/auth.routing';
+import { authEndpoints } from '../../src/modules/auth/api/routing/auth.routing';
 import { RegistrationEmailResendingInputDto } from '../../src/modules/auth/api/input-dto/registration-email-resending.input.dto';
 import { ConfirmationCodeInputDto } from '../../src/modules/auth/api/input-dto/confirmation-code.input.dto';
 import { LoginInputDto } from '../../src/modules/auth/api/input-dto/login.input.dto';
@@ -12,9 +12,12 @@ import { NewPasswordInputDto } from '../../src/modules/auth/api/input-dto/new-pa
 import { MailManager } from '../../src/providers/mailer/application/mail-manager.service';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { MeViewDto } from '../../src/modules/auth/api/view-dto/me.view.dto';
+import { googleEndpoints } from '../../src/modules/auth/api/routing/google.routing';
+import { githubEndpoints } from '../../src/modules/auth/api/routing/github.routing';
 
 export class AuthHelper {
   constructor(private readonly app: INestApplication) {}
+
   async registrationUser(
     command: RegisterInputDto,
     config: {
@@ -33,6 +36,62 @@ export class AuthHelper {
     return response.body;
   }
 
+  async googleRegistration(
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = { expectedCode: HTTP_Status.NO_CONTENT_204 },
+  ): Promise<any> {
+    // default expected code is 204 or code mistake from config
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .get(googleEndpoints.googleRegistrationHandler())
+      .expect(config.expectedCode);
+
+    return response.body;
+  }
+
+  async googleAuthorization(
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = { expectedCode: HTTP_Status.OK_200 },
+  ): Promise<any> {
+    // default expected code is 200 or code mistake from config
+    // send request for authorize user
+    return request(this.app.getHttpServer())
+      .get(googleEndpoints.googleAuthorizationHandler())
+      .expect(config.expectedCode);
+  }
+
+  async gitHubRegistration(
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = { expectedCode: HTTP_Status.NO_CONTENT_204 },
+  ): Promise<any> {
+    // default expected code is 204 or code mistake from config
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .get(githubEndpoints.githubRegistrationHandler())
+      .expect(config.expectedCode);
+
+    return response.body;
+  }
+
+  async githubAuthorization(
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = { expectedCode: HTTP_Status.OK_200 },
+  ): Promise<any> {
+    // default expected code is 200 or code mistake from config
+    // send request for authorize user
+    return request(this.app.getHttpServer())
+      .get(githubEndpoints.githubAuthorizationHandler())
+      .expect(config.expectedCode);
+  }
+
   async registrationConfirmation(
     command: ConfirmationCodeInputDto,
     config: {
@@ -47,6 +106,42 @@ export class AuthHelper {
       .post(authEndpoints.registrationConfirmation())
       .send(command)
       .expect(expectedCode);
+
+    return response.body;
+  }
+
+  async confirmAddingExternalAccount(
+    command: ConfirmationCodeInputDto,
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = { expectedCode: HTTP_Status.NO_CONTENT_204 },
+  ): Promise<any> {
+    // default expected code is 204 or code mistake from config
+
+    // confirm adding ExternalAccount
+    const response = await request(this.app.getHttpServer())
+      .post(authEndpoints.confirmAddingExternalAccount())
+      .send(command)
+      .expect(config.expectedCode);
+
+    return response.body;
+  }
+
+  async rejectAddingExternalAccount(
+    command: ConfirmationCodeInputDto,
+    config: {
+      expectedBody?: any;
+      expectedCode?: number;
+    } = { expectedCode: HTTP_Status.NO_CONTENT_204 },
+  ): Promise<any> {
+    // default expected code is 204 or code mistake from config
+
+    // reject adding ExternalAccount
+    const response = await request(this.app.getHttpServer())
+      .post(authEndpoints.rejectAddingExternalAccount())
+      .send(command)
+      .expect(config.expectedCode);
 
     return response.body;
   }

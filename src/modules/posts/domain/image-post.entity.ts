@@ -1,7 +1,8 @@
 import { BaseImageEntity } from '../../images/domain/base-image.entity';
 import { PostStatus } from './post.entity';
+import { PostImage } from '@prisma/client';
 
-export class ImagePostEntity extends BaseImageEntity {
+export class ImagePostEntity extends BaseImageEntity implements PostImage {
   postId: number;
   status: PostStatus;
   constructor() {
@@ -11,7 +12,7 @@ export class ImagePostEntity extends BaseImageEntity {
   static initCreate(userId: number, baseImage: BaseImageEntity): ImagePostEntity {
     const imagePost = new ImagePostEntity();
     imagePost.postId = null;
-    imagePost.status = PostStatus.PENDING;
+    imagePost.status = PostStatus.PUBLISHED;
     imagePost.imageType = baseImage.imageType;
     imagePost.sizeType = baseImage.sizeType;
     imagePost.url = baseImage.url;
@@ -28,9 +29,18 @@ export class ImagePostEntity extends BaseImageEntity {
     return this;
   }
 
-  changeStatusToDeleted(resourceId: string) {
-    if (this.resourceId !== resourceId) return;
-    this.status = PostStatus.DELETED;
+  changeStatusToDeleted(uploadId: string) {
+    if (this.resourceId === uploadId) {
+      this.status = PostStatus.DELETED;
+    }
     return this;
+  }
+
+  isPublished() {
+    return this.status === PostStatus.PUBLISHED;
+  }
+
+  isHugeSize() {
+    return this.sizeType === 'HUGE_HD1_1' || this.sizeType === 'HUGE_HD16_9' || this.sizeType === 'HUGE_HD4_5';
   }
 }

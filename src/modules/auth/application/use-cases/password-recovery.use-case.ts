@@ -4,6 +4,8 @@ import { IUsersRepository } from '../../../users/infrastructure/users.repository
 import { IPasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
 import { PasswordRecoveryEntity } from '../../domain/password-recovery.entity';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
+import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationCode } from '../../../../configuration/exception.filter';
 
 /**
  * Recovery password
@@ -33,7 +35,8 @@ export class PasswordRecoveryUseCase
     const { email } = command;
     //search user by login or email
     const isUserExist = await this.usersRepository.findUserByEmail(email);
-    if (!isUserExist) return;
+    if (!isUserExist)
+      throw new NotificationException(`User with this ${email} not registered`, 'email', NotificationCode.BAD_REQUEST);
 
     const passwordRecovery = PasswordRecoveryEntity.initCreate(email);
     await this.passwordRepository.savePassRecovery(passwordRecovery);

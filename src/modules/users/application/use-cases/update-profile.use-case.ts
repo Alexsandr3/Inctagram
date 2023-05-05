@@ -5,6 +5,9 @@ import { IUsersRepository } from '../../infrastructure/users.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
 
+/**
+ * @description Update profile for user command
+ */
 export class UpdateProfileCommand {
   constructor(public readonly userId: number, public readonly body: UpdateProfileInputDto) {}
 }
@@ -18,6 +21,10 @@ export class UpdateProfileUseCase
     super();
   }
 
+  /**
+   * @description Checking the user's existence and updating the profile
+   * @param command
+   */
   async executeUseCase(command: UpdateProfileCommand): Promise<void> {
     const { userId, body } = command;
     const { userName } = body;

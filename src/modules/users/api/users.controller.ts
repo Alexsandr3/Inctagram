@@ -18,7 +18,7 @@ import {
   SwaggerDecoratorsByGetProfile,
   SwaggerDecoratorsByUpdateProfile,
   SwaggerDecoratorsByUploadPhotoAvatar,
-} from '../swagger.users.decorators';
+} from '../swagger/swagger.users.decorators';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
@@ -31,7 +31,7 @@ import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { UpdateProfileCommand } from '../application/use-cases/update-profile.use-case';
 import { NotificationCode } from '../../../configuration/exception.filter';
 import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
-import { ValidationTypeImagePipe } from '../../../main/validators/validation-type-image.pipe';
+import { ValidationImagePipe } from '../../../main/validators/validation-image.pipe';
 import { DeleteImageAvatarCommand } from '../application/use-cases/delete-image-avatar.use-case';
 import { AvatarsViewModel } from './view-models/avatars-view.dto';
 import { IUsersQueryRepository } from '../infrastructure/users.query-repository';
@@ -43,6 +43,11 @@ import { IUsersQueryRepository } from '../infrastructure/users.query-repository'
 export class UsersController {
   constructor(private readonly commandBus: CommandBus, private readonly usersQueryRepository: IUsersQueryRepository) {}
 
+  /**
+   * @description Update profile user
+   * @param userId
+   * @param body
+   */
   @SwaggerDecoratorsByUpdateProfile()
   @Put('/profile')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
@@ -53,6 +58,10 @@ export class UsersController {
     return notification.getData();
   }
 
+  /**
+   * @description Get profile user
+   * @param userId
+   */
   @SwaggerDecoratorsByGetProfile()
   @Get(`/profile`)
   @HttpCode(HTTP_Status.OK_200)
@@ -80,15 +89,19 @@ export class UsersController {
   @SwaggerDecoratorsByFormData()
   async uploadPhotoAvatar(
     @CurrentUserId() userId: number,
-    @UploadedFile(new ValidationTypeImagePipe(typeImageAvatar))
+    @UploadedFile(new ValidationImagePipe(typeImageAvatar))
     file: Express.Multer.File,
   ): Promise<AvatarsViewModel> {
     await this.commandBus.execute<UploadImageAvatarCommand, ResultNotification<null>>(
-      new UploadImageAvatarCommand(userId, file.mimetype, file.buffer),
+      new UploadImageAvatarCommand(userId, file),
     );
     return this.usersQueryRepository.findUserAvatars(userId);
   }
 
+  /**
+   * @description Delete photo avatar for user
+   * @param userId
+   */
   @SwaggerDecoratorsByDeletePhotoAvatar()
   @Delete('/profile/avatar')
   @HttpCode(HTTP_Status.NO_CONTENT_204)

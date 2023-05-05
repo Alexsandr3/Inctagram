@@ -20,7 +20,7 @@ async function bootstrap() {
   await createdApp.listen(PORT).then(async () => {
     console.log(`Server is listening on ${await app.getUrl()}`);
   });
-  //connect to ngrok for development
+  //connect to ngrok for development if NODE_ENV === test
   await connectToNgrok(createdApp);
 }
 bootstrap();

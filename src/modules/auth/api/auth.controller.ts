@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
-import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { ConfirmationCodeInputDto } from './input-dto/confirmation-code.input.dto';
 import { PasswordRecoveryInputDto } from './input-dto/password-recovery.input.dto';
@@ -28,6 +28,7 @@ import { CheckLoginBodyFieldsGuard } from '../../../main/guards/check-login-body
 import { LoginInputDto } from './input-dto/login.input.dto';
 import {
   SwaggerDecoratorsByCheckPasswordRecovery,
+  SwaggerDecoratorsByConfirmAddingExternalAccount,
   SwaggerDecoratorsByConfirmationRegistration,
   SwaggerDecoratorsByLogin,
   SwaggerDecoratorsByLogout,
@@ -36,8 +37,9 @@ import {
   SwaggerDecoratorsByPasswordRecovery,
   SwaggerDecoratorsByRegistration,
   SwaggerDecoratorsByRegistrationEmailResending,
+  SwaggerDecoratorsByRejectAddingExternalAccount,
   SwaggerDecoratorsByUpdateTokens,
-} from './swagger.auth.decorators';
+} from '../swagger/swagger.auth.decorators';
 import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
@@ -45,6 +47,8 @@ import { MeViewDto } from './view-dto/me.view.dto';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';
 import { GoogleEnterpriseRecaptchaGuard } from '../../../providers/recaptcha/google-enterprise-recaptcha.guard';
 import { PasswordRecoveryCommand } from '../application/use-cases/password-recovery.use-case';
+import { ConfirmAddingExternalAccountCommand } from '../application/use-cases/confirm-adding-external-account.use-case';
+import { RejectAddingExternalAccountCommand } from '../application/use-cases/reject-adding-external-account.use-case';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -123,11 +127,39 @@ export class AuthController {
   }
 
   /**
+   * @description Confirm adding External Account to user by code
+   * @param body
+   */
+  @SwaggerDecoratorsByConfirmAddingExternalAccount()
+  @Post('confirm-external-account')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async confirmAddingExternalAccount(@Body() body: ConfirmationCodeInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<ConfirmAddingExternalAccountCommand, ResultNotification>(
+      new ConfirmAddingExternalAccountCommand(body),
+    );
+    return notification.getData();
+  }
+
+  /**
+   * @description Reject adding External Account to user by code
+   * @param body
+   */
+  @SwaggerDecoratorsByRejectAddingExternalAccount()
+  @Post('reject-adding-external-account')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async rejectAddingExternalAccount(@Body() body: ConfirmationCodeInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<RejectAddingExternalAccountCommand, ResultNotification>(
+      new RejectAddingExternalAccountCommand(body),
+    );
+    return notification.getData();
+  }
+
+  /**
    * @description Recovery password via email
    * @param body
    */
   @SwaggerDecoratorsByPasswordRecovery()
-  // @UseGuards(GoogleEnterpriseRecaptchaGuard)
+  @UseGuards(GoogleEnterpriseRecaptchaGuard)
   @Post('password-recovery')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async passwordRecovery(@Body() body: PasswordRecoveryInputDto): Promise<null> {
@@ -181,6 +213,13 @@ export class AuthController {
     return notification.getData();
   }
 
+  /**
+   * @description Update tokens
+   * @param sessionData
+   * @param ip
+   * @param deviceName
+   * @param res
+   */
   @SwaggerDecoratorsByUpdateTokens()
   @Post('update-tokens')
   @UseGuards(RefreshTokenGuard)
@@ -201,6 +240,10 @@ export class AuthController {
     return { accessToken };
   }
 
+  /**
+   * @description Get user info by id
+   * @param userId
+   */
   @SwaggerDecoratorsByMe()
   @Get('me')
   @UseGuards(JwtAuthGuard)
@@ -208,17 +251,5 @@ export class AuthController {
     const user = await this.usersQueryRepository.findUserById(userId);
     if (!user) return;
     return new MeViewDto(user);
-  }
-
-  //need for testing recaptcha --- > remove in production
-  @ApiExcludeEndpoint()
-  @UseGuards(GoogleEnterpriseRecaptchaGuard)
-  @Post('password-recovery-test')
-  @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async passwordRecoveryTest(@Body() body: PasswordRecoveryInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<PasswordRecoveryCommand, ResultNotification<null>>(
-      new PasswordRecoveryCommand(body.email),
-    );
-    return notification.getData();
   }
 }

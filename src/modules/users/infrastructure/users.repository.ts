@@ -2,8 +2,9 @@ import { UserEntity } from '../domain/user.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
-import { EmailConfirmationEntity } from '../../auth/domain/user.email-confirmation.entity';
+import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
 import { AvatarEntity } from '../domain/avatar.entity';
+import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
 
 export abstract class IUsersRepository {
   abstract findById(userId: number): Promise<UserEntity | null>;
@@ -22,6 +23,25 @@ export abstract class IUsersRepository {
   abstract addAvatars(userId: number, avatars: AvatarEntity[]);
 
   abstract updateAvatars(userId: number, avatars: AvatarEntity[]);
+
+  abstract findUserByProviderId(googleId: string): Promise<UserEntity | null>;
+
+  abstract countUsers(): Promise<number>;
+
+  abstract saveUser(user: UserEntity);
+
+  abstract addExternalAccountToUser(
+    user: UserEntity,
+    confirmationOfExternalAccount: ConfirmationOfExternalAccountEntity,
+  );
+
+  abstract findUserWithConfirmationOfExternalAccountByConfirmationCode(
+    confirmationCode: string,
+  ): Promise<{ foundUser: UserEntity; foundConfirmationOfExternalAccount: ConfirmationOfExternalAccountEntity } | null>;
+
+  abstract updateUserExternalAccount(user: UserEntity);
+
+  abstract deleteUserExternalAccount(foundUser: UserEntity, providerId: string);
 }
 
 @Injectable()
@@ -48,11 +68,10 @@ export class PrismaUsersRepository implements IUsersRepository {
     const foundUser = await this.prisma.user.findFirst({
       where: {
         email: {
-          equals: email,
-          mode: 'insensitive', // установка нечувствительности к регистру для сравнения
+          equals: email.toLowerCase(),
         },
       },
-      include: { profile: { include: { avatars: true } } },
+      include: { profile: { include: { avatars: true } }, externalAccounts: true },
     });
     return plainToInstance(UserEntity, foundUser);
   }
@@ -91,6 +110,7 @@ export class PrismaUsersRepository implements IUsersRepository {
         emailConfirmation: {
           create: emailConfirmation,
         },
+        externalAccounts: {},
         profile: {
           create: {},
         }, //{ create: { ...user.profile, images: { create: user.profile.images } } },
@@ -143,6 +163,7 @@ export class PrismaUsersRepository implements IUsersRepository {
         isConfirmed: user.isConfirmed,
         emailConfirmation: updEmailConfirmation,
         profile: updProfile,
+        externalAccounts: { create: user.externalAccounts },
       },
     });
   }
@@ -214,5 +235,106 @@ export class PrismaUsersRepository implements IUsersRepository {
         profile: { update: { avatars: { updateMany: updateAvatarsConfig } } },
       },
     });
+  }
+
+  async findUserByProviderId(providerId: string): Promise<UserEntity | null> {
+    const foundUser = await this.prisma.user.findFirst({
+      where: { externalAccounts: { some: { providerId } } },
+      include: { profile: { include: { avatars: true } }, externalAccounts: true },
+    });
+
+    return plainToInstance(UserEntity, foundUser);
+  }
+
+  async countUsers(): Promise<number> {
+    return this.prisma.user.count();
+  }
+
+  async saveUser(user: UserEntity) {
+    await this.prisma.user.create({
+      data: {
+        ...user,
+        externalAccounts: {
+          create: user.externalAccounts,
+        },
+        profile: {
+          create: {},
+        },
+      },
+    });
+  }
+
+  async addExternalAccountToUser(user: UserEntity, confirmationOfExternalAccount: ConfirmationOfExternalAccountEntity) {
+    const createExternalAccounts = user.externalAccounts.find(a => !a.id);
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        externalAccounts: {
+          create: {
+            ...createExternalAccounts,
+            confirmationOfExternalAccount: {
+              create: {
+                confirmationCode: confirmationOfExternalAccount.confirmationCode,
+                codeExpirationDate: confirmationOfExternalAccount.codeExpirationDate,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  async findUserWithConfirmationOfExternalAccountByConfirmationCode(confirmationCode: string): Promise<{
+    foundUser: UserEntity;
+    foundConfirmationOfExternalAccount: ConfirmationOfExternalAccountEntity;
+  } | null> {
+    const foundUserWithConfirmation = await this.prisma.user.findFirst({
+      where: { externalAccounts: { some: { confirmationOfExternalAccount: { confirmationCode } } } },
+      include: { externalAccounts: { include: { confirmationOfExternalAccount: true } } },
+    });
+    const { confirmationOfExternalAccount } = foundUserWithConfirmation.externalAccounts.find(
+      a => a.confirmationOfExternalAccount && a.confirmationOfExternalAccount.confirmationCode === confirmationCode,
+    );
+
+    const userInstance = plainToInstance(UserEntity, foundUserWithConfirmation);
+    const confirmationOfExternalAccountInstance = plainToInstance(
+      ConfirmationOfExternalAccountEntity,
+      confirmationOfExternalAccount,
+    );
+    return { foundUser: userInstance, foundConfirmationOfExternalAccount: confirmationOfExternalAccountInstance };
+  }
+
+  async updateUserExternalAccount(user: UserEntity) {
+    const updExternalAccounts = user.externalAccounts.map(a => {
+      return {
+        where: {
+          id: a.id,
+        },
+        data: {
+          isConfirmed: a.isConfirmed,
+          provider: a.provider,
+          displayName: a.displayName,
+          email: a.email,
+        },
+      };
+    });
+
+    await this.prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        externalAccounts: {
+          updateMany: updExternalAccounts,
+        },
+      },
+    });
+  }
+
+  async deleteUserExternalAccount(user: UserEntity, providerId: string) {
+    await this.prisma.user.update({ where: { id: user.id }, data: { externalAccounts: { delete: { providerId } } } });
   }
 }

@@ -2,12 +2,13 @@ import { INestApplication } from '@nestjs/common';
 import { AuthHelper } from '../helpers/auth-helper';
 import { getAppForE2ETesting } from '../utils/tests.utils';
 import { PostsHelper } from '../helpers/posts-helper';
-import { CreatePostInputDto } from '../../src/modules/posts/api/input-dto/create-post.input.dto';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
 import { UploadedImageViewModel } from '../../src/modules/posts/api/view-models/uploaded-image-view.dto';
-import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
+import { CreatePostInputDto } from '../../src/modules/posts/api/input-dto/create-post.input.dto';
 import { Paginated } from '../../src/main/shared/paginated';
+import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
+import FormData from 'form-data';
 
 jest.setTimeout(120000);
 describe('Posts flow - e2e', () => {
@@ -16,7 +17,7 @@ describe('Posts flow - e2e', () => {
   let postsHelper: PostsHelper;
 
   beforeAll(async () => {
-    app = await getAppForE2ETesting(false);
+    app = await getAppForE2ETesting();
     authHelper = new AuthHelper(app);
     postsHelper = new PostsHelper(app);
   });
@@ -423,5 +424,83 @@ describe('Posts flow - e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('post');
     expect(responseBody.messages[0].message).toBe(`Post with id: ${post.id} not found`);
+  });
+});
+
+describe('Testing new flow upload files and create post -  e2e', () => {
+  let app: INestApplication;
+  let authHelper: AuthHelper;
+  let postsHelper: PostsHelper;
+  let formData: FormData;
+
+  beforeAll(async () => {
+    app = await getAppForE2ETesting();
+    authHelper = new AuthHelper(app);
+    postsHelper = new PostsHelper(app);
+    formData = new FormData();
+  });
+
+  afterAll(async () => {
+    await app.close();
+  });
+
+  // Registration correct data
+  let accessToken: string;
+  let correctEmail_first_user = 'Kiarra92@yahoo.om';
+  let correctUserName_first_user = 'Anderson';
+  let post: PostViewModel;
+  let uploadId1: string;
+  let uploadId2: string;
+  let uploadId3: string;
+  it('01 - / (POST) - should create user and returned accessToken', async () => {
+    const command = { password: '12345678', email: correctEmail_first_user, userName: correctUserName_first_user };
+    accessToken = await authHelper.createUser(command, { expectedCode: 204 });
+    // console.log('accessToken', accessToken);
+  });
+  it('02 - / (POST) - should return 201 if all data is correct for create post', async () => {
+    let nameFile = '/images/image2.jpeg';
+    let nameFile2 = '/images/image1.png';
+    let nameFile3 = '/images/667x1000_345kb.jpeg';
+    const body = { description: 'New super description', nameFile: [nameFile, nameFile2, nameFile3] };
+    const responseBody: PostViewModel = await postsHelper.uploadImagesAndCreatePost(body, {
+      token: accessToken,
+      expectedCode: 201,
+    });
+    post = responseBody;
+    uploadId1 = responseBody.images[0].uploadId;
+    uploadId2 = responseBody.images[1].uploadId;
+    uploadId3 = responseBody.images[2].uploadId;
+    expect(responseBody.images).toHaveLength(6);
+    expect(responseBody.description).toBe(body.description);
+  });
+  //delete image
+  it('03 - / (DELETE) - should return 204 and delete image', async () => {
+    const query = { postId: post.id, uploadId: uploadId1 };
+    await postsHelper.deleteImage(query, { token: accessToken, expectedCode: 204 });
+  });
+  //get post
+  it('04 - / (GET) - should return 200 and post without deleted image', async () => {
+    const foundPost: PostViewModel = await postsHelper.getPost(post.id, { token: accessToken, expectedCode: 200 });
+    expect(foundPost.images).toHaveLength(4);
+  });
+  //delete image
+  it('05 - / (DELETE) - should return 204 and delete image', async () => {
+    const query = { postId: post.id, uploadId: uploadId2 };
+    await postsHelper.deleteImage(query, { token: accessToken, expectedCode: 204 });
+  });
+  //get post
+  it('06 - / (GET) - should return 200 and post without deleted image', async () => {
+    const foundPost: PostViewModel = await postsHelper.getPost(post.id, { token: accessToken, expectedCode: 200 });
+    expect(foundPost.images).toHaveLength(2);
+  });
+  //delete image
+  it('07 - / (DELETE) - should return 403 so user can`t delete last image', async () => {
+    const query = { postId: post.id, uploadId: uploadId3 };
+    const responseBody = await postsHelper.deleteImage(query, {
+      token: accessToken,
+      expectedCode: 400,
+    });
+    expect(responseBody.messages[0].field).toBe('post');
+    expect(responseBody.messages[0].message).toBe(`Post with id: ${post.id} must have at least one image`);
   });
 });

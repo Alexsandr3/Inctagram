@@ -1,6 +1,6 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
-import { usersEndpoints } from '../../src/modules/users/api/users.routing';
+import { usersEndpoints } from '../../src/modules/users/api/routing/users.routing';
 import fs from 'fs';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';

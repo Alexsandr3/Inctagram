@@ -1,13 +1,15 @@
-import { ArgumentsHost, Catch, ExceptionFilter, HttpException } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { Response } from 'express';
 import { CheckerNotificationErrors } from '../main/validators/checker-notification.errors';
 import { ApiErrorResultDto } from '../main/validators/api-error-result.dto';
 
 @Catch(Error)
 export class ErrorFilter implements ExceptionFilter {
+  private readonly logger = new Logger(ErrorFilter.name);
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    this.logger.error(exception);
     if (process.env.envoirment !== `production`) {
       response.status(500).send({ error: exception.toString(), stack: exception.stack });
     } else {
@@ -18,6 +20,7 @@ export class ErrorFilter implements ExceptionFilter {
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(HttpExceptionFilter.name);
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -26,6 +29,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const errorResult = new ApiErrorResultDto();
     errorResult.statusCode = status;
+    // this.logger.error(exception);
+    this.logger.error(JSON.stringify(responseBody));
     if (status === 401) {
       errorResult.messages = [{ message: 'Authorization error', field: 'authorization' }];
       errorResult.error = 'Unauthorized';

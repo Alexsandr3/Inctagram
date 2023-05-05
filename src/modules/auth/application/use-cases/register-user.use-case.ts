@@ -7,7 +7,7 @@ import { NotificationException } from '../../../../main/validators/result-notifi
 import { NotificationCode } from '../../../../configuration/exception.filter';
 import { UserEntity } from '../../../users/domain/user.entity';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
-import { EmailConfirmationEntity } from '../../domain/user.email-confirmation.entity';
+import { EmailConfirmationEntity } from '../../domain/email-confirmation.entity';
 
 /**
  * @description create new user and send email for confirmation
@@ -41,7 +41,7 @@ export class RegisterUserUseCase
     const foundUser = await this.usersRepository.findUserByNameOrEmail(userName, email);
 
     if (foundUser) {
-      const field = foundUser.userName.toLowerCase() === userName.toLowerCase() ? 'name' : 'email';
+      const field = foundUser.userName.toLowerCase() === userName.toLowerCase() ? 'userName' : 'email';
       throw new NotificationException(`User with this ${field} is already exist`, field, NotificationCode.BAD_REQUEST);
     }
 

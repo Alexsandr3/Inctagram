@@ -12,10 +12,9 @@ export abstract class IPostsRepository {
   abstract deleteImages(resourceId: string): Promise<void>;
   abstract findImagesByOwnerIdAndResourceIds(resourceId: string): Promise<ImagePostEntity[]>;
   abstract findImagesByUploadIds(childrenMetadata: ChildMetadataDto[]): Promise<ImagePostEntity[]>;
-  //two flow
   abstract savePost(post: PostEntity): Promise<void>;
   abstract findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }>;
-
+  abstract savePostWithImages(instancePost: PostEntity): Promise<number>;
   //unused
   abstract deletePostById(postId: number);
 }
@@ -55,24 +54,20 @@ export class PostsRepository implements IPostsRepository {
       return post.id;
     });
   }
-
   async saveImages(images: ImagePostEntity[]): Promise<void> {
     await this.prisma.postImage.createMany({
       data: images,
     });
   }
-
   async deleteImages(resourceId: string): Promise<void> {
     await this.prisma.postImage.deleteMany({ where: { resourceId } });
   }
-
   async findImagesByOwnerIdAndResourceIds(resourceId: string): Promise<ImagePostEntity[]> {
     const images = await this.prisma.postImage.findMany({
       where: { resourceId },
     });
     return plainToInstance(ImagePostEntity, images);
   }
-
   async findImagesByUploadIds(childrenMetadata: ChildMetadataDto[]): Promise<ImagePostEntity[]> {
     const uploadIds = childrenMetadata.map(c => c.uploadId);
     const images = await this.prisma.postImage.findMany({
@@ -84,8 +79,6 @@ export class PostsRepository implements IPostsRepository {
     });
     return plainToInstance(ImagePostEntity, images);
   }
-
-  //two flow
   async savePost(post: PostEntity): Promise<void> {
     const updateImagesConfig = this.getUpdateImagesConfig(post.images);
     await this.prisma.post.update({
@@ -115,18 +108,6 @@ export class PostsRepository implements IPostsRepository {
     const owner = plainToInstance(UserEntity, postWithUser.user);
     return { post: post, owner: owner };
   }
-
-  //unused
-
-  async deletePostById(postId: number) {
-    await this.prisma.post.delete({
-      where: {
-        id: postId,
-      },
-      include: { images: true },
-    });
-  }
-
   private getUpdateImagesConfig(images: ImagePostEntity[]) {
     return images.map(i => {
       return {
@@ -145,6 +126,49 @@ export class PostsRepository implements IPostsRepository {
           resourceId: i.resourceId,
         },
       };
+    });
+  }
+  async savePostWithImages(instancePost: PostEntity): Promise<number> {
+    //create post
+    return await this.prisma.$transaction(async tx => {
+      const post = await tx.post.create({
+        data: {
+          ownerId: instancePost.ownerId,
+          description: instancePost.description,
+          location: instancePost.location,
+          status: instancePost.status,
+          images: {
+            create: [],
+          },
+        },
+      });
+      const images = instancePost.images.map(i => {
+        return {
+          postId: post.id,
+          status: i.status,
+          imageType: i.imageType,
+          sizeType: i.sizeType,
+          url: i.url,
+          width: i.width,
+          height: i.height,
+          fileSize: i.fileSize,
+          fieldId: i.fieldId,
+          resourceId: i.resourceId,
+        };
+      });
+      await tx.postImage.createMany({
+        data: images,
+      });
+      return post.id;
+    });
+  }
+  //unused
+  async deletePostById(postId: number) {
+    await this.prisma.post.delete({
+      where: {
+        id: postId,
+      },
+      include: { images: true },
     });
   }
 }

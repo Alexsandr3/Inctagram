@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { SessionDto } from '../../modules/sessions/application/dto/SessionDto';
 
 declare global {
@@ -6,6 +5,7 @@ declare global {
     export interface Request {
       userId: number;
       sessionData: SessionDto;
+      payLoad: any;
     }
   }
 }

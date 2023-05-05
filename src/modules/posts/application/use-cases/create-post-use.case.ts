@@ -7,6 +7,9 @@ import { IUsersRepository } from '../../../users/infrastructure/users.repository
 import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { PostEntity } from '../../domain/post.entity';
 
+/**
+ * Create post command
+ */
 export class CreatePostCommand {
   constructor(
     public readonly userId: number,
@@ -23,6 +26,11 @@ export class CreatePostUseCase
   constructor(private readonly usersRepository: IUsersRepository, private readonly postsRepository: IPostsRepository) {
     super();
   }
+
+  /**
+   * @description Checking the user's existence and creating a post
+   * @param command
+   */
   async executeUseCase(command: CreatePostCommand): Promise<number> {
     const { userId, description, childrenMetadata } = command;
     //find user

@@ -1,7 +1,8 @@
 import { SessionExtendedDto } from '../application/dto/SessionExtendedDto';
 import { UserEntity } from '../../users/domain/user.entity';
+import { Session } from '@prisma/client';
 
-export class SessionEntity {
+export class SessionEntity implements Session {
   deviceId: number;
   userId: number;
   exp: number;
@@ -17,17 +18,6 @@ export class SessionEntity {
     this.deviceName = dto.deviceName;
     this.exp = dto.exp;
     this.iat = dto.iat;
-  }
-
-  static preparation(session: any): SessionEntity {
-    const sessionEntity = new SessionEntity();
-    sessionEntity.deviceId = session.deviceId;
-    sessionEntity.userId = session.userId;
-    sessionEntity.exp = session.exp;
-    sessionEntity.ip = session.ip;
-    sessionEntity.deviceName = session.deviceName;
-    sessionEntity.iat = session.iat;
-    return sessionEntity;
   }
 
   static initCreate(param: {
