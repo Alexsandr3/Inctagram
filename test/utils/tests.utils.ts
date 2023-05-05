@@ -5,6 +5,8 @@ import { DataSource } from 'typeorm';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { PrismaClient } from '@prisma/client';
 import { GoogleEnterpriseRecaptchaGuard } from '../../src/providers/recaptcha/google-enterprise-recaptcha.guard';
+import { GoogleRegistrationGuard } from '../../src/modules/auth/api/guards/google-registration.guard';
+import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';
 
 async function truncateDBTablesPrisma(prisma: PrismaClient): Promise<void> {
   const models = Object.keys(prisma)
@@ -30,15 +32,23 @@ export async function truncateDBTables(connection: DataSource): Promise<void> {
 const prisma = new PrismaClient();
 
 export const getAppForE2ETesting = async (
-  mocks: { mailerOn?: boolean; recaptchaOn?: boolean } = { mailerOn: false, recaptchaOn: false },
+  mocks: { useMailer?: boolean; useRecaptcha?: boolean; useGoogleAuth?: boolean; useGitHubAuth?: boolean } = {
+    useMailer: false,
+    useRecaptcha: false,
+    useGoogleAuth: false,
+    useGitHubAuth: false,
+  },
   setupModuleBuilder?: (appModuleBuilder: TestingModuleBuilder) => void,
 ) => {
   let appModule: TestingModuleBuilder = await Test.createTestingModule({
     imports: [AppModule],
   });
   if (setupModuleBuilder) setupModuleBuilder(appModule);
-  if (!mocks.mailerOn) appModule.overrideProvider(EmailAdapter).useValue({ sendEmail: () => 'SENT EMAIL' });
-  if (!mocks.recaptchaOn) appModule.overrideGuard(GoogleEnterpriseRecaptchaGuard).useValue({ canActivate: () => true });
+  if (!mocks.useMailer) appModule.overrideProvider(EmailAdapter).useValue({ sendEmail: () => 'SENT EMAIL' });
+  if (!mocks.useRecaptcha)
+    appModule.overrideGuard(GoogleEnterpriseRecaptchaGuard).useValue({ canActivate: () => true });
+  if (!mocks.useGoogleAuth) appModule.overrideGuard(GoogleRegistrationGuard).useValue({ canActivate: () => true });
+  if (!mocks.useGitHubAuth) appModule.overrideGuard(GitHubRegistrationGuard).useValue({ canActivate: () => true });
   const appCompile = await appModule.compile();
   const app = appCompile.createNestApplication();
   baseAppConfig(app);

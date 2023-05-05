@@ -377,7 +377,7 @@ describe('Recaptcha -  e2e', () => {
   // let mailManager: MailManager;
 
   beforeAll(async () => {
-    app = await getAppForE2ETesting({ recaptchaOn: true });
+    app = await getAppForE2ETesting({ useRecaptcha: true });
     authHelper = new AuthHelper(app);
   });
 
