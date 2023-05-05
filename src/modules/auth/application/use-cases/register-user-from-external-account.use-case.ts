@@ -7,6 +7,9 @@ import { UserEntity, userFieldParameters } from '../../../users/domain/user.enti
 import { randomUUID } from 'crypto';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 
+/**
+ * Registration user from external account
+ */
 export class RegisterUserFromExternalAccountCommand {
   constructor(public dto: RegisterUserFromExternalAccountInputDto) {}
 }
@@ -24,21 +27,32 @@ export class RegisterUserFromExternalAccountUseCase
     super();
   }
 
+  /**
+   * Execute the command action for RegisterUserFromExternalAccountCommand
+   * @param command
+   */
   async executeUseCase(command: RegisterUserFromExternalAccountCommand): Promise<void> {
     let user = await this.usersRepository.findUserByEmail(command.dto.email);
     if (!user) {
+      //create user
       user = await this.createUserByExternalAccount(command.dto);
       await this.usersRepository.saveUser(user);
-      await this.mailService.sendMailWithSuccessRegistration(command.dto.email); //todo
+      await this.mailService.sendMailWithSuccessRegistration(command.dto.email);
     } else {
+      //add external account to user
       user.addExternalAccountToUser(command.dto);
       await this.usersRepository.updateUser(user);
-
-      const code = randomUUID(); //todo - add confirmation code for adding ExternalAccountToUser
-      await this.mailService.sendUserConfirmation(command.dto.email, code); //todo
+      //generate code for confirmation external account
+      const code = randomUUID();
+      await this.mailService.sendUserConfirmationCodeForExternalAccount(command.dto.email, code);
     }
   }
 
+  /**
+   * Create user from external account
+   * @param dto
+   * @private
+   */
   private async createUserByExternalAccount(dto: RegisterUserFromExternalAccountInputDto): Promise<UserEntity> {
     const userName = await this.setUserName(dto.displayName);
     //generate password hash
@@ -47,22 +61,29 @@ export class RegisterUserFromExternalAccountUseCase
     return UserEntity.createUserFromExternalAccount(userName, passwordHash, dto);
   }
 
+  /**
+   * Generate userName with random symbols
+   * @param userName
+   * @private
+   */
   private async setUserName(userName: string): Promise<string> {
+    //get min and max length of userName from config default values
+    const { max, min } = userFieldParameters.userNameLength;
     let foundUser: UserEntity;
 
     //if don`t get displayName from external accounts or userName length longer than needed - generate it
-    if (!userName || userName.length > userFieldParameters.userNameLength.max || !userName.match('^[a-zA-Z0-9_-]*$'))
+    if (!userName || userName.length > max || !userName.match('^[a-zA-Z0-9_-]*$'))
       userName = await this.generateUserName();
+
     //if userName length shorter than needed - extend it value
-    if (userName.length < userFieldParameters.userNameLength.min) {
-      const countCorrectingSymbols = userFieldParameters.userNameLength.min - userName.length;
+    if (userName.length < min) {
+      const countCorrectingSymbols = min - userName.length;
       userName = this.correctShortUserName(userName, countCorrectingSymbols);
     }
-
     do {
       foundUser = await this.usersRepository.findUserByUserName(userName);
       if (foundUser) userName = this.correctUserName(userName);
-      if (userName.length > userFieldParameters.userNameLength.max) userName = await this.generateUserName();
+      if (userName.length > max) userName = await this.generateUserName();
     } while (foundUser);
 
     return userName;
@@ -79,16 +100,30 @@ export class RegisterUserFromExternalAccountUseCase
   }
 
   private correctUserName(userName: string): string {
-    if (!userName.includes('_')) return userName + '_0';
+    const parts = userName.split('_');
+    const lastPart = parts[parts.length - 1];
 
-    const userNameParts = userName.split('_');
+    // Increment the number at the end of the userName
+    if (/^\d+$/.test(lastPart)) {
+      const newNumber = Number(lastPart) + 1;
+      parts[parts.length - 1] = newNumber.toString();
+    } else {
+      // Append "_0" if there's no number at the end of the userName
+      parts.push('0');
+    }
 
-    const lastPart = Number(userNameParts[userNameParts.length - 1]);
-    if (isNaN(lastPart)) return userName + '_0';
+    return parts.join('_');
 
-    const addedValue = lastPart + 1;
-    userNameParts[userNameParts.length - 1] = String(addedValue);
-
-    return userNameParts.join('_');
+    // if (!userName.includes('_')) return userName + '_0';
+    //
+    // const userNameParts = userName.split('_');
+    //
+    // const lastPart = Number(userNameParts[userNameParts.length - 1]);
+    // if (isNaN(lastPart)) return userName + '_0';
+    //
+    // const addedValue = lastPart + 1;
+    // userNameParts[userNameParts.length - 1] = String(addedValue);
+    //
+    // return userNameParts.join('_');
   }
 }
