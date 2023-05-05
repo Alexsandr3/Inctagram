@@ -28,6 +28,7 @@ import { CheckLoginBodyFieldsGuard } from '../../../main/guards/check-login-body
 import { LoginInputDto } from './input-dto/login.input.dto';
 import {
   SwaggerDecoratorsByCheckPasswordRecovery,
+  SwaggerDecoratorsByConfirmAddingExternalAccount,
   SwaggerDecoratorsByConfirmationRegistration,
   SwaggerDecoratorsByLogin,
   SwaggerDecoratorsByLogout,
@@ -36,6 +37,7 @@ import {
   SwaggerDecoratorsByPasswordRecovery,
   SwaggerDecoratorsByRegistration,
   SwaggerDecoratorsByRegistrationEmailResending,
+  SwaggerDecoratorsByRejectAddingExternalAccount,
   SwaggerDecoratorsByUpdateTokens,
 } from '../swagger/swagger.auth.decorators';
 import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
@@ -45,6 +47,8 @@ import { MeViewDto } from './view-dto/me.view.dto';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';
 import { GoogleEnterpriseRecaptchaGuard } from '../../../providers/recaptcha/google-enterprise-recaptcha.guard';
 import { PasswordRecoveryCommand } from '../application/use-cases/password-recovery.use-case';
+import { ConfirmAddingExternalAccountCommand } from '../application/use-cases/confirm-adding-external-account.use-case';
+import { RejectAddingExternalAccountCommand } from '../application/use-cases/reject-adding-external-account.use-case';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -120,6 +124,34 @@ export class AuthController {
     const { accessToken, refreshToken } = notification.getData();
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
     return { accessToken };
+  }
+
+  /**
+   * @description Confirm adding External Account to user by code
+   * @param body
+   */
+  @SwaggerDecoratorsByConfirmAddingExternalAccount()
+  @Post('confirm-external-account')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async confirmAddingExternalAccount(@Body() body: ConfirmationCodeInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<ConfirmAddingExternalAccountCommand, ResultNotification>(
+      new ConfirmAddingExternalAccountCommand(body),
+    );
+    return notification.getData();
+  }
+
+  /**
+   * @description Reject adding External Account to user by code
+   * @param body
+   */
+  @SwaggerDecoratorsByRejectAddingExternalAccount()
+  @Post('reject-adding-external-account')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async rejectAddingExternalAccount(@Body() body: ConfirmationCodeInputDto): Promise<null> {
+    const notification = await this.commandBus.execute<RejectAddingExternalAccountCommand, ResultNotification>(
+      new RejectAddingExternalAccountCommand(body),
+    );
+    return notification.getData();
   }
 
   /**

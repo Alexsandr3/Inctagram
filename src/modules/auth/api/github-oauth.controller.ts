@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, Ip, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Headers, HttpCode, Ip, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { GitHubAuthorizationGuard } from './guards/github-authorization.guard';
 import { LoginCommand } from '../application/use-cases/login.use-case';
@@ -17,6 +17,7 @@ import { PayloadData } from '../../../main/decorators/payload-data.decorator';
 import { GitHubRegistrationGuard } from './guards/github-registration.guard';
 import { RegisterUserFromExternalAccountCommand } from '../application/use-cases/register-user-from-external-account.use-case';
 import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
+import { HTTP_Status } from '../../../main/enums/http-status.enum';
 
 @ApiTags('GitHub-OAuth2')
 @Controller('auth/github')
@@ -53,6 +54,7 @@ export class GitHubOauthController {
   @SwaggerDecoratorsByGitHubRegistrationHandler()
   @Get('registration/redirect')
   @UseGuards(GitHubRegistrationGuard)
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
   async githubRegistrationHandler(@PayloadData() dto: RegisterUserFromExternalAccountInputDto): Promise<null> {
     const notification = await this.commandBus.execute<RegisterUserFromExternalAccountCommand, ResultNotification>(
       new RegisterUserFromExternalAccountCommand(dto),

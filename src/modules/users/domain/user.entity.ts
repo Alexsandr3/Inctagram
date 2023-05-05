@@ -31,7 +31,7 @@ export class UserEntity extends BaseDateEntity implements User {
   static initCreateUser(userName: string, email: string, passwordHash: string): UserEntity {
     const instanceUser = new UserEntity();
     instanceUser.userName = userName;
-    instanceUser.email = email;
+    instanceUser.email = email.toLowerCase();
     instanceUser.passwordHash = passwordHash;
     instanceUser.isConfirmed = false;
     instanceUser.profile = null;
@@ -70,5 +70,10 @@ export class UserEntity extends BaseDateEntity implements User {
   public addExternalAccountToUser(dto: RegisterUserFromExternalAccountInputDto) {
     if (!this.externalAccounts) this.externalAccounts = [];
     this.externalAccounts.push(ExternalAccountEntity.initCreate(dto));
+  }
+
+  confirmExternalAccount(providerId: string) {
+    const externalAccount = this.externalAccounts.find(a => a.providerId === providerId);
+    externalAccount.confirmAccount();
   }
 }

@@ -2,7 +2,7 @@ export const baseUrlGitHub = '/auth/github';
 
 export const githubEndpoints = {
   githubAuthorization: () => `${baseUrlGitHub}/authorization`,
-  githubAuthorizationHandler: (code: string) => `${baseUrlGitHub}/authorization/redirect?code=${code}`,
+  githubAuthorizationHandler: () => `${baseUrlGitHub}/authorization/redirect`,
   githubRegistration: () => `${baseUrlGitHub}/registration`,
-  githubRegistrationHandler: (code: string) => `${baseUrlGitHub}/registration/redirect?code=${code}`,
+  githubRegistrationHandler: () => `${baseUrlGitHub}/registration/redirect`,
 };

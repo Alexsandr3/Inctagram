@@ -31,6 +31,8 @@ import { GoogleRegistrationStrategy } from './api/strategies/google-registration
 import { ValidatorService } from '../../providers/validation/validator.service';
 import { GitHubRegistrationStrategy } from './api/strategies/github-registration.strategy';
 import { RegisterUserFromExternalAccountUseCase } from './application/use-cases/register-user-from-external-account.use-case';
+import { ConfirmAddingExternalAccountUseCase } from './application/use-cases/confirm-adding-external-account.use-case';
+import { RejectAddingExternalAccountUseCase } from './application/use-cases/reject-adding-external-account.use-case';
 
 const useCases = [
   RegisterUserUseCase,
@@ -43,6 +45,8 @@ const useCases = [
   LogoutUseCase,
   CheckPasswordRecoveryCodeUseCase,
   RegisterUserFromExternalAccountUseCase,
+  ConfirmAddingExternalAccountUseCase,
+  RejectAddingExternalAccountUseCase,
 ];
 
 const strategies = [
