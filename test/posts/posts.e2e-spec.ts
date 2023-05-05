@@ -458,7 +458,7 @@ describe('Testing new flow upload files and create post -  e2e', () => {
     // console.log('accessToken', accessToken);
   });
   it('02 - / (POST) - should return 201 if all data is correct for create post', async () => {
-    let nameFile = '/images/image2.png';
+    let nameFile = '/images/image2.jpeg';
     let nameFile2 = '/images/image1.png';
     let nameFile3 = '/images/667x1000_345kb.jpeg';
     const body = { description: 'New super description', nameFile: [nameFile, nameFile2, nameFile3] };
