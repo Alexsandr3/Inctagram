@@ -4,6 +4,8 @@ import { BadRequestException } from '@nestjs/common';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
 import { PrismaService } from '../../../../providers/prisma/prisma.service';
 import { GitHubRegistrationStrategy } from './github-registration.strategy';
+import { AuthService } from '../../application/auth.service';
+import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 
 describe('test GitHubRegistrationStrategy', () => {
   let gitHubRegistrationStrategy: GitHubRegistrationStrategy;
@@ -29,7 +31,13 @@ describe('test GitHubRegistrationStrategy', () => {
     app = await Test.createTestingModule({
       imports: [ApiConfigModule],
       controllers: [],
-      providers: [GitHubRegistrationStrategy, ValidatorService, PrismaService],
+      providers: [
+        GitHubRegistrationStrategy,
+        ValidatorService,
+        PrismaService,
+        AuthService,
+        { provide: IUsersRepository, useClass: PrismaUsersRepository },
+      ],
     }).compile();
 
     gitHubRegistrationStrategy = app.get<GitHubRegistrationStrategy>(GitHubRegistrationStrategy);

@@ -4,6 +4,8 @@ import { BadRequestException } from '@nestjs/common';
 import { GoogleRegistrationStrategy } from './google-registration.strategy';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
 import { PrismaService } from '../../../../providers/prisma/prisma.service';
+import { AuthService } from '../../application/auth.service';
+import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 
 describe('test GoogleRegistrationStrategy', () => {
   let googleRegistrationStrategy: GoogleRegistrationStrategy;
@@ -29,7 +31,13 @@ describe('test GoogleRegistrationStrategy', () => {
     app = await Test.createTestingModule({
       imports: [ApiConfigModule],
       controllers: [],
-      providers: [GoogleRegistrationStrategy, ValidatorService, PrismaService],
+      providers: [
+        GoogleRegistrationStrategy,
+        ValidatorService,
+        PrismaService,
+        AuthService,
+        { provide: IUsersRepository, useClass: PrismaUsersRepository },
+      ],
     }).compile();
 
     googleRegistrationStrategy = app.get<GoogleRegistrationStrategy>(GoogleRegistrationStrategy);

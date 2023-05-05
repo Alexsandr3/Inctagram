@@ -384,7 +384,7 @@ describe('Authorisation -  e2e', () => {
     // let mailManager: MailManager;
 
     beforeAll(async () => {
-      app = await getAppForE2ETesting({ recaptchaOn: true });
+      app = await getAppForE2ETesting({ useRecaptcha: true });
       authHelper = new AuthHelper(app);
     });
 
@@ -592,7 +592,7 @@ describe('OAuth2 -  e2e', () => {
     mockGuardForGoogleRegistration(dto);
 
     jest.spyOn(emailAdapter, 'sendEmail');
-    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmation');
+    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmationCodeForExternalAccount');
 
     await authHelper.googleRegistration();
 
@@ -711,7 +711,7 @@ describe('OAuth2 -  e2e', () => {
       providerId: '12345___2',
     };
     mockGuardForGoogleRegistration(dto);
-    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmation');
+    const sendEmailConfirmationMessage = jest.spyOn(mailManager, 'sendUserConfirmationCodeForExternalAccount');
 
     await authHelper.googleRegistration();
     const user = await prismaUsersRepository.findUserByEmail(dto.email);

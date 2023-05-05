@@ -86,15 +86,6 @@ export class AuthService {
           field: `${provider} id`,
         },
       ]);
-
-    const userId = await this.usersRepository.findUserByProviderId(profile.id);
-    if (userId)
-      throw new BadRequestException([
-        {
-          message: `User with ${provider} id: ${profile.id} is already register`,
-          field: `${provider} id`,
-        },
-      ]);
   }
 
   async checkConfirmationCodeForAddingExternalAccount(

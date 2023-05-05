@@ -36,6 +36,7 @@ export class RegisterUserFromExternalAccountUseCase
    */
   async executeUseCase(command: RegisterUserFromExternalAccountCommand): Promise<void> {
     const { dto } = command;
+
     const userId = await this.usersRepository.findUserByProviderId(String(dto.providerId));
     if (userId)
       throw new NotificationException(
@@ -56,7 +57,10 @@ export class RegisterUserFromExternalAccountUseCase
       //create confirmation for external account with code
       const confirmationOfExternalAccount = ConfirmationOfExternalAccountEntity.initCreate(dto.providerId);
       await this.usersRepository.addExternalAccountToUser(user, confirmationOfExternalAccount);
-      await this.mailService.sendUserConfirmationCodeForExternalAccount(dto.email, confirmationOfExternalAccount.confirmationCode);
+      await this.mailService.sendUserConfirmationCodeForExternalAccount(
+        dto.email,
+        confirmationOfExternalAccount.confirmationCode,
+      );
     }
   }
 
