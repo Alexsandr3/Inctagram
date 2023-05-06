@@ -8,6 +8,10 @@ import { GoogleEnterpriseRecaptchaGuard } from '../../src/providers/recaptcha/go
 import { GoogleRegistrationGuard } from '../../src/modules/auth/api/guards/google-registration.guard';
 import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';
 
+/**
+ * Clear all tables in DB (Postgres) using Prisma
+ * @param prisma
+ */
 async function truncateDBTablesPrisma(prisma: PrismaClient): Promise<void> {
   const models = Object.keys(prisma)
     .filter(item => {
@@ -15,7 +19,8 @@ async function truncateDBTablesPrisma(prisma: PrismaClient): Promise<void> {
     })
     .map(str => {
       return str.charAt(0).toUpperCase() + str.slice(1);
-    });
+    })
+    .map(model => model + 's');
   for (const model of models) {
     await prisma.$queryRawUnsafe(`TRUNCATE TABLE "${model}" CASCADE;`);
   }

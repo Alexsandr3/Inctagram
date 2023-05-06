@@ -16,7 +16,8 @@ export class TestingService {
       })
       .map(str => {
         return str.charAt(0).toUpperCase() + str.slice(1);
-      });
+      })
+      .map(model => model + 's');
     for (const model of models) {
       await this.prisma.$queryRawUnsafe(`TRUNCATE TABLE "${model}" CASCADE;`);
     }
