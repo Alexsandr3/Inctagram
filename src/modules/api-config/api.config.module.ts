@@ -22,6 +22,7 @@ import Joi from 'joi';
         //MAIL_FROM: Joi.string().required(),
 
         CLIENT_URL: Joi.string().required(),
+        SERVER_URL: Joi.string().required(),
 
         //ACCESS_TOKEN_SECRET: Joi.string().required(),
         //EXPIRED_ACCESS: Joi.string().required(),
@@ -48,8 +49,8 @@ import Joi from 'joi';
 
         //TOKEN_TELEGRAM: Joi.string(),
 
-        //API_KEY_STRIPE: Joi.string(),
-        //SECRET_HOOK_STRIPE: Joi.string(),
+        API_KEY_STRIPE: Joi.string(),
+        SECRET_HOOK_STRIPE: Joi.string(),
 
         SA_LOGIN: Joi.string().required(),
         SA_PASSWORD: Joi.string().required(),

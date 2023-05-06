@@ -4,8 +4,9 @@ export const configuration = () => ({
   NODE_ENV: process.env.NODE_ENV,
 
   PORT: process.env.PORT,
-  CURRENT_APP_BASE_URL: process.env.CURRENT_APP_BASE_URL,
+
   CLIENT_URL: process.env.CLIENT_URL,
+  SERVER_URL: process.env.SERVER_URL,
 
   database: {
     POSTGRES_HOST: process.env.POSTGRES_HOST,
@@ -61,12 +62,21 @@ export const configuration = () => ({
 
   dev: {
     TOKEN_NGROK: process.env.TOKEN_NGROK,
+    CURRENT_APP_BASE_URL: process.env.CURRENT_APP_BASE_URL,
   },
 
   TOKEN_TELEGRAM: process.env.TOKEN_TELEGRAM,
 
-  API_KEY_STRIPE: process.env.API_KEY_STRIPE,
-  SECRET_HOOK_STRIPE: process.env.SECRET_HOOK_STRIPE,
+  payment: {
+    stripe: {
+      API_KEY_STRIPE: process.env.API_KEY_STRIPE,
+      SECRET_HOOK_STRIPE: process.env.SECRET_HOOK_STRIPE,
+    },
+    // paypal: {
+    //   CLIENT_ID_PAYPAL: process.env.CLIENT_ID_PAYPAL,
+    //   SECRET_PAYPAL: process.env.SECRET_PAYPAL,
+    // },
+  },
 
   IP_RESTRICTION: process.env.IP_RESTRICTION,
 });
