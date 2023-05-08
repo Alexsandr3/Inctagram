@@ -14,6 +14,10 @@ export class ApiConfigService {
     return +this.configService.get('PORT', { infer: true }) || 3000;
   }
 
+  get CORS_ORIGIN(): string {
+    return this.configService.get('CORS_ORIGIN', { infer: true });
+  }
+
   get CURRENT_APP_BASE_URL(): string {
     return this.configService.get('dev.CURRENT_APP_BASE_URL', { infer: true });
   }

@@ -13,6 +13,8 @@ import Joi from 'joi';
         NODE_ENV: Joi.string().valid('development', 'production', 'test', 'provision').default('development'),
         PORT: Joi.number(),
 
+        CORS_ORIGIN: Joi.string().required(),
+
         CURRENT_APP_BASE_URL: Joi.string(),
 
         DATABASE_URL: Joi.string().required(),

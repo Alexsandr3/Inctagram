@@ -5,6 +5,8 @@ export const configuration = () => ({
 
   PORT: process.env.PORT,
 
+  CORS_ORIGIN: process.env.CORS_ORIGIN,
+
   CLIENT_URL: process.env.CLIENT_URL,
   SERVER_URL: process.env.SERVER_URL,
 
