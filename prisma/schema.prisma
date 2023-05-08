@@ -12,20 +12,21 @@ datasource db {
 }
 
 model User {
-  id                Int                @id @default(autoincrement())
-  userName          String             @unique
-  email             String             @unique // @map("email" varchar(255) COLLATE "C")
-  passwordHash      String
-  isConfirmed       Boolean
-  createdAt         DateTime           @default(now()) //, map: "created_at::timestamptz"
-  updatedAt         DateTime           @updatedAt
-  emailConfirmation EmailConfirmation?
-  profile           Profile?
-  sessions          Session[]
-  posts             Post[]
-  externalAccounts  ExternalAccount[]
+  id                 Int                @id @default(autoincrement())
+  userName           String             @unique
+  email              String             @unique // @map("email" varchar(255) COLLATE "C")
+  passwordHash       String
+  isConfirmed        Boolean
+  createdAt          DateTime           @default(now()) //, map: "created_at::timestamptz"
+  updatedAt          DateTime           @updatedAt
+  emailConfirmation  EmailConfirmation?
+  profile            Profile?
+  sessions           Session[]
+  posts              Post[]
+  externalAccounts   ExternalAccount[]
+  hasBusinessAccount Boolean            @default(false)
 
-  @@map("User")
+  @@map("Users")
 }
 
 model ExternalAccount {
@@ -39,6 +40,8 @@ model ExternalAccount {
   createdAt   DateTime @default(now()) //, map: "created_at::timestamptz"
   updatedAt   DateTime @updatedAt
   user        User     @relation(fields: [userId], references: [id])
+
+  @@map("ExternalAccounts")
 }
 
 enum Provider {
@@ -48,11 +51,11 @@ enum Provider {
 
 model EmailConfirmation {
   userId             Int       @unique
-  confirmationCode   String? // является необязательным (nullable)
-  codeExpirationDate DateTime? // является необязательным (nullable)
+  confirmationCode   String?
+  codeExpirationDate DateTime?
   user               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("EmailConfirmation")
+  @@map("EmailConfirmations")
 }
 
 model Session {
@@ -64,7 +67,7 @@ model Session {
   iat        Int?
   user       User?   @relation(fields: [userId], references: [id])
 
-  @@map("Session")
+  @@map("Sessions")
 }
 
 model PasswordRecovery {
@@ -73,7 +76,7 @@ model PasswordRecovery {
   expirationDate DateTime
   email          String
 
-  @@map("PasswordRecovery")
+  @@map("PasswordRecoverys")
 }
 
 model Profile {
@@ -88,7 +91,7 @@ model Profile {
   avatars     AvatarImage[]
   user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("Profile")
+  @@map("Profiles")
 }
 
 enum ImageSizeType {
@@ -122,7 +125,7 @@ model AvatarImage {
   updatedAt DateTime      @updatedAt
   profile   Profile       @relation(fields: [profileId], references: [userId])
 
-  @@map("AvatarImage")
+  @@map("AvatarImages")
 }
 
 enum Status {
@@ -145,9 +148,9 @@ model PostImage {
   fieldId    String
   createdAt  DateTime      @default(now())
   updatedAt  DateTime      @updatedAt
-  post       Post?          @relation(fields: [postId], references: [id])
+  post       Post?         @relation(fields: [postId], references: [id])
 
-  @@map("PostImage")
+  @@map("PostImages")
 }
 
 model Post {
@@ -161,5 +164,87 @@ model Post {
   images      PostImage[]
   user        User        @relation(fields: [ownerId], references: [id])
 
-  @@map("Post")
+  @@map("Posts")
+}
+
+
+model BusinessAccount {
+  userId        Int            @unique
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  subscriptions Subscription[]
+
+  @@map("BusinessAccounts")
+}
+
+enum SubscriptionType {
+  MONTHLY
+  SEMI_ANNUALLY
+  YEARLY
+}
+enum PaymentType {
+  PAYPAL
+  STRIPE
+  CREDIT_CARD
+}
+
+enum StatusSubscriptionType {
+  PENDING
+  ACTIVE
+  DELETED
+}
+
+model Subscription {
+  id                String                 @id @unique
+  businessAccountId Int
+  status            StatusSubscriptionType
+  dateOfPayment     DateTime?
+  endDate           DateTime?
+  type              SubscriptionType
+  price             Float
+  paymentType       PaymentType
+  autoRenew         Boolean                @default(true)
+  businessAccount   BusinessAccount        @relation(fields: [businessAccountId], references: [userId])
+  payments          Payment[]
+  renewals          Renewal[]
+
+  @@map("Subscriptions")
+}
+
+model Renewal {
+  id             Int          @id @default(autoincrement())
+  dateOfRenewal  DateTime
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id])
+
+  @@map("Renewals")
+}
+
+enum Currency {
+  USD
+  EUR
+}
+
+enum PaymentStatus {
+  PENDING //The payment is pending or in progress.
+  SUCCESSFUL //The payment was successfully processed
+  CANCELED //The payment was canceled or declined.
+  REFUNDED //The payment has been refunded.
+  FAILED //The payment failed or encountered an error.
+}
+
+model Payment {
+  id       Int           @id @default(autoincrement())
+  amount   Float
+  currency Currency
+  status   PaymentStatus @default(PENDING)
+
+  context   Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscriptionId String?
+  subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
+
+  @@map("Payments")
 }
