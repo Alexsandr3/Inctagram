@@ -80,6 +80,10 @@ export const configuration = () => ({
     // },
   },
 
+  subscription: {
+    COST_SUBSCRIPTION: process.env.COST_SUBSCRIPTION,
+  },
+
   IP_RESTRICTION: process.env.IP_RESTRICTION,
 });
 

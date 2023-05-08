@@ -157,4 +157,8 @@ export class ApiConfigService {
   get TOKEN_NGROK(): string {
     return this.configService.get('dev.TOKEN_NGROK', { infer: true });
   }
+
+  get COST_SUBSCRIPTION(): number {
+    return this.configService.get('subscription.COST_SUBSCRIPTION', { infer: true });
+  }
 }
