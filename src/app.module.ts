@@ -11,6 +11,8 @@ import { LoggerModule } from './providers/logger/logger.module';
 import LogsMiddleware from './providers/logger/logs.middleware';
 import { PrismaModule } from './providers/prisma/prisma.module';
 import { PostsModule } from './modules/posts/posts.module';
+import { PaymentsModule } from './providers/payment/payments.module';
+import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { PostsModule } from './modules/posts/posts.module';
     LoggerModule,
     PrismaModule,
     PostsModule,
+    PaymentsModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [],
