@@ -4,10 +4,8 @@
   "description": "",
   "author": "Team jobs",
   "private": true,
-  "license": "MIT",
   "repository": {
     "description": "Project from internship - Inctagram",
-    "type": "git",
     "url": "https://github.com/Alexsandr3/Inctagram"
   },
   "engines": {
