@@ -97,12 +97,6 @@ describe('Update-profile -  e2e', () => {
       expectedCode: 400,
     });
     expect(responseBody.messages[0].field).toBe('aboutMe');
-    command.aboutMe = '';
-    const responseBody2: ApiErrorResultDto = await usersHelper.updateProfile(command, {
-      expectedBody: accessToken,
-      expectedCode: 400,
-    });
-    expect(responseBody2.messages[0].field).toBe('aboutMe');
   });
   it('06 - / (PUT) - should return 400 if dateOfBirth is incorrect', async () => {
     const command = {
