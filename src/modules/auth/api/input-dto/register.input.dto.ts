@@ -12,7 +12,9 @@ export class RegisterInputDto {
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Length(userFieldParameters.userNameLength.min, userFieldParameters.userNameLength.max)
   @IsString()
-  @Matches('^[a-zA-Z0-9_-]*$')
+  @Matches('^[a-zA-Z0-9_-]*$', undefined, {
+    message: 'The username should contain only latin letters, numbers and the following characters: "-" and "_"',
+  })
   userName: string;
 
   /**

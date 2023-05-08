@@ -1,4 +1,4 @@
-import { IsDate, IsOptional, IsString, Length, Matches } from 'class-validator';
+import { IsDate, IsOptional, IsString, Length, Matches, MaxLength } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 
@@ -12,7 +12,9 @@ export class UpdateProfileInputDto {
   @ApiProperty({ pattern: '^[a-zA-Z0-9_-]*$', example: 'string' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))
   @Length(6, 30)
-  @Matches('^[a-zA-Z0-9_-]*$')
+  @Matches('^[a-zA-Z0-9_-]*$', undefined, {
+    message: 'The username should contain only latin letters, numbers and the following characters: "-" and "_"',
+  })
   @IsOptional()
   userName: string;
 
@@ -52,7 +54,7 @@ export class UpdateProfileInputDto {
    * About me
    */
   @ApiProperty({ nullable: true, required: false })
-  @Length(1, 200)
+  @MaxLength(200)
   @IsString()
   @IsOptional()
   aboutMe: string | null;
