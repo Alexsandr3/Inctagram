@@ -36,7 +36,11 @@ export class PasswordRecoveryUseCase
     //search user by login or email
     const isUserExist = await this.usersRepository.findUserByEmail(email);
     if (!isUserExist)
-      throw new NotificationException(`User with this ${email} not registered`, 'email', NotificationCode.BAD_REQUEST);
+      throw new NotificationException(
+        `User with this ${email} is not registered`,
+        'email',
+        NotificationCode.BAD_REQUEST,
+      );
 
     const passwordRecovery = PasswordRecoveryEntity.initCreate(email);
     await this.passwordRepository.savePassRecovery(passwordRecovery);
