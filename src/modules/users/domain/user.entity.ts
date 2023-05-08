@@ -19,6 +19,7 @@ export class UserEntity extends BaseDateEntity implements User {
   email: string;
   passwordHash: string;
   isConfirmed: boolean;
+  hasBusinessAccount: boolean;
   @Type(() => ExternalAccountEntity)
   externalAccounts: ExternalAccountEntity[];
   @Type(() => ProfileEntity)
@@ -36,6 +37,7 @@ export class UserEntity extends BaseDateEntity implements User {
     instanceUser.isConfirmed = false;
     instanceUser.profile = null;
     instanceUser.externalAccounts = null;
+    instanceUser.hasBusinessAccount = false;
     return instanceUser;
   }
 

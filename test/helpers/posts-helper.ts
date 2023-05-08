@@ -5,64 +5,47 @@ import { postsEndpoints } from '../../src/modules/posts/api/routing/posts.routin
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
-import { tempPostsEndpoints } from '../../src/modules/posts/temp/temp-posts.routing';
 
 export class PostsHelper {
   constructor(private readonly app: INestApplication) {}
 
   async createPost<T = PostViewModel>(
-    command: any, //CreatePostInputDto,
+    body: {
+      description: string;
+      nameFile: string[];
+    },
     config: {
-      token?: any;
+      token?: string;
       expectedCode?: number;
     } = {},
   ): Promise<T> {
     // default expected code is 201 or code mistake from config
     const expectedCode = config.expectedCode ?? HTTP_Status.CREATED_201;
+    // create file
+    const files = [];
+    for (const file of body.nameFile) {
+      files.push(fs.createReadStream(__dirname + '/../' + file));
+    }
     // send request for create user
     const response = await request(this.app.getHttpServer())
-      .post(postsEndpoints.createPost())
+      .post(postsEndpoints.createPostWithUploadImages())
       .auth(config.token, { type: 'bearer' })
-      .send(command)
+      .field('description', body.description)
+      .set('content-type', 'multipart/form-data')
+      .attach('files', files[0], body.nameFile[0])
+      .attach('files', files[1], body.nameFile[1])
+      .attach('files', files[2], body.nameFile[2])
       .expect(expectedCode);
 
     return response.body;
   }
 
-  async deletePhotoPost(
-    uploadId: string,
-    config: {
-      token?: any;
-      expectedCode?: number;
-    } = {},
-  ): Promise<any> {
+  async deleteImage(query: { uploadId: string; postId: number }, config: { expectedCode: number; token: string }) {
     const expectedCode = config.expectedCode ?? HTTP_Status.NO_CONTENT_204;
     // send request for create user
     const response = await request(this.app.getHttpServer())
-      .delete(postsEndpoints.deleteImagePost(uploadId))
+      .delete(postsEndpoints.deleteImagePost(query.postId, query.uploadId))
       .auth(config.token, { type: 'bearer' })
-      .expect(expectedCode);
-
-    return response.body;
-  }
-
-  async uploadPhotoPost(
-    nameFile: string,
-    config: {
-      token?: any;
-      expectedCode?: number;
-    } = {},
-  ): Promise<any> {
-    // default expected code is 201 or code mistake from config
-    const expectedCode = config.expectedCode ?? HTTP_Status.CREATED_201;
-    // create file
-    const file = fs.createReadStream(__dirname + '/../' + nameFile);
-    // send request for create user
-    const response = await request(this.app.getHttpServer())
-      .post(postsEndpoints.uploadImagePost())
-      .auth(config.token, { type: 'bearer' })
-      .set('content-type', 'multipart/form-data')
-      .attach('file', file, nameFile)
       .expect(expectedCode);
 
     return response.body;
@@ -120,7 +103,6 @@ export class PostsHelper {
 
     return response.body;
   }
-
   async getPosts(
     userId: number,
     query?: any,
@@ -139,46 +121,63 @@ export class PostsHelper {
 
     return response.body;
   }
+}
 
-  async uploadImagesAndCreatePost<T = PostViewModel>(
-    body: {
-      description: string;
-      nameFile: string[];
-    },
+/*
+  async createPost<T = PostViewModel>(
+    command: any, //CreatePostInputDto,
     config: {
-      token?: string;
+      token?: any;
       expectedCode?: number;
     } = {},
   ): Promise<T> {
     // default expected code is 201 or code mistake from config
     const expectedCode = config.expectedCode ?? HTTP_Status.CREATED_201;
-    // create file
-    const files = [];
-    for (const file of body.nameFile) {
-      files.push(fs.createReadStream(__dirname + '/../' + file));
-    }
     // send request for create user
     const response = await request(this.app.getHttpServer())
-      .post(tempPostsEndpoints.uploadImagePost())
+      .post(postsEndpoints.createPost())
       .auth(config.token, { type: 'bearer' })
-      .field('description', body.description)
-      .set('content-type', 'multipart/form-data')
-      .attach('files', files[0], body.nameFile[0])
-      .attach('files', files[1], body.nameFile[1])
-      .attach('files', files[2], body.nameFile[2])
+      .send(command)
       .expect(expectedCode);
 
     return response.body;
   }
 
-  async deleteImage(query: { uploadId: string; postId: number }, config: { expectedCode: number; token: string }) {
+  async deletePhotoPost(
+    uploadId: string,
+    config: {
+      token?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<any> {
     const expectedCode = config.expectedCode ?? HTTP_Status.NO_CONTENT_204;
     // send request for create user
     const response = await request(this.app.getHttpServer())
-      .delete(tempPostsEndpoints.deleteImagePost(query.postId, query.uploadId))
+      .delete(postsEndpoints.deleteImagePost(uploadId))
       .auth(config.token, { type: 'bearer' })
       .expect(expectedCode);
 
     return response.body;
   }
-}
+
+  async uploadPhotoPost(
+    nameFile: string,
+    config: {
+      token?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<any> {
+    // default expected code is 201 or code mistake from config
+    const expectedCode = config.expectedCode ?? HTTP_Status.CREATED_201;
+    // create file
+    const file = fs.createReadStream(__dirname + '/../' + nameFile);
+    // send request for create user
+    const response = await request(this.app.getHttpServer())
+      .post(postsEndpoints.uploadImagePost())
+      .auth(config.token, { type: 'bearer' })
+      .set('content-type', 'multipart/form-data')
+      .attach('file', file, nameFile)
+      .expect(expectedCode);
+
+    return response.body;
+  }*/

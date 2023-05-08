@@ -13,6 +13,8 @@ import Joi from 'joi';
         NODE_ENV: Joi.string().valid('development', 'production', 'test', 'provision').default('development'),
         PORT: Joi.number(),
 
+        CORS_ORIGIN: Joi.string().required(),
+
         CURRENT_APP_BASE_URL: Joi.string(),
 
         DATABASE_URL: Joi.string().required(),
@@ -22,6 +24,7 @@ import Joi from 'joi';
         //MAIL_FROM: Joi.string().required(),
 
         CLIENT_URL: Joi.string().required(),
+        SERVER_URL: Joi.string().required(),
 
         //ACCESS_TOKEN_SECRET: Joi.string().required(),
         //EXPIRED_ACCESS: Joi.string().required(),
@@ -48,8 +51,8 @@ import Joi from 'joi';
 
         //TOKEN_TELEGRAM: Joi.string(),
 
-        //API_KEY_STRIPE: Joi.string(),
-        //SECRET_HOOK_STRIPE: Joi.string(),
+        API_KEY_STRIPE: Joi.string(),
+        SECRET_HOOK_STRIPE: Joi.string(),
 
         SA_LOGIN: Joi.string().required(),
         SA_PASSWORD: Joi.string().required(),
@@ -58,6 +61,8 @@ import Joi from 'joi';
         RECAPTCHA_ENTERPRISE_API_KEY: Joi.string().required(),
         RECAPTCHA_ENTERPRISE_PUBLIC_SITE_KEY: Joi.string().required(),
         RECAPTCHA_ENTERPRISE_PROJECT_ID: Joi.string().required(),
+
+        COST_SUBSCRIPTION: Joi.number().required(),
 
         IP_RESTRICTION: Joi.boolean(),
       }),

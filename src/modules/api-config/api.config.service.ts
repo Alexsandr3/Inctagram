@@ -14,8 +14,12 @@ export class ApiConfigService {
     return +this.configService.get('PORT', { infer: true }) || 3000;
   }
 
+  get CORS_ORIGIN(): string {
+    return this.configService.get('CORS_ORIGIN', { infer: true });
+  }
+
   get CURRENT_APP_BASE_URL(): string {
-    return this.configService.get('CURRENT_APP_BASE_URL', { infer: true });
+    return this.configService.get('dev.CURRENT_APP_BASE_URL', { infer: true });
   }
 
   get DATABASE_URL(): string {
@@ -36,6 +40,10 @@ export class ApiConfigService {
 
   get CLIENT_URL(): string {
     return this.configService.get('CLIENT_URL', { infer: true });
+  }
+
+  get SERVER_URL(): string {
+    return this.configService.get('SERVER_URL', { infer: true });
   }
 
   get ACCESS_TOKEN_SECRET(): string {
@@ -111,11 +119,11 @@ export class ApiConfigService {
   }
 
   get API_KEY_STRIPE(): string {
-    return this.configService.get('API_KEY_STRIPE', { infer: true });
+    return this.configService.get('payment.stripe.API_KEY_STRIPE', { infer: true });
   }
 
   get SECRET_HOOK_STRIPE(): string {
-    return this.configService.get('SECRET_HOOK_STRIPE', { infer: true });
+    return this.configService.get('payment.stripe.SECRET_HOOK_STRIPE', { infer: true });
   }
 
   get SA_LOGIN(): string {
@@ -148,5 +156,9 @@ export class ApiConfigService {
 
   get TOKEN_NGROK(): string {
     return this.configService.get('dev.TOKEN_NGROK', { infer: true });
+  }
+
+  get COST_SUBSCRIPTION(): number {
+    return this.configService.get('subscription.COST_SUBSCRIPTION', { infer: true });
   }
 }

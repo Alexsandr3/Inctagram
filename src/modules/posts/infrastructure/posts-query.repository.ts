@@ -1,19 +1,17 @@
 import { PrismaService } from '../../../providers/prisma/prisma.service';
-import { PostImageViewModel } from '../api/view-models/post-image-view.dto';
 import { PostEntity, PostStatus } from '../domain/post.entity';
 import { plainToInstance } from 'class-transformer';
 import { PostViewModel } from '../api/view-models/post-view.dto';
 import { Injectable } from '@nestjs/common';
-import { UploadedImageViewModel } from '../api/view-models/uploaded-image-view.dto';
 import { PaginationPostsInputDto } from '../api/input-dto/pagination-posts.input.dto';
 import { PostsWithPaginationViewDto } from '../api/view-models/posts-with-pagination-view.dto';
 import { Paginated } from '../../../main/shared/paginated';
 
 export abstract class IPostsQueryRepository {
   abstract getPost(postId: number, status: PostStatus): Promise<PostViewModel>;
-  abstract getUploadImages(resourceId: string): Promise<UploadedImageViewModel>;
-
   abstract getPosts(userId: number, paginationInputModel: PaginationPostsInputDto): Promise<Paginated<PostViewModel[]>>;
+  //unused
+  /* abstract getUploadImages(resourceId: string): Promise<UploadedImageViewModel>;*/
 }
 
 @Injectable()
@@ -36,23 +34,6 @@ export class PostsQueryRepository implements IPostsQueryRepository {
     post.images.sort((a, b) => b.width - a.width);
     return new PostViewModel(post);
   }
-  async getUploadImages(resourceId: string): Promise<UploadedImageViewModel> {
-    const images = await this.prisma.postImage.findMany({
-      where: {
-        resourceId,
-        status: PostStatus.PUBLISHED,
-      },
-      orderBy: {
-        createdAt: 'desc',
-      },
-    });
-    return new UploadedImageViewModel(
-      images.map(
-        image => new PostImageViewModel(image.url, image.width, image.height, image.fileSize, image.resourceId),
-      ),
-    );
-  }
-
   async getPosts(userId: number, paginationInputModel: PaginationPostsInputDto): Promise<Paginated<PostViewModel[]>> {
     const posts = await this.prisma.post.findMany({
       where: {
@@ -81,4 +62,21 @@ export class PostsQueryRepository implements IPostsQueryRepository {
       count: total,
     });
   }
+  //unused
+  /* async getUploadImages(resourceId: string): Promise<UploadedImageViewModel> {
+    const images = await this.prisma.postImage.findMany({
+      where: {
+        resourceId,
+        status: PostStatus.PUBLISHED,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return new UploadedImageViewModel(
+      images.map(
+        image => new PostImageViewModel(image.url, image.width, image.height, image.fileSize, image.resourceId),
+      ),
+    );
+  }*/
 }

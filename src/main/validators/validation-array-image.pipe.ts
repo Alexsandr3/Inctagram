@@ -12,6 +12,12 @@ export class ValidationArrayImagePipe<T extends BaseParametersImageValidation>
     const { contentTypes } = this.options;
     // checking types of all files in the array
     for (const file of images) {
+      //check if size of file is more than 5MB
+      if (file.size > 5 * 1024 * 1024) {
+        throw new BadRequestException([
+          { message: `The file size is too large, please upload the file less than 5MB`, field: 'file' },
+        ]);
+      }
       const inputMimeType = file.mimetype.split(' ');
       if (!contentTypes.includes(inputMimeType[0])) {
         throw new BadRequestException([

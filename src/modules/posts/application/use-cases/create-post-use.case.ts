@@ -1,46 +1,60 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { ChildMetadataDto } from '../../api/input-dto/create-post.input.dto';
+import { IUsersRepository } from '../../../users/infrastructure/users.repository';
+import { ImagesEditorService } from '../../../images/application/images-editor.service';
+import { IPostsRepository } from '../../infrastructure/posts.repository';
+import { ImageType } from '../../../images/type/image.type';
+import { PostEntity } from '../../domain/post.entity';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
-import { IUsersRepository } from '../../../users/infrastructure/users.repository';
-import { IPostsRepository } from '../../infrastructure/posts.repository';
-import { PostEntity } from '../../domain/post.entity';
 
 /**
- * Create post command
+ * Upload image post command
  */
-export class CreatePostCommand {
+export class CreatePostWithUploadImagesCommand {
   constructor(
     public readonly userId: number,
+    public readonly files: Express.Multer.File[],
     public readonly description: string,
-    public readonly childrenMetadata: ChildMetadataDto[],
   ) {}
 }
 
-@CommandHandler(CreatePostCommand)
-export class CreatePostUseCase
-  extends BaseNotificationUseCase<CreatePostCommand, number>
-  implements ICommandHandler<CreatePostCommand>
+@CommandHandler(CreatePostWithUploadImagesCommand)
+export class CreatePostWithUploadImagesUseCase
+  extends BaseNotificationUseCase<CreatePostWithUploadImagesCommand, number>
+  implements ICommandHandler<CreatePostWithUploadImagesCommand>
 {
-  constructor(private readonly usersRepository: IUsersRepository, private readonly postsRepository: IPostsRepository) {
+  constructor(
+    private readonly usersRepository: IUsersRepository,
+    private readonly imagesEditor: ImagesEditorService,
+    private readonly postsRepository: IPostsRepository,
+  ) {
     super();
   }
 
   /**
-   * @description Checking the user's existence and creating a post
+   * @description Checking the user's existence and upload image
    * @param command
    */
-  async executeUseCase(command: CreatePostCommand): Promise<number> {
-    const { userId, description, childrenMetadata } = command;
+  async executeUseCase(command: CreatePostWithUploadImagesCommand): Promise<number> {
+    const { userId, files, description } = command;
     //find user
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-    //find all images
-    const images = await this.postsRepository.findImagesByUploadIds(childrenMetadata);
-    //create post
-    const instancePost = PostEntity.initCreate(userId, images, description);
-    //save post
-    return this.postsRepository.createPost(instancePost);
+    //set type  for images
+    const type = ImageType.POST;
+    //generate keys for images and save images on s3 storage and create instances images
+    const post = PostEntity.create(userId, description);
+    try {
+      const images = await this.imagesEditor.generateAndSaveImages(userId, files, type);
+      //create instance post
+      post.addImages(userId, images);
+      //save post in db
+      return await this.postsRepository.createPostWithImages(post);
+    } catch (e) {
+      console.log(e);
+      //delete images from s3 storage
+      await this.imagesEditor.deleteImages(...post.images);
+    }
   }
 }
