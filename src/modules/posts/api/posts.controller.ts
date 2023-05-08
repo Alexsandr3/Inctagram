@@ -8,32 +8,28 @@ import {
   ParseIntPipe,
   Post,
   Put,
-  UploadedFile,
+  UploadedFiles,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
-import { CreatePostInputDto } from './input-dto/create-post.input.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
-  SwaggerDecoratorsByCreatePost,
+  SwaggerDecoratorsByCreatePostWithUploadImages,
   SwaggerDecoratorsByDeleteImagePost,
   SwaggerDecoratorsByDeletePost,
+  SwaggerDecoratorsByFormDataForArrayFileWith,
   SwaggerDecoratorsByGetPost,
   SwaggerDecoratorsByUpdatePost,
-  SwaggerDecoratorsByUploadImagePost,
 } from '../swagger/swagger.posts.decorators';
-import { SwaggerDecoratorsByFormData } from '../../users/swagger/swagger.users.decorators';
 import { UpdatePostInputDto } from './input-dto/update-post.input.dto';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
 import { typeImagePost } from '../default-options-for-validate-images-post';
 import { IPostsQueryRepository } from '../infrastructure/posts-query.repository';
-import { FileInterceptor } from '@nestjs/platform-express';
+import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
-import { CreatePostCommand } from '../application/use-cases/create-post-use.case';
-import { DeleteImagePostCommand } from '../application/use-cases/delete-image-post-use.case';
 import { PostViewModel } from './view-models/post-view.dto';
 import { ProfileViewModel } from '../../users/api/view-models/profile-view.dto';
 import { NotificationCode } from '../../../configuration/exception.filter';
@@ -41,9 +37,10 @@ import { CheckerNotificationErrors } from '../../../main/validators/checker-noti
 import { DeletePostCommand } from '../application/use-cases/delete-post-use.case';
 import { PostStatus } from '../domain/post.entity';
 import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
-import { UploadedImageViewModel } from './view-models/uploaded-image-view.dto';
-import { ValidationImagePipe } from '../../../main/validators/validation-image.pipe';
-import { UploadImagePostCommand } from '../application/use-cases/upload-image-post-use.case';
+import { ValidationArrayImagePipe } from '../../../main/validators/validation-array-image.pipe';
+import { CreatePostWithUploadImagesCommand } from '../application/use-cases/create-post-use.case';
+import { DeleteImageExistingPostCommand } from '../application/use-cases/delete-image-post-use.case';
+import { CreatePostInputDto } from './input-dto/create-post.input.dto';
 
 @ApiBearerAuth()
 @ApiTags('Posts')
@@ -53,52 +50,44 @@ export class PostsController {
   constructor(private readonly commandBus: CommandBus, private readonly postsQueryRepository: IPostsQueryRepository) {}
 
   /**
-   * Upload image post
+   * Create post with upload images
    * @param userId
-   * @param file
-   */
-  @SwaggerDecoratorsByUploadImagePost()
-  @SwaggerDecoratorsByFormData()
-  @Post(`/image`)
-  @HttpCode(HTTP_Status.CREATED_201)
-  @UseInterceptors(FileInterceptor('file'))
-  async uploadImagePost(
-    @CurrentUserId() userId: number,
-    @UploadedFile(new ValidationImagePipe(typeImagePost))
-    file: Express.Multer.File,
-  ): Promise<UploadedImageViewModel> {
-    const notification = await this.commandBus.execute<UploadImagePostCommand, ResultNotification<string>>(
-      new UploadImagePostCommand(userId, file),
-    );
-    return this.postsQueryRepository.getUploadImages(notification.getData());
-  }
-
-  /**
-   * Create post
-   * @param userId
+   * @param files
    * @param body
    */
-  @SwaggerDecoratorsByCreatePost()
+  @SwaggerDecoratorsByCreatePostWithUploadImages()
+  @SwaggerDecoratorsByFormDataForArrayFileWith()
   @Post()
   @HttpCode(HTTP_Status.CREATED_201)
-  async createPost(@CurrentUserId() userId: number, @Body() body: CreatePostInputDto): Promise<PostViewModel> {
-    const notification = await this.commandBus.execute<CreatePostCommand, ResultNotification<number>>(
-      new CreatePostCommand(userId, body.description, body.childrenMetadata),
+  @UseInterceptors(FilesInterceptor('files', 10))
+  async createPostWithUploadImages(
+    @CurrentUserId() userId: number,
+    @UploadedFiles(new ValidationArrayImagePipe(typeImagePost))
+    files: Express.Multer.File[],
+    @Body() body: CreatePostInputDto,
+  ) {
+    const notification = await this.commandBus.execute<CreatePostWithUploadImagesCommand, ResultNotification<number>>(
+      new CreatePostWithUploadImagesCommand(userId, files, body.description),
     );
     return this.postsQueryRepository.getPost(notification.getData(), PostStatus.PUBLISHED);
   }
 
   /**
-   * Delete image post
+   * Delete image existing post by post id and upload id
    * @param userId
+   * @param postId
    * @param uploadId
    */
   @SwaggerDecoratorsByDeleteImagePost()
-  @Delete('/image/:uploadId')
+  @Delete('/:postId/images/:uploadId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async deleteImagePost(@CurrentUserId() userId: number, @Param('uploadId') uploadId: string) {
-    await this.commandBus.execute<DeleteImagePostCommand, ResultNotification>(
-      new DeleteImagePostCommand(userId, uploadId),
+  async deleteImageExistingPost(
+    @CurrentUserId() userId: number,
+    @Param('postId', ParseIntPipe) postId: number,
+    @Param('uploadId') uploadId: string,
+  ) {
+    await this.commandBus.execute<DeleteImageExistingPostCommand, ResultNotification>(
+      new DeleteImageExistingPostCommand(userId, postId, uploadId),
     );
   }
 
@@ -156,3 +145,55 @@ export class PostsController {
     await this.commandBus.execute<DeletePostCommand, ResultNotification>(new DeletePostCommand({ userId, postId }));
   }
 }
+
+//deprecated
+/*
+  /!**
+   * Upload image post
+   * @param userId
+   * @param file
+   *!/
+  @SwaggerDecoratorsByUploadImagePost()
+  @SwaggerDecoratorsByFormData()
+  @Post(`/image`)
+  @HttpCode(HTTP_Status.CREATED_201)
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadImagePost(
+    @CurrentUserId() userId: number,
+    @UploadedFile(new ValidationImagePipe(typeImagePost))
+    file: Express.Multer.File,
+  ): Promise<UploadedImageViewModel> {
+    const notification = await this.commandBus.execute<UploadImagePostCommand, ResultNotification<string>>(
+      new UploadImagePostCommand(userId, file),
+    );
+    return this.postsQueryRepository.getUploadImages(notification.getData());
+  }
+
+  /!**
+   * Create post
+   * @param userId
+   * @param body
+   *!/
+  @SwaggerDecoratorsByCreatePost()
+  @Post()
+  @HttpCode(HTTP_Status.CREATED_201)
+  async createPost(@CurrentUserId() userId: number, @Body() body: CreatePostInputDto): Promise<PostViewModel> {
+    const notification = await this.commandBus.execute<CreatePostCommand, ResultNotification<number>>(
+      new CreatePostCommand(userId, body.description, body.childrenMetadata),
+    );
+    return this.postsQueryRepository.getPost(notification.getData(), PostStatus.PUBLISHED);
+  }
+
+  /!**
+   * Delete image post
+   * @param userId
+   * @param uploadId
+   *!/
+  @SwaggerDecoratorsByDeleteImagePost()
+  @Delete('/image/:uploadId')
+  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  async deleteImagePost(@CurrentUserId() userId: number, @Param('uploadId') uploadId: string) {
+    await this.commandBus.execute<DeleteImagePostCommand, ResultNotification>(
+      new DeleteImagePostCommand(userId, uploadId),
+    );
+  }*/

@@ -1,28 +1,23 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { IUsersRepository } from '../../../users/infrastructure/users.repository';
-import { ImagesEditorService } from '../../../images/application/images-editor.service';
+import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
-import { IPostsRepository } from '../../infrastructure/posts.repository';
+import { PostsService } from '../posts.service';
 
 /**
  * Delete image command
  */
-export class DeleteImagePostCommand {
-  constructor(public readonly userId: number, public readonly uploadId: string) {}
+export class DeleteImageExistingPostCommand {
+  constructor(public readonly userId: number, public readonly postId: number, public readonly uploadId: string) {}
 }
 
-@CommandHandler(DeleteImagePostCommand)
-export class DeleteImagePostUseCase
-  extends BaseNotificationUseCase<DeleteImagePostCommand, void>
-  implements ICommandHandler<DeleteImagePostCommand>
+@CommandHandler(DeleteImageExistingPostCommand)
+export class DeleteImageExistingPostUseCase
+  extends BaseNotificationUseCase<DeleteImageExistingPostCommand, void>
+  implements ICommandHandler<DeleteImageExistingPostCommand>
 {
-  constructor(
-    private readonly usersRepository: IUsersRepository,
-    private readonly imagesEditor: ImagesEditorService,
-    private readonly postsRepository: IPostsRepository,
-  ) {
+  constructor(private readonly postsRepository: IPostsRepository, private readonly postsService: PostsService) {
     super();
   }
 
@@ -30,24 +25,20 @@ export class DeleteImagePostUseCase
    * @description Checking the user's existence and deleting the image
    * @param command
    */
-  async executeUseCase(command: DeleteImagePostCommand): Promise<void> {
-    const { userId, uploadId } = command;
-    //find user
-    const user = await this.usersRepository.findById(userId);
-    if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-    //find images by uploadId and userId
-    const imagesForDelete = await this.postsRepository.findImagesByOwnerIdAndResourceIds(uploadId);
-    if (imagesForDelete.length === 0)
+  async executeUseCase(command: DeleteImageExistingPostCommand): Promise<void> {
+    const { userId, postId, uploadId } = command;
+    //find post and check owner
+    const post = await this.postsService.findPostAndCheckUserForOwner(userId, postId);
+    //check owner and last image with huge size
+    if (post.hasLastImage())
       throw new NotificationException(
-        `Images with uploadId: ${uploadId} not found`,
-        'image',
-        NotificationCode.NOT_FOUND,
+        `Post with id: ${post.id} must have at least one image`,
+        'post',
+        NotificationCode.BAD_REQUEST,
       );
-    //urls for delete
-    const urlsForDelete = imagesForDelete.map(image => image.url);
-    //delete image from aws
-    await this.imagesEditor.deleteImageByUrl(urlsForDelete);
-    //delete images from db
-    await this.postsRepository.deleteImages(uploadId);
+    //change status to deleted for image
+    post.changeStatusToDeletedForImage(uploadId);
+    //update post
+    await this.postsRepository.savePost(post);
   }
 }
