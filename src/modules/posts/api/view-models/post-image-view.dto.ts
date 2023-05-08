@@ -1,10 +1,16 @@
 import { BasePhotoSizeViewModel } from '../../../images/api/view-models/base-photo-size-view.dto';
 
-export class PostImageViewModel extends BasePhotoSizeViewModel {
-  uploadId: string;
+export class PostImageVersionViewModel {
+  huge?: BasePhotoSizeViewModel;
+  large?: BasePhotoSizeViewModel;
+}
 
-  constructor(url: string, width: number, height: number, fileSize: number, uploadId: string) {
-    super(url, width, height, fileSize);
-    this.uploadId = uploadId;
+export class PostImageViewModel {
+  uploadId: string;
+  versions: PostImageVersionViewModel;
+
+  constructor(resourceId: string, postImageVersionViewModels: PostImageVersionViewModel) {
+    this.uploadId = resourceId;
+    this.versions = postImageVersionViewModels;
   }
 }
