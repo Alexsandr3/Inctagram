@@ -4,12 +4,15 @@
   "description": "",
   "author": "Team jobs",
   "private": true,
+  "license": "MIT",
   "repository": {
     "description": "Project from internship - Inctagram",
+    "type": "git",
     "url": "https://github.com/Alexsandr3/Inctagram"
   },
   "engines": {
-    "node": "16.x"
+    "node": "16.x",
+    "yarn": "^0.14.0"
   },
   "scripts": {
     "build": "nest build",
