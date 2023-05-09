@@ -30,12 +30,24 @@ describe('Testing create subscriptions -  e2e', () => {
     const command = { password: '12345678', email: correctEmail_first_user, userName: correctUserName_first_user };
     accessToken = await authHelper.createUser(command, { expectedCode: 204 });
   });
-  it('01 - / (POST) - should create subscriptions for current user', async () => {
+  it('02 - / (POST) - should create subscriptions for current user', async () => {
     const command: CreateSubscriptionInputDto = {
       typeSubscription: SubscriptionType.MONTHLY,
       paymentType: PaymentMethod.STRIPE,
-      autoRenew: false,
+      autoRenew: true,
       amount: 9,
+    };
+    const subscription = await subscriptionsHelper.createSubscription(command, {
+      token: accessToken,
+      expectedCode: 201,
+    });
+  });
+  it('03 - / (POST) - should create subscriptions for current user', async () => {
+    const command: CreateSubscriptionInputDto = {
+      typeSubscription: SubscriptionType.MONTHLY,
+      paymentType: PaymentMethod.STRIPE,
+      autoRenew: true,
+      amount: 10,
     };
     const subscription = await subscriptionsHelper.createSubscription(command, {
       token: accessToken,

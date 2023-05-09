@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { CreateSubscriptionInputDto } from './input-dtos/create-subscription-input.dto';
@@ -7,6 +7,8 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { ApiConfigService } from '../../api-config/api.config.service';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
+import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { SuccessSubscriptionCommand } from '../application/use-cases/success-subscription-use.case';
 
 @ApiTags('subscriptions')
 @ApiBearerAuth()
@@ -28,16 +30,20 @@ export class SubscriptionsController {
     };
   }
   @Post()
+  @HttpCode(HTTP_Status.CREATED_201)
   async createSubscription(@CurrentUserId() userId: number, @Body() createSubscriptionDto: CreateSubscriptionInputDto) {
-    const notification = await this.commandBus.execute<CreateSubscriptionCommand, ResultNotification<any>>(
+    const notification = await this.commandBus.execute<CreateSubscriptionCommand, ResultNotification<string>>(
       new CreateSubscriptionCommand(userId, createSubscriptionDto),
     );
     return notification.getData();
   }
 
-  @Get('success')
-  async successSubscription() {
-    return 'Payment was successful';
+  @Post('success/:session_id')
+  async successSubscription(@CurrentUserId() userId: number, @Param('session_id') sessionId: string) {
+    const notification = await this.commandBus.execute<SuccessSubscriptionCommand, ResultNotification<string>>(
+      new SuccessSubscriptionCommand(userId, sessionId),
+    );
+    return notification.getData();
   }
 
   @Get('failed')

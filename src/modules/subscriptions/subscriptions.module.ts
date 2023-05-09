@@ -6,8 +6,9 @@ import { UsersModule } from '../users/users.module';
 import { PaymentsModule } from '../../providers/payment/payments.module';
 import { ApiConfigModule } from '../api-config/api.config.module';
 import { ISubscriptionsRepository, SubscriptionsRepository } from './infrastructure/subscriptions.repository';
+import { SuccessSubscriptionUseCase } from './application/use-cases/success-subscription-use.case';
 
-const useCases = [CreateSubscriptionUseCase];
+const useCases = [CreateSubscriptionUseCase, SuccessSubscriptionUseCase];
 
 @Module({
   imports: [CqrsModule, UsersModule, PaymentsModule, ApiConfigModule],

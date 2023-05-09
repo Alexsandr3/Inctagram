@@ -51,6 +51,33 @@ export class StripeService {
       console.log(e, 'error');
     }
   }
+
+  async subscription(): Promise<any> {
+    const priceId = 'price_1N5kAJIW91ghbnFj2bpYCefi';
+    const priceId2 = 'price_1N5k8tIW91ghbnFjXZRpaEWq';
+
+    try {
+      const session = await this.stripe.checkout.sessions.create({
+        mode: 'payment',
+        customer: 'cus_NrTZwD9dUrjpCw',
+        line_items: [
+          {
+            price: priceId2,
+            // For metered billing, do not pass quantity
+            quantity: 1,
+          },
+        ],
+        // {CHECKOUT_SESSION_ID} is a string literal; do not change it!
+        // the actual Session ID is returned in the query parameter when your customer
+        // is redirected to the success page.
+        success_url: 'https://example.com/success.html?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: 'https://example.com/canceled.html',
+      });
+      return session;
+    } catch (e) {
+      console.log(e, 'error');
+    }
+  }
 }
 
 /*

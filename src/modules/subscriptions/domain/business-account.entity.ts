@@ -3,6 +3,7 @@ import { BusinessAccount } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { SubscriptionEntity } from './subscription.entity';
 import { CreateSubscriptionInputDto } from '../api/input-dtos/create-subscription-input.dto';
+import { PaymentEntity } from './payment.entity';
 
 export class BusinessAccountEntity extends BaseDateEntity implements BusinessAccount {
   userId: number;
@@ -21,10 +22,13 @@ export class BusinessAccountEntity extends BaseDateEntity implements BusinessAcc
     return instance;
   }
 
-  createSubscription(createSubscriptionDto: CreateSubscriptionInputDto): SubscriptionEntity {
-    const subscription = SubscriptionEntity.create(this.userId, createSubscriptionDto);
+  createSubscription(
+    createSubscriptionDto: CreateSubscriptionInputDto,
+    sessionId: string,
+  ): { subscription: SubscriptionEntity; payment: PaymentEntity } {
+    const { subscription, payment } = SubscriptionEntity.create(this.userId, createSubscriptionDto, sessionId);
     this.subscription.push(subscription);
-    return subscription;
+    return { subscription, payment };
   }
 
   addStripeCustomerId(id: string) {

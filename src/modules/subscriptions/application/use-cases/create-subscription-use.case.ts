@@ -14,7 +14,7 @@ export class CreateSubscriptionCommand {
 
 @CommandHandler(CreateSubscriptionCommand)
 export class CreateSubscriptionUseCase
-  extends BaseNotificationUseCase<CreateSubscriptionCommand, any>
+  extends BaseNotificationUseCase<CreateSubscriptionCommand, string>
   implements ICommandHandler<CreateSubscriptionCommand>
 {
   constructor(
@@ -25,26 +25,28 @@ export class CreateSubscriptionUseCase
     super();
   }
 
-  async executeUseCase(command: CreateSubscriptionCommand): Promise<any> {
+  async executeUseCase(command: CreateSubscriptionCommand): Promise<string> {
     const { userId, createSubscriptionDto } = command;
     //find user
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
     //check if user has business account and create if not
-    if (!user.hasBusinessAccount) {
-      const businessAccount = await BusinessAccountEntity.create(userId);
-    }
-    //find business account
-    const businessAccount = await BusinessAccountEntity.create(userId);
-    // const businessAccount = await this.subscriptionsRepository.findBusinessAccountByUserId(userId);
-    //create subscription to business account
-    const subscription = businessAccount.createSubscription(createSubscriptionDto);
-    // create customer for future payments
-    const customer = await this.paymentService.createCustomer(user.userName, user.email);
-    //added stripe customer id to business account
-    businessAccount.addStripeCustomerId(customer.id);
-    //create
-    const session = await this.paymentService.createPaymentToSubscription(customer.id, subscription);
-    return session;
+    const businessAccount = user.hasBusinessAccount
+      ? await this.subscriptionsRepository.findBusinessAccountByUserId(userId)
+      : await BusinessAccountEntity.create(userId);
+    //create customer for future payments
+    const customerId = user.hasBusinessAccount
+      ? businessAccount.stripeCustomerId
+      : await this.paymentService.createCustomer(user.userName, user.email);
+    // added stripe customer id to business account
+    businessAccount.addStripeCustomerId(customerId);
+    //create session for payment
+    const session = await this.paymentService.createSession(customerId, createSubscriptionDto);
+    //create subscription with payment with status pending
+    const { subscription, payment } = businessAccount.createSubscription(createSubscriptionDto, session.id);
+    //save business account with subscription and payment
+    await this.subscriptionsRepository.saveSubscription(subscription, payment, businessAccount);
+    //return session url
+    return session.url;
   }
 }

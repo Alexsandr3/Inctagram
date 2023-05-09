@@ -24,6 +24,11 @@ export class StripeController {
     return await this.stripeService.createBuy(productIds);
   }
 
+  @Get(`stripe`)
+  async b(@Query('productIds') productIds) {
+    return await this.stripeService.subscription();
+  }
+
   @Get(`stripe/success`)
   async success() {
     return 'success';

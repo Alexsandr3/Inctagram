@@ -7,7 +7,7 @@ export abstract class BaseNotificationUseCase<TCommand, TResult> {
   /**
    *
    * @param command
-   */
+   */ w;
   async execute(command: TCommand): Promise<ResultNotification<TResult>> {
     //prepare a notification for result
     const notification = new ResultNotification<TResult>();

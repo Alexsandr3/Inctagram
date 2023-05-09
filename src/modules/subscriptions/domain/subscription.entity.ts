@@ -7,7 +7,6 @@ import { PaymentEntity } from './payment.entity';
 import { RenewalEntity } from './renewal.entity';
 import { CreateSubscriptionInputDto } from '../api/input-dtos/create-subscription-input.dto';
 import { StatusSubscriptionType } from './status-subscription.type';
-import { randomUUID } from 'crypto';
 
 export class SubscriptionEntity extends BaseDateEntity implements Subscription {
   id: string;
@@ -30,19 +29,24 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
     super();
   }
 
-  static create(userId: number, createSubscriptionDto: CreateSubscriptionInputDto): SubscriptionEntity {
-    const instance = new SubscriptionEntity();
-    instance.id = randomUUID();
-    instance.status = StatusSubscriptionType.PENDING;
-    instance.dateOfPayment = null;
-    instance.endDate = null;
-    instance.type = createSubscriptionDto.typeSubscription;
-    instance.price = createSubscriptionDto.amount;
-    instance.paymentType = createSubscriptionDto.paymentType;
-    instance.autoRenew = createSubscriptionDto.autoRenew;
-    instance.businessAccountId = userId;
-    instance.payments = [];
-    instance.renewals = [];
-    return instance;
+  static create(
+    userId: number,
+    createSubscriptionDto: CreateSubscriptionInputDto,
+    sessionId: string,
+  ): { subscription: SubscriptionEntity; payment: PaymentEntity } {
+    const subscription = new SubscriptionEntity();
+    subscription.status = StatusSubscriptionType.PENDING;
+    subscription.dateOfPayment = null;
+    subscription.endDate = null;
+    subscription.type = createSubscriptionDto.typeSubscription;
+    subscription.price = createSubscriptionDto.amount;
+    subscription.paymentType = createSubscriptionDto.paymentType;
+    subscription.autoRenew = createSubscriptionDto.autoRenew;
+    subscription.businessAccountId = userId;
+    // subscription.payments = [];
+    const payment = PaymentEntity.create(sessionId, subscription.id, createSubscriptionDto.amount);
+    // subscription.payments.push(payment);
+    // subscription.renewals = [];
+    return { subscription, payment };
   }
 }

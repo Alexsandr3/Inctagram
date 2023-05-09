@@ -4,10 +4,10 @@ import { PaymentMethod } from '../../types/payment.method';
 
 export class CreateSubscriptionInputDto {
   @IsEnum(SubscriptionType)
-  typeSubscription: SubscriptionType;
+  typeSubscription: SubscriptionType; //monthly, yearly
 
   @IsEnum(PaymentMethod)
-  paymentType: PaymentMethod;
+  paymentType: PaymentMethod; //stripe, paypal
 
   @IsNumber()
   amount: number;
