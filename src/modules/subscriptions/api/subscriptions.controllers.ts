@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { CreateSubscriptionInputDto } from './input-dtos/create-subscription-input.dto';
@@ -8,7 +8,8 @@ import { CurrentUserId } from '../../../main/decorators/user.decorator';
 import { ApiConfigService } from '../../api-config/api.config.service';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
-import { SuccessSubscriptionCommand } from '../application/use-cases/success-subscription-use.case';
+import { SubscriptionViewModel } from './view-model/subscription-view.dto';
+import { CostMonthlySubscriptionViewModel } from './view-model/cost-monthly-subscription-view.dto';
 
 @ApiTags('subscriptions')
 @ApiBearerAuth()
@@ -23,28 +24,27 @@ export class SubscriptionsController {
     const currentCostSubscription = this.apiConfigService.COST_SUBSCRIPTION;
     //need to get set for month, semi-annual and year
     //{period: 'month', cost: 10}
-    return {
-      month: `${currentCostSubscription}$ per month`,
-      semiAnnual: `${currentCostSubscription * 6}$ per 6 months`,
-      year: `${currentCostSubscription * 10}$ per year`, // 2 months free
-    };
+    return new CostMonthlySubscriptionViewModel(currentCostSubscription);
+    // return {
+    //   month: `${currentCostSubscription}$ per month`,
+    //   semiAnnual: `${currentCostSubscription * 6}$ per 6 months`,
+    //   year: `${currentCostSubscription * 10}$ per year`, // 2 months free
+    // };
   }
   @Post()
   @HttpCode(HTTP_Status.CREATED_201)
-  async createSubscription(@CurrentUserId() userId: number, @Body() createSubscriptionDto: CreateSubscriptionInputDto) {
+  async createSubscription(
+    @CurrentUserId() userId: number,
+    @Body() createSubscriptionDto: CreateSubscriptionInputDto,
+  ): Promise<any> {
     const notification = await this.commandBus.execute<CreateSubscriptionCommand, ResultNotification<string>>(
       new CreateSubscriptionCommand(userId, createSubscriptionDto),
     );
-    return notification.getData();
+    return new SubscriptionViewModel(notification.getData());
   }
 
-  @Post('success/:session_id')
-  async successSubscription(@CurrentUserId() userId: number, @Param('session_id') sessionId: string) {
-    const notification = await this.commandBus.execute<SuccessSubscriptionCommand, ResultNotification<string>>(
-      new SuccessSubscriptionCommand(userId, sessionId),
-    );
-    return notification.getData();
-  }
+  @Get('success/:session_id')
+  async successSubscription() {}
 
   @Get('failed')
   async failedSubscription() {

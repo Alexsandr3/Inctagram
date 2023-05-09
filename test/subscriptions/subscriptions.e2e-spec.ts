@@ -5,6 +5,7 @@ import { SubscriptionsHelper } from '../helpers/subscriptions-helper';
 import { CreateSubscriptionInputDto } from '../../src/modules/subscriptions/api/input-dtos/create-subscription-input.dto';
 import { SubscriptionType } from '../../src/modules/subscriptions/types/subscription.type';
 import { PaymentMethod } from '../../src/modules/subscriptions/types/payment.method';
+import { SubscriptionViewModel } from '../../src/modules/subscriptions/api/view-model/subscription-view.dto';
 
 jest.setTimeout(120000);
 describe('Testing create subscriptions -  e2e', () => {
@@ -37,10 +38,11 @@ describe('Testing create subscriptions -  e2e', () => {
       autoRenew: true,
       amount: 9,
     };
-    const subscription = await subscriptionsHelper.createSubscription(command, {
+    const subscription = await subscriptionsHelper.createSubscription<SubscriptionViewModel>(command, {
       token: accessToken,
       expectedCode: 201,
     });
+    expect(subscription.url).toEqual(expect.any(String));
   });
   it('03 - / (POST) - should create subscriptions for current user', async () => {
     const command: CreateSubscriptionInputDto = {
@@ -49,10 +51,9 @@ describe('Testing create subscriptions -  e2e', () => {
       autoRenew: true,
       amount: 10,
     };
-    const subscription = await subscriptionsHelper.createSubscription(command, {
+    const subscription = await subscriptionsHelper.createSubscription<SubscriptionViewModel>(command, {
       token: accessToken,
       expectedCode: 201,
     });
-    console.log(subscription);
   });
 });

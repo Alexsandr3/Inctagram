@@ -5,7 +5,6 @@ import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { CreateSubscriptionInputDto } from '../../api/input-dtos/create-subscription-input.dto';
 import { PaymentService } from '../../../../providers/payment/application/payment.service';
-import { BusinessAccountEntity } from '../../domain/business-account.entity';
 import { ISubscriptionsRepository } from '../../infrastructure/subscriptions.repository';
 
 export class CreateSubscriptionCommand {
@@ -31,9 +30,7 @@ export class CreateSubscriptionUseCase
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
     //check if user has business account and create if not
-    const businessAccount = user.hasBusinessAccount
-      ? await this.subscriptionsRepository.findBusinessAccountByUserId(userId)
-      : await BusinessAccountEntity.create(userId);
+    const businessAccount = await this.subscriptionsRepository.findBusinessAccountByUserId(userId);
     //create customer for future payments
     const customerId = user.hasBusinessAccount
       ? businessAccount.stripeCustomerId

@@ -6,15 +6,18 @@ import { UsersModule } from '../users/users.module';
 import { PaymentsModule } from '../../providers/payment/payments.module';
 import { ApiConfigModule } from '../api-config/api.config.module';
 import { ISubscriptionsRepository, SubscriptionsRepository } from './infrastructure/subscriptions.repository';
-import { SuccessSubscriptionUseCase } from './application/use-cases/success-subscription-use.case';
+import { SuccessSubscriptionHandler } from './application/event-handlers/success-subscription.handler';
+import { FailedSubscriptionHandler } from './application/event-handlers/failed-subscription.handler';
 
-const useCases = [CreateSubscriptionUseCase, SuccessSubscriptionUseCase];
+const useCases = [CreateSubscriptionUseCase];
+const handlers = [SuccessSubscriptionHandler, FailedSubscriptionHandler];
 
 @Module({
   imports: [CqrsModule, UsersModule, PaymentsModule, ApiConfigModule],
   controllers: [SubscriptionsController],
   providers: [
     ...useCases,
+    ...handlers,
     {
       provide: ISubscriptionsRepository,
       useClass: SubscriptionsRepository,

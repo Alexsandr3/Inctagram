@@ -104,7 +104,7 @@ export class PrismaUsersRepository implements IUsersRepository {
   }
 
   async saveUserWithEmailConfirmation(user: UserEntity, emailConfirmation: EmailConfirmationEntity) {
-    await this.prisma.user.create({
+    const createdUser = await this.prisma.user.create({
       data: {
         ...user,
         emailConfirmation: {
@@ -114,6 +114,12 @@ export class PrismaUsersRepository implements IUsersRepository {
         profile: {
           create: {},
         }, //{ create: { ...user.profile, images: { create: user.profile.images } } },
+      },
+    });
+    //create businessAccount
+    await this.prisma.businessAccount.create({
+      data: {
+        userId: createdUser.id,
       },
     });
   }

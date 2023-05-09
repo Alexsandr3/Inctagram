@@ -13,6 +13,7 @@ import { PrismaModule } from './providers/prisma/prisma.module';
 import { PostsModule } from './modules/posts/posts.module';
 import { PaymentsModule } from './providers/payment/payments.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
     PostsModule,
     PaymentsModule,
     SubscriptionsModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [],

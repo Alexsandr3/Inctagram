@@ -26,9 +26,7 @@ export class BusinessAccountEntity extends BaseDateEntity implements BusinessAcc
     createSubscriptionDto: CreateSubscriptionInputDto,
     sessionId: string,
   ): { subscription: SubscriptionEntity; payment: PaymentEntity } {
-    const { subscription, payment } = SubscriptionEntity.create(this.userId, createSubscriptionDto, sessionId);
-    this.subscription.push(subscription);
-    return { subscription, payment };
+    return SubscriptionEntity.create(this.userId, createSubscriptionDto, sessionId);
   }
 
   addStripeCustomerId(id: string) {
