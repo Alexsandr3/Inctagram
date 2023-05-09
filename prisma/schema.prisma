@@ -30,16 +30,16 @@ model User {
 }
 
 model ExternalAccount {
-  id          Int      @id @default(autoincrement())
-  userId      Int
-  provider    Provider
-  providerId  String   @unique
-  displayName String?
-  email       String
-  isConfirmed Boolean
-  createdAt   DateTime @default(now()) //, map: "created_at::timestamptz"
-  updatedAt   DateTime @updatedAt
-  user        User     @relation(fields: [userId], references: [id])
+  id                            Int                            @id @default(autoincrement())
+  userId                        Int
+  provider                      Provider
+  providerId                    String                         @unique
+  displayName                   String?
+  email                         String
+  isConfirmed                   Boolean
+  createdAt                     DateTime                       @default(now()) //, map: "created_at::timestamptz"
+  updatedAt                     DateTime                       @updatedAt
+  user                          User                           @relation(fields: [userId], references: [id])
   confirmationOfExternalAccount ConfirmationOfExternalAccount?
 
   @@map("ExternalAccounts")
@@ -66,8 +66,6 @@ model ConfirmationOfExternalAccount {
 
   @@map("ConfirmationOfExternalAccounts")
 }
-
-
 
 model Session {
   deviceId   Int     @id @default(autoincrement())
@@ -178,12 +176,12 @@ model Post {
   @@map("Posts")
 }
 
-
 model BusinessAccount {
-  userId        Int            @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  subscriptions Subscription[]
+  userId           Int            @unique
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  stripeCustomerId String?
+  subscriptions    Subscription[]
 
   @@map("BusinessAccounts")
 }
@@ -206,13 +204,13 @@ enum StatusSubscriptionType {
 }
 
 model Subscription {
-  id                String                 @id @unique
-  businessAccountId Int
+  id                String                 @id @default(uuid())
+  businessAccountId Int                    @unique
   status            StatusSubscriptionType
   dateOfPayment     DateTime?
   endDate           DateTime?
   type              SubscriptionType
-  price             Float
+  price             Int
   paymentType       PaymentType
   autoRenew         Boolean                @default(true)
   businessAccount   BusinessAccount        @relation(fields: [businessAccountId], references: [userId])
@@ -245,10 +243,11 @@ enum PaymentStatus {
 }
 
 model Payment {
-  id       Int           @id @default(autoincrement())
-  amount   Float
-  currency Currency
-  status   PaymentStatus @default(PENDING)
+  id        Int           @id @default(autoincrement())
+  sessionId String
+  amount    Float
+  currency  Currency
+  status    PaymentStatus @default(PENDING)
 
   context   Json?
   createdAt DateTime @default(now())
