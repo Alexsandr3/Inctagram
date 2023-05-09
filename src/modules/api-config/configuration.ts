@@ -82,6 +82,8 @@ export const configuration = () => ({
 
   subscription: {
     COST_SUBSCRIPTION: process.env.COST_SUBSCRIPTION,
+    PRICE_ID_MONTHLY: process.env.PRICE_ID_MONTHLY,
+    PRICE_ID_SUBSCRIPTION_MONTHLY: process.env.PRICE_ID_SUBSCRIPTION_MONTHLY,
   },
 
   IP_RESTRICTION: process.env.IP_RESTRICTION,
