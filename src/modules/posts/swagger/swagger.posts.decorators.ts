@@ -1,8 +1,8 @@
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
 import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { PostViewModel } from '../api/view-models/post-view.dto';
+import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 /**
  * Create a new post with upload images
@@ -135,9 +135,7 @@ export function SwaggerDecoratorsByUpdatePost(): MethodDecorator {
 
 export function SwaggerDecoratorsByGetPosts(): MethodDecorator {
   return applyDecorators(
-    ApiOperation({
-      summary: 'Get posts with pagination',
-    }),
+    ApiOperation({ summary: 'Get posts with pagination' }),
     ApiResponse({ status: HTTP_Status.UNAUTHORIZED_401, description: 'Unauthorized' }),
   );
 }
