@@ -43,6 +43,7 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
       const createdSubscription = await tx.subscription.create({
         data: {
           businessAccountId: businessAccount.userId,
+          customerId: subscription.customerId,
           status: subscription.status,
           type: subscription.type,
           price: subscription.price,
@@ -80,7 +81,6 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
       await tx.businessAccount.update({
         where: { userId: businessAccount.userId },
         data: {
-          stripeCustomerId: businessAccount.stripeCustomerId,
           subscriptions: {
             connect: {
               id: createdSubscription.id,
@@ -122,17 +122,25 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
   async saveSubscriptionWithPayment(subscriptionEntity: SubscriptionEntity) {
     //create subscription and payment in one transaction
     return this.prisma.$transaction(async tx => {
-      const subscription = await tx.subscription.update({
+      await tx.subscription.update({
         where: { id: subscriptionEntity.id },
         data: {
           status: subscriptionEntity.status,
           type: subscriptionEntity.type,
+          customerId: subscriptionEntity.customerId,
+          dateOfPayment: subscriptionEntity.dateOfPayment,
+          endDate: subscriptionEntity.endDate,
           price: subscriptionEntity.price,
           paymentType: subscriptionEntity.paymentType,
           autoRenew: subscriptionEntity.autoRenew,
-          payments: {
-            create: [],
-          },
+        },
+      });
+      //update payment
+      await tx.payment.update({
+        where: { id: subscriptionEntity.payments[0].id },
+        data: {
+          status: subscriptionEntity.payments[0].status,
+          context: subscriptionEntity.payments[0].context,
         },
       });
     });

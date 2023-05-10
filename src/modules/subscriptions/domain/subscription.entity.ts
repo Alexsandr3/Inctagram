@@ -7,11 +7,12 @@ import { PaymentEntity } from './payment.entity';
 import { RenewalEntity } from './renewal.entity';
 import { CreateSubscriptionInputDto } from '../api/input-dtos/create-subscription-input.dto';
 import { StatusSubscriptionType } from './status-subscription.type';
-import { StripeEventType } from '../application/event-handlers/success-subscription.handler';
+import { StripeEventType } from '../types/stripe-event.type';
 
 export class SubscriptionEntity extends BaseDateEntity implements Subscription {
   id: string;
   businessAccountId: number;
+  customerId: string;
   status: StatusSubscriptionType;
   dateOfPayment: Date;
   endDate: Date;
@@ -44,6 +45,7 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
     subscription.paymentType = createSubscriptionDto.paymentType;
     subscription.autoRenew = createSubscriptionDto.autoRenew;
     subscription.businessAccountId = userId;
+    subscription.customerId = null;
     subscription.payments = [];
     const payment = PaymentEntity.create(sessionId, subscription.id, createSubscriptionDto.amount);
     subscription.payments.push(payment);
@@ -53,8 +55,16 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
   changeStatusToActive(event: StripeEventType) {
     this.status = StatusSubscriptionType.ACTIVE;
     this.dateOfPayment = new Date();
+    this.customerId = event.customer;
     this.endDate = this.getEndDateSubscription();
     this.payments[0].changeStatusToSuccess(event);
+    return this;
+  }
+
+  changeStatusToFailing(event: StripeEventType) {
+    this.status = StatusSubscriptionType.DELETED;
+    this.customerId = event.customer;
+    this.payments[0].changeStatusToFailing(event);
     return this;
   }
 
@@ -81,11 +91,5 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
         this.dateOfPayment.getDate(),
       );
     }
-  }
-
-  changeStatusToFailing(event: StripeEventType) {
-    this.status = StatusSubscriptionType.DELETED;
-    this.payments[0].changeStatusToFailing(event);
-    return this;
   }
 }

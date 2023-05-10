@@ -9,7 +9,6 @@ export class BusinessAccountEntity extends BaseDateEntity implements BusinessAcc
   userId: number;
   @Type(() => SubscriptionEntity)
   subscription: SubscriptionEntity[];
-  stripeCustomerId: string;
 
   constructor() {
     super();
@@ -29,7 +28,4 @@ export class BusinessAccountEntity extends BaseDateEntity implements BusinessAcc
     return SubscriptionEntity.create(this.userId, createSubscriptionDto, sessionId);
   }
 
-  addStripeCustomerId(id: string) {
-    this.stripeCustomerId = id;
-  }
 }

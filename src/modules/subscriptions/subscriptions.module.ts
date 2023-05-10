@@ -8,6 +8,10 @@ import { ApiConfigModule } from '../api-config/api.config.module';
 import { ISubscriptionsRepository, SubscriptionsRepository } from './infrastructure/subscriptions.repository';
 import { SuccessSubscriptionHandler } from './application/event-handlers/success-subscription.handler';
 import { FailedSubscriptionHandler } from './application/event-handlers/failed-subscription.handler';
+import {
+  ISubscriptionsQueryRepository,
+  SubscriptionsQueryRepository,
+} from './infrastructure/subscriptions-query.repository';
 
 const useCases = [CreateSubscriptionUseCase];
 const handlers = [SuccessSubscriptionHandler, FailedSubscriptionHandler];
@@ -21,6 +25,10 @@ const handlers = [SuccessSubscriptionHandler, FailedSubscriptionHandler];
     {
       provide: ISubscriptionsRepository,
       useClass: SubscriptionsRepository,
+    },
+    {
+      provide: ISubscriptionsQueryRepository,
+      useClass: SubscriptionsQueryRepository,
     },
   ],
 })
