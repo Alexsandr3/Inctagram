@@ -1,4 +1,4 @@
-export class SubscriptionViewModel {
+export class PaymentSessionUrlViewModel {
   url: string;
 
   constructor(url: string) {
