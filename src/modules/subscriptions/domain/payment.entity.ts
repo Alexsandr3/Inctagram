@@ -2,7 +2,7 @@ import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { Payment } from '@prisma/client';
 import { Currency } from '../types/currency';
 import { PaymentStatus } from '../types/paymentStatus';
-import { StripeEventType } from '../application/event-handlers/success-subscription.handler';
+import { StripeEventType } from '../types/stripe-event.type';
 
 export class PaymentEntity extends BaseDateEntity implements Payment {
   id: number;

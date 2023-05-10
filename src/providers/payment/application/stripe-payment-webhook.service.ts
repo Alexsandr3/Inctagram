@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Stripe } from 'stripe';
 import { ApiConfigService } from '../../../modules/api-config/api.config.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PaymentEventType } from '../payment-event.type';
+import { PaymentEventType } from '../types/payment-event.type';
 
 @Injectable()
 export class StripePaymentWebhookService {
@@ -12,13 +12,14 @@ export class StripePaymentWebhookService {
   constructor(private readonly configService: ApiConfigService, private eventEmitter: EventEmitter2) {}
 
   async createEventSession(signature: string | string[], body: Buffer) {
-    let data: Stripe.Event.Data;
+    let data;
     let eventType;
     try {
       const event = this.stripe.webhooks.constructEvent(body, signature, this.secretHook);
       // Extract the object from the event.
-      data = event.data;
+      data = event.data.object;
       eventType = event.type;
+      this.eventEmitter.emit(PaymentEventType.someOtherEvent, data);
       switch (eventType) {
         case 'checkout.session.completed':
           this.eventEmitter.emit(PaymentEventType.successSubscription, data);
@@ -33,9 +34,16 @@ export class StripePaymentWebhookService {
           break;
         default:
       }
-      return event;
+      return;
     } catch (e) {
       throw new BadRequestException([{ message: 'Webhook Error', field: 'stripe' }]);
     }
+  }
+
+  public async listSubscriptions(priceId: string, customerId: string) {
+    return this.stripe.subscriptions.list({
+      customer: customerId,
+      price: priceId,
+    });
   }
 }

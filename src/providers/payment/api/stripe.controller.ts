@@ -1,43 +1,27 @@
-import { Controller, Get, HttpCode, Post, Query } from '@nestjs/common';
+import { Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaymentInputData, Signature } from '../../../main/decorators/signature-data.decorator';
-import { StripeService } from '../application/stripe.service';
 import { StripePaymentWebhookService } from '../application/stripe-payment-webhook.service';
 
-@ApiTags('payments')
+@ApiTags('Payments')
 @Controller('payments')
 export class StripeController {
-  constructor(
-    private readonly stripePaymentWebhookService: StripePaymentWebhookService,
-    private readonly stripeService: StripeService,
-  ) {}
+  constructor(private readonly stripePaymentWebhookService: StripePaymentWebhookService) {}
 
+  /**
+   * Webhook for Stripe Api (see stripe official documentation)
+   * @param inputData
+   */
   @ApiOperation({ summary: 'Webhook for Stripe Api (see stripe official documentation)' })
   @ApiResponse({ status: 204 })
   @HttpCode(204)
   @Post('stripe/webhook')
   async stripeHook(@Signature() inputData: PaymentInputData) {
     await this.stripePaymentWebhookService.createEventSession(inputData.signature, inputData.body);
-    // await this.stripeService.createCheckoutSession(inputData.signature, inputData.body);
   }
 
-  @Get(`stripe/buy`)
-  async buy(@Query('productIds') productIds) {
-    return await this.stripeService.subscription();
+  @Get(':id')
+  async test(@Param('id') id: string) {
+    return this.stripePaymentWebhookService.listSubscriptions('price_1N5l2vIW91ghbnFjg7L4b8HR', id);
   }
-  //
-  // @Get(`stripe`)
-  // async b(@Query('productIds') productIds) {
-  //   return await this.stripeService.subscription();
-  // }
-  //
-  // @Get(`stripe/success`)
-  // async success() {
-  //   return 'success';
-  // }
-  //
-  // @Get(`stripe/cancel`)
-  // async cancel() {
-  //   return 'cancel';
-  // }
 }

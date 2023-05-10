@@ -1,4 +1,4 @@
-export class CostMonthlySubscriptionViewModel {
+export class CostOfSubscriptionViewModel {
   month: number;
   semiAnnual: number;
   year: number;
