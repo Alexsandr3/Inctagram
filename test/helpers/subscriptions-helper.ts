@@ -3,12 +3,12 @@ import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import request from 'supertest';
 import { CreateSubscriptionInputDto } from '../../src/modules/subscriptions/api/input-dtos/create-subscription-input.dto';
 import { subscriptionsEndpoints } from '../../src/modules/subscriptions/api/routing/subscriptions.routing';
-import { SubscriptionViewModel } from '../../src/modules/subscriptions/api/view-model/subscription-view.dto';
+import { PaymentSessionUrlViewModel } from '../../src/modules/subscriptions/api/view-model/payment-session-url-view-view.dto';
 
 export class SubscriptionsHelper {
   constructor(private readonly app: INestApplication) {}
 
-  async createSubscription<T = SubscriptionViewModel>(
+  async createSubscription<T = PaymentSessionUrlViewModel>(
     command: CreateSubscriptionInputDto,
     config: {
       token?: any;

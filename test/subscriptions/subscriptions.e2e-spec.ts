@@ -5,7 +5,7 @@ import { SubscriptionsHelper } from '../helpers/subscriptions-helper';
 import { CreateSubscriptionInputDto } from '../../src/modules/subscriptions/api/input-dtos/create-subscription-input.dto';
 import { SubscriptionType } from '../../src/modules/subscriptions/types/subscription.type';
 import { PaymentMethod } from '../../src/modules/subscriptions/types/payment.method';
-import { SubscriptionViewModel } from '../../src/modules/subscriptions/api/view-model/subscription-view.dto';
+import { PaymentSessionUrlViewModel } from '../../src/modules/subscriptions/api/view-model/payment-session-url-view-view.dto';
 
 jest.setTimeout(120000);
 describe('Testing create subscriptions -  e2e', () => {
@@ -25,7 +25,7 @@ describe('Testing create subscriptions -  e2e', () => {
 
   // Registration correct data
   let accessToken: string;
-  let correctEmail_first_user = 'Mariarti92@raccoon.bl';
+  let correctEmail_first_user = 'admin@admin.com';
   let correctUserName_first_user = 'Takomas';
   it('01 - / (POST) - should create user and returned accessToken', async () => {
     const command = { password: '12345678', email: correctEmail_first_user, userName: correctUserName_first_user };
@@ -36,9 +36,9 @@ describe('Testing create subscriptions -  e2e', () => {
       typeSubscription: SubscriptionType.MONTHLY,
       paymentType: PaymentMethod.STRIPE,
       autoRenew: true,
-      amount: 9,
+      amount: 10,
     };
-    const subscription = await subscriptionsHelper.createSubscription<SubscriptionViewModel>(command, {
+    const subscription = await subscriptionsHelper.createSubscription<PaymentSessionUrlViewModel>(command, {
       token: accessToken,
       expectedCode: 201,
     });
@@ -46,12 +46,12 @@ describe('Testing create subscriptions -  e2e', () => {
   });
   it('03 - / (POST) - should create subscriptions for current user', async () => {
     const command: CreateSubscriptionInputDto = {
-      typeSubscription: SubscriptionType.MONTHLY,
+      typeSubscription: SubscriptionType.SEMI_ANNUALLY,
       paymentType: PaymentMethod.STRIPE,
-      autoRenew: true,
-      amount: 10,
+      autoRenew: false,
+      amount: 60,
     };
-    const subscription = await subscriptionsHelper.createSubscription<SubscriptionViewModel>(command, {
+    const subscription = await subscriptionsHelper.createSubscription<PaymentSessionUrlViewModel>(command, {
       token: accessToken,
       expectedCode: 201,
     });
