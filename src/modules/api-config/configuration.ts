@@ -65,6 +65,7 @@ export const configuration = () => ({
   dev: {
     TOKEN_NGROK: process.env.TOKEN_NGROK,
     CURRENT_APP_BASE_URL: process.env.CURRENT_APP_BASE_URL,
+    TEST_CLIENT_URL: process.env.TEST_CLIENT_URL,
   },
 
   TOKEN_TELEGRAM: process.env.TOKEN_TELEGRAM,
@@ -83,7 +84,7 @@ export const configuration = () => ({
   subscription: {
     COST_SUBSCRIPTION: process.env.COST_SUBSCRIPTION,
     PRICE_ID_MONTHLY: process.env.PRICE_ID_MONTHLY,
-    PRICE_ID_SUBSCRIPTION_MONTHLY: process.env.PRICE_ID_SUBSCRIPTION_MONTHLY,
+    MONTHLY_SUBSCRIPTION_PRICE_ID: process.env.MONTHLY_SUBSCRIPTION_PRICE_ID,
   },
 
   IP_RESTRICTION: process.env.IP_RESTRICTION,
