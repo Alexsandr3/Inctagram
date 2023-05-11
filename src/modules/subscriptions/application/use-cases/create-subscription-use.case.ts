@@ -42,7 +42,6 @@ export class CreateSubscriptionUseCase
       user.userName,
       user.id,
     );
-    console.log(session);
     //create subscription with payment with status pending
     const { subscription, payment } = businessAccount.createSubscription(createSubscriptionDto, session.id);
     //save business account with subscription and payment
