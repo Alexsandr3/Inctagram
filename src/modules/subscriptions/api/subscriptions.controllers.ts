@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
 import { CreateSubscriptionInputDto } from './input-dtos/create-subscription-input.dto';
@@ -36,7 +36,7 @@ export class SubscriptionsController {
   async createSubscription(
     @CurrentUserId() userId: number,
     @Body() createSubscriptionDto: CreateSubscriptionInputDto,
-    @Res() res,
+    // @Res() res,
   ): Promise<PaymentSessionUrlViewModel> {
     const notification = await this.commandBus.execute<CreateSubscriptionCommand, ResultNotification<string>>(
       new CreateSubscriptionCommand(userId, createSubscriptionDto),
