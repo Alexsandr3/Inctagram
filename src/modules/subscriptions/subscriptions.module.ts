@@ -12,13 +12,14 @@ import {
   ISubscriptionsQueryRepository,
   SubscriptionsQueryRepository,
 } from './infrastructure/subscriptions-query.repository';
+import { GetSubscriptionsController } from './api/get-subscriptions.controllers';
 
 const useCases = [CreateSubscriptionUseCase];
 const handlers = [SuccessSubscriptionHandler, FailedSubscriptionHandler];
 
 @Module({
   imports: [CqrsModule, UsersModule, PaymentsModule, ApiConfigModule],
-  controllers: [SubscriptionsController],
+  controllers: [SubscriptionsController, GetSubscriptionsController],
   providers: [
     ...useCases,
     ...handlers,

@@ -5,7 +5,7 @@ export class SubscriptionPriceViewModel {
 
   constructor(cost: number) {
     this.data = [
-      PricingDetailsViewModel.create(cost, SubscriptionType.MONTHLY),
+      PricingDetailsViewModel.create(+cost, SubscriptionType.MONTHLY),
       PricingDetailsViewModel.create(cost * 6, SubscriptionType.SEMI_ANNUALLY),
       PricingDetailsViewModel.create(cost * 10, SubscriptionType.YEARLY),
     ];

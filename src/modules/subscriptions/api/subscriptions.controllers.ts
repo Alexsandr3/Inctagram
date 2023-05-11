@@ -5,15 +5,12 @@ import { CreateSubscriptionInputDto } from './input-dtos/create-subscription-inp
 import { CreateSubscriptionCommand } from '../application/use-cases/create-subscription-use.case';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CurrentUserId } from '../../../main/decorators/user.decorator';
-import { ApiConfigService } from '../../api-config/api.config.service';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { PaymentSessionUrlViewModel } from './view-model/payment-session-url-view-view.dto';
-import { SubscriptionPriceViewModel } from './view-model/cost-monthly-subscription-view.dto';
 import {
   SwaggerDecoratorsByCreateSubscription,
   SwaggerDecoratorsByGetCurrentSubscription,
   SwaggerDecoratorsByGetPayments,
-  SwaggerDecoratorsGetCostOfSubscription,
 } from '../swagger/swagger.subscription.decorators';
 import { ISubscriptionsQueryRepository } from '../infrastructure/subscriptions-query.repository';
 import { ProfileViewModel } from '../../users/api/view-models/profile-view.dto';
@@ -30,16 +27,8 @@ import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 export class SubscriptionsController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly apiConfigService: ApiConfigService,
     private readonly subscriptionsQueryRepository: ISubscriptionsQueryRepository,
   ) {}
-
-  @SwaggerDecoratorsGetCostOfSubscription()
-  @Get('cost-of-subscriptions')
-  @HttpCode(HTTP_Status.OK_200)
-  async getCurrentCostSubscription(@CurrentUserId() userId: number): Promise<SubscriptionPriceViewModel> {
-    return new SubscriptionPriceViewModel(this.apiConfigService.COST_SUBSCRIPTION);
-  }
 
   @SwaggerDecoratorsByCreateSubscription()
   @Post()
@@ -52,8 +41,8 @@ export class SubscriptionsController {
     const notification = await this.commandBus.execute<CreateSubscriptionCommand, ResultNotification<string>>(
       new CreateSubscriptionCommand(userId, createSubscriptionDto),
     );
-    // return new PaymentSessionUrlViewModel(notification.getData());
-    return res.redirect(notification.getData());
+    return new PaymentSessionUrlViewModel(notification.getData());
+    // return res.redirect(notification.getData());
   }
 
   @SwaggerDecoratorsByGetCurrentSubscription()
