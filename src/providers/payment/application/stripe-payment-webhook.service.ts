@@ -40,10 +40,101 @@ export class StripePaymentWebhookService {
     }
   }
 
-  public async listSubscriptions(priceId: string, customerId: string) {
+  /*  public async listSubscriptions(priceId: string, customerId: string) {
     return this.stripe.subscriptions.list({
       customer: customerId,
       price: priceId,
     });
   }
+
+  async testCreateSession() {
+    try {
+      const session = await this.stripe.checkout.sessions.create({
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        client_reference_id: '3',
+        customer_email: 'email@eamil.tr',
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: 'Premium Subscription',
+                images: [
+                  'https://nest-public-avatar.s3.eu-central-1.amazonaws.com/Screenshot+2023-05-05+at+09.47.43.png',
+                ],
+              },
+              unit_amount: 3 * 100,
+            },
+            // price: 'price_1N5l2vIW91ghbnFjg7L4b8HR',
+            quantity: 4,
+          },
+        ],
+        // payment_intent_data: {
+        //   metadata: {
+        //     subscription_id: '3апдаыипавдипдэва',
+        //   },
+        // },
+        success_url: 'http://localhost:5003/payments/payments/stripe/success.html?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: `http://localhost:5003/payments/canceled.html`,
+      });
+      return session;
+    } catch (e) {
+      console.log(e, 'error');
+    }
+  }
+
+  async testCreateSession2() {
+    // For a fully working example, please see:
+    // https://github.com/paypal-examples/docs-examples/tree/main/standard-integration
+    const { CLIENT_ID_PAYPAL, APP_SECRET_PAYPAL } = process.env;
+    const auth = Buffer.from(CLIENT_ID_PAYPAL + ':' + APP_SECRET_PAYPAL).toString('base64');
+    return await this.createOrder(auth);
+  }
+  async createOrder(auth: string) {
+    const baseURL = {
+      sandbox: 'https://api-m.sandbox.paypal.com',
+      production: 'https://api-m.paypal.com',
+    };
+    const accessToken = await this.generateAccessToken(auth);
+    const url = `${baseURL.sandbox}/v2/checkout/orders`;
+    const response = await axios.post(
+      url,
+      {
+        intent: 'CAPTURE',
+        purchase_units: [
+          {
+            amount: {
+              currency_code: 'USD',
+              value: '23.00',
+            },
+          },
+        ],
+      },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      },
+    );
+
+    const data = response.data;
+    return data;
+  }
+
+  async generateAccessToken(auth: string) {
+    const baseURL = {
+      sandbox: 'https://api-m.sandbox.paypal.com',
+      production: 'https://api-m.paypal.com',
+    };
+    const response = await axios.post(`${baseURL.sandbox}/v1/oauth2/token`, 'grant_type=client_credentials', {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+    });
+    const data = response.data;
+    return data.access_token;
+  }*/
 }

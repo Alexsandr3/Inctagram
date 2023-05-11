@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, Param, Post } from '@nestjs/common';
+import { Controller, HttpCode, Post } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaymentInputData, Signature } from '../../../main/decorators/signature-data.decorator';
 import { StripePaymentWebhookService } from '../application/stripe-payment-webhook.service';
@@ -20,8 +20,10 @@ export class StripeController {
     await this.stripePaymentWebhookService.createEventSession(inputData.signature, inputData.body);
   }
 
-  @Get(':id')
-  async test(@Param('id') id: string) {
-    return this.stripePaymentWebhookService.listSubscriptions('price_1N5l2vIW91ghbnFjg7L4b8HR', id);
-  }
+  // @Get()
+  // async test(@Param() id: string) {
+  //   // return this.stripePaymentWebhookService.listSubscriptions('price_1N5l2vIW91ghbnFjg7L4b8HR', id);
+  //   // return this.stripePaymentWebhookService.testCreateSession();
+  //   return this.stripePaymentWebhookService.testCreateSession2();
+  // }
 }
