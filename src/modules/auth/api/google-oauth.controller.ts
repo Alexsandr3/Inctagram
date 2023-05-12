@@ -1,7 +1,6 @@
 import { Controller, Get, Headers, HttpCode, Ip, Res, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
-import { GoogleAuthorizationGuard } from './guards/google-authorization.guard';
 import {
   SwaggerDecoratorsByGoogleAuthorization,
   SwaggerDecoratorsByGoogleAuthorizationHandler,
@@ -15,9 +14,10 @@ import { TokensType } from '../application/types/types';
 import { Response } from 'express';
 import { GoogleRegistrationGuard } from './guards/google-registration.guard';
 import { PayloadData } from '../../../main/decorators/payload-data.decorator';
-import { RegisterUserFromExternalAccountCommand } from '../application/use-cases/register-user-from-external-account.use-case';
+import { RegisterUserFromExternalAccountAndAuthorizeIfNewCommand } from '../application/use-cases/register-user-from-external-account-and-authorize-if-new-use.case';
 import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { GoogleAuthorizationGuard } from './guards/google-authorization.guard';
 
 @ApiTags('Google-OAuth2')
 @Controller('auth/google')
@@ -35,15 +35,16 @@ export class GoogleOAuthController {
   async googleAuthorizationHandler(
     @Ip() ip: string,
     @Headers('user-agent') deviceName = 'unknown',
+    @Headers('referer') refererUrl,
     @Res({ passthrough: true }) res: Response,
     @CurrentUserId() userId: number,
   ) {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
       new LoginCommand(userId, ip, deviceName),
     );
-    const { accessToken, refreshToken } = notification.getData();
+    const refreshToken = notification.getData().refreshToken;
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
-    return { accessToken };
+    res.redirect(`${refererUrl}auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
   }
 
   @SwaggerDecoratorsByGoogleRegistration()
@@ -55,10 +56,24 @@ export class GoogleOAuthController {
   @Get('registration/redirect')
   @UseGuards(GoogleRegistrationGuard)
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async googleRegistrationHandler(@PayloadData() dto: RegisterUserFromExternalAccountInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<RegisterUserFromExternalAccountCommand, ResultNotification>(
-      new RegisterUserFromExternalAccountCommand(dto),
-    );
-    return notification.getData();
+  async googleRegistrationHandler(
+    @Ip() ip: string,
+    @Headers('user-agent') deviceName = 'unknown',
+    @Headers('referer') refererUrl,
+    @PayloadData() dto: RegisterUserFromExternalAccountInputDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const notification = await this.commandBus.execute<
+      RegisterUserFromExternalAccountAndAuthorizeIfNewCommand,
+      ResultNotification<TokensType | null>
+    >(new RegisterUserFromExternalAccountAndAuthorizeIfNewCommand(dto, ip, deviceName));
+
+    if (notification.getData()) {
+      const refreshToken = notification.getData().refreshToken;
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
+    }
+
+    res.redirect(`${refererUrl}auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
+    return;
   }
 }

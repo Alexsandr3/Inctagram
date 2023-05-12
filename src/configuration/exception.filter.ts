@@ -1,7 +1,8 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { Response } from 'express';
-import { CheckerNotificationErrors } from '../main/validators/checker-notification.errors';
+import { NotificationErrors } from '../main/validators/notification.errors';
 import { ApiErrorResultDto } from '../main/validators/api-error-result.dto';
+import { OAuthException, OAuthFlowType } from '../main/validators/oauth.exception';
 
 @Catch(Error)
 export class ErrorFilter implements ExceptionFilter {
@@ -51,11 +52,12 @@ export enum NotificationCode {
   SERVER_ERROR = 5,
 }
 
-@Catch(CheckerNotificationErrors)
+@Catch(NotificationErrors)
 export class ErrorExceptionFilter implements ExceptionFilter {
-  catch(exception: CheckerNotificationErrors, host: ArgumentsHost) {
+  catch(exception: NotificationErrors, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
+    const notificationCode = exception.resultNotification.getCode();
 
     const codeMap = {
       [NotificationCode.OK]: 200,
@@ -69,8 +71,29 @@ export class ErrorExceptionFilter implements ExceptionFilter {
     const errorResult = new ApiErrorResultDto();
     errorResult.statusCode = statusCode;
     errorResult.messages = mapErrorsToNotification(exception.resultNotification.extensions);
-    errorResult.error = NotificationCode[exception.resultNotification.getCode()];
+    errorResult.error = NotificationCode[notificationCode];
     return response.status(statusCode).json(errorResult);
+  }
+}
+
+@Catch(OAuthException)
+export class OAuthExceptionFilter implements ExceptionFilter {
+  catch(exception: OAuthException, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse<Response>();
+
+    if (exception.key === OAuthFlowType.Authorization) {
+      response.redirect(
+        `${response.req.header('referer')}auth/login/?status_code=${exception.httpCode}&message=${exception.message}`,
+      );
+    } else if (exception.key === OAuthFlowType.Registration) {
+      response.redirect(
+        `${response.req.header('referer')}auth/registration/?status_code=${exception.httpCode}&message=${
+          exception.message
+        }`,
+      );
+    }
+    return;
   }
 }
 

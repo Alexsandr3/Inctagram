@@ -1,6 +1,6 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '../../../api-config/api.config.service';
 import { AuthService } from '../../application/auth.service';
 
@@ -17,7 +17,6 @@ export class GoogleAuthorizationStrategy extends PassportStrategy(Strategy, 'goo
 
   async validate(accessToken: string, _refreshToken: string, profile: Profile): Promise<any> {
     const userId = await this.authService.checkCredentialsOfUserOAuth2({ providerId: profile.id });
-    if (!userId) throw new UnauthorizedException();
 
     return { userId };
   }

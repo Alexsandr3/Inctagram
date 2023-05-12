@@ -17,6 +17,16 @@ export class ResultNotification<T = null> {
     not.addData(data);
   }
 
+  static error(
+    message: string, // message for mistake
+    key: string | null = null,
+    code: NotificationCode | null = null, //status code
+  ): ResultNotification {
+    const not = new ResultNotification();
+    not.addError(message, key, code);
+    return not;
+  }
+
   hasError() {
     return this.code !== 0;
   }

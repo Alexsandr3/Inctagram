@@ -43,9 +43,9 @@ export class MailManager {
    * @param code
    */
   async sendUserConfirmationCodeForExternalAccount(email: string, code: string) {
-    const url = `${this.configService.CLIENT_URL}/auth/registration-confirmation-external-account?code=${code}`;
+    const url = `${this.configService.CLIENT_URL}/registration/external-account?code=${code}`;
     const subject = 'Finish registration';
-    const template = `./confirmation.html`;
+    const template = `./confirmation.html`; //todo sendUserConfirmationCodeForExternalAccount
     await this.emailAdapter.sendEmail(email, url, subject, template);
   }
 }
