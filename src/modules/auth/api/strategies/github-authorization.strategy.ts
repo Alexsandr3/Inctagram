@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-github2';
 import { ApiConfigService } from '../../../api-config/api.config.service';
@@ -19,8 +19,6 @@ export class GithubAuthorizationStrategy extends PassportStrategy(Strategy, 'git
 
   async validate(accessToken: string, _refreshToken: string, profile: Profile): Promise<any> {
     const userId = await this.authService.checkCredentialsOfUserOAuth2({ providerId: profile.id });
-
-    if (!userId) throw new UnauthorizedException();
 
     return { userId };
   }

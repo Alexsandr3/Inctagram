@@ -7,20 +7,21 @@ import { UserEntity, userFieldParameters } from '../../../users/domain/user.enti
 import { randomUUID } from 'crypto';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { ConfirmationOfExternalAccountEntity } from '../../domain/confirmation-of-external-account.entity';
-import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
+import { TokensType } from '../types/types';
+import { OAuthException, OAuthFlowType } from '../../../../main/validators/oauth.exception';
+import { HTTP_Status } from '../../../../main/enums/http-status.enum';
 
 /**
  * Registration user from external account
  */
-export class RegisterUserFromExternalAccountCommand {
-  constructor(public dto: RegisterUserFromExternalAccountInputDto) {}
+export class RegisterUserFromExternalAccountAndAuthorizeIfNewCommand {
+  constructor(public dto: RegisterUserFromExternalAccountInputDto, public ip: string, public deviceName: string) {}
 }
 
-@CommandHandler(RegisterUserFromExternalAccountCommand)
-export class RegisterUserFromExternalAccountUseCase
-  extends BaseNotificationUseCase<RegisterUserFromExternalAccountCommand, void>
-  implements ICommandHandler<RegisterUserFromExternalAccountCommand>
+@CommandHandler(RegisterUserFromExternalAccountAndAuthorizeIfNewCommand)
+export class RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase
+  extends BaseNotificationUseCase<RegisterUserFromExternalAccountAndAuthorizeIfNewCommand, TokensType | null>
+  implements ICommandHandler<RegisterUserFromExternalAccountAndAuthorizeIfNewCommand>
 {
   constructor(
     private readonly authService: AuthService,
@@ -34,24 +35,26 @@ export class RegisterUserFromExternalAccountUseCase
    * Execute the command action for Register User From External Account (Google, GitHub, etc.)
    * @param command
    */
-  async executeUseCase(command: RegisterUserFromExternalAccountCommand): Promise<void> {
-    const { dto } = command;
+  async executeUseCase(command: RegisterUserFromExternalAccountAndAuthorizeIfNewCommand): Promise<TokensType | null> {
+    const { dto, ip, deviceName } = command;
     //check if user with this external account is already register
-    const userId = await this.usersRepository.findUserByProviderId(String(dto.providerId));
-    if (userId)
-      throw new NotificationException(
+    let user = await this.usersRepository.findUserByProviderId(String(dto.providerId));
+    if (user)
+      throw new OAuthException(
         `User with ${dto.provider} id: ${dto.providerId} is already register`,
-        `${dto.provider} id`,
-        NotificationCode.BAD_REQUEST,
+        OAuthFlowType.Registration,
+        HTTP_Status.BAD_REQUEST_400,
       );
+
     //check if user with this email is already register
-    let user = await this.usersRepository.findUserByEmail(dto.email);
+    user = await this.usersRepository.findUserByEmail(dto.email);
     if (!user) {
       //create user from external account
       user = await this.createUserByExternalAccount(dto);
-      await this.usersRepository.saveUser(user);
+      const userId = await this.usersRepository.saveUser(user);
       //send email with success registration without confirmation
       await this.mailService.sendMailWithSuccessRegistration(dto.email);
+      return this.authService.loginUser({ userId, ip, deviceName });
     } else {
       //add external account to user
       user.addExternalAccountToUser(dto);
@@ -63,6 +66,7 @@ export class RegisterUserFromExternalAccountUseCase
         dto.email,
         confirmationOfExternalAccount.confirmationCode,
       );
+      return null;
     }
   }
 

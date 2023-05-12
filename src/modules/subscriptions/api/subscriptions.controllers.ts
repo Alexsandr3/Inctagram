@@ -15,10 +15,10 @@ import {
 import { ISubscriptionsQueryRepository } from '../infrastructure/subscriptions-query.repository';
 import { ProfileViewModel } from '../../users/api/view-models/profile-view.dto';
 import { NotificationCode } from '../../../configuration/exception.filter';
-import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
 import { CurrentSubscriptionViewModel } from './view-model/current-subscription-view.dto';
 import { PaymentsViewModel } from './view-model/payments-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
+import { NotificationErrors } from '../../../main/validators/notification.errors';
 
 @ApiTags('subscriptions')
 @ApiBearerAuth()
@@ -54,7 +54,7 @@ export class SubscriptionsController {
       notification.addErrorFromNotificationException(
         new NotificationException(`Subscription not found`, 'subscription', NotificationCode.NOT_FOUND),
       );
-      throw new CheckerNotificationErrors('Error', notification);
+      throw new NotificationErrors('Error', notification);
     }
     return subscription;
   }
