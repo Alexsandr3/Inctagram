@@ -128,16 +128,27 @@ export class AuthController {
 
   /**
    * @description Confirm adding External Account to user by code
+   * @param ip
+   * @param deviceName
+   * @param res
    * @param body
    */
   @SwaggerDecoratorsByConfirmAddingExternalAccount()
   @Post('confirm-external-account')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async confirmAddingExternalAccount(@Body() body: ConfirmationCodeInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<ConfirmAddingExternalAccountCommand, ResultNotification>(
-      new ConfirmAddingExternalAccountCommand(body),
-    );
-    return notification.getData();
+  async confirmAddingExternalAccount(
+    @Ip() ip: string,
+    @Headers('user-agent') deviceName = 'unknown',
+    @Res({ passthrough: true }) res: Response,
+    @Body() body: ConfirmationCodeInputDto,
+  ): Promise<LoginSuccessViewDto> {
+    const notification = await this.commandBus.execute<
+      ConfirmAddingExternalAccountCommand,
+      ResultNotification<TokensType>
+    >(new ConfirmAddingExternalAccountCommand(body, ip, deviceName));
+    const { accessToken, refreshToken } = notification.getData();
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
+    return { accessToken };
   }
 
   /**

@@ -49,7 +49,8 @@ export function SwaggerDecoratorsByConfirmAddingExternalAccount(): MethodDecorat
     ApiOperation({ summary: 'Confirm adding external account' }),
     ApiResponse({
       status: HTTP_Status.NO_CONTENT_204,
-      description: 'Email was verified. Account was added',
+      description: 'Email was verified. Account was added. User is authorized',
+      type: TokenTypeSwaggerDto,
     }),
     ApiResponse({
       status: HTTP_Status.BAD_REQUEST_400,

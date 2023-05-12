@@ -28,7 +28,7 @@ export abstract class IUsersRepository {
 
   abstract countUsers(): Promise<number>;
 
-  abstract saveUser(user: UserEntity);
+  abstract saveUser(user: UserEntity): Promise<number>;
 
   abstract addExternalAccountToUser(
     user: UserEntity,
@@ -256,8 +256,8 @@ export class PrismaUsersRepository implements IUsersRepository {
     return this.prisma.user.count();
   }
 
-  async saveUser(user: UserEntity) {
-    await this.prisma.user.create({
+  async saveUser(user: UserEntity): Promise<number> {
+    const createdUser = await this.prisma.user.create({
       data: {
         ...user,
         externalAccounts: {
@@ -267,7 +267,9 @@ export class PrismaUsersRepository implements IUsersRepository {
           create: {},
         },
       },
+      select: { id: true },
     });
+    return createdUser.id;
   }
 
   async addExternalAccountToUser(user: UserEntity, confirmationOfExternalAccount: ConfirmationOfExternalAccountEntity) {

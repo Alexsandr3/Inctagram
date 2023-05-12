@@ -15,7 +15,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { PayloadData } from '../../../main/decorators/payload-data.decorator';
 import { GitHubRegistrationGuard } from './guards/github-registration.guard';
-import { RegisterUserFromExternalAccountCommand } from '../application/use-cases/register-user-from-external-account.use-case';
+import { RegisterUserFromExternalAccountAndAuthorizeIfNewCommand } from '../application/use-cases/register-user-from-external-account-and-authorize-if-new-use.case';
 import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 
@@ -35,15 +35,16 @@ export class GitHubOauthController {
   async githubAuthorizationHandler(
     @Ip() ip: string,
     @Headers('user-agent') deviceName = 'unknown',
+    @Headers('referer') refererUrl,
     @Res({ passthrough: true }) res: Response,
     @CurrentUserId() userId: number,
   ) {
     const notification = await this.commandBus.execute<LoginCommand, ResultNotification<TokensType>>(
       new LoginCommand(userId, ip, deviceName),
     );
-    const { accessToken, refreshToken } = notification.getData();
+    const refreshToken = notification.getData().refreshToken;
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
-    return { accessToken };
+    res.redirect(`${refererUrl}auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
   }
 
   @SwaggerDecoratorsByGitHubRegistration()
@@ -55,10 +56,24 @@ export class GitHubOauthController {
   @Get('registration/redirect')
   @UseGuards(GitHubRegistrationGuard)
   @HttpCode(HTTP_Status.NO_CONTENT_204)
-  async githubRegistrationHandler(@PayloadData() dto: RegisterUserFromExternalAccountInputDto): Promise<null> {
-    const notification = await this.commandBus.execute<RegisterUserFromExternalAccountCommand, ResultNotification>(
-      new RegisterUserFromExternalAccountCommand(dto),
-    );
-    return notification.getData();
+  async githubRegistrationHandler(
+    @Ip() ip: string,
+    @Headers('user-agent') deviceName = 'unknown',
+    @Headers('referer') refererUrl,
+    @PayloadData() dto: RegisterUserFromExternalAccountInputDto,
+    @Res({ passthrough: true }) res: Response,
+  ): Promise<null> {
+    const notification = await this.commandBus.execute<
+      RegisterUserFromExternalAccountAndAuthorizeIfNewCommand,
+      ResultNotification<TokensType | null>
+    >(new RegisterUserFromExternalAccountAndAuthorizeIfNewCommand(dto, ip, deviceName));
+
+    if (notification.getData()) {
+      const refreshToken = notification.getData().refreshToken;
+      res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
+    }
+
+    res.redirect(`${refererUrl}auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
+    return;
   }
 }
