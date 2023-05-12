@@ -1,16 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 import {
-  RegisterUserFromExternalAccountCommand,
-  RegisterUserFromExternalAccountUseCase,
-} from './register-user-from-external-account.use-case';
+  RegisterUserFromExternalAccountAndAuthorizeIfNewCommand,
+  RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase,
+} from './register-user-from-external-account-and-authorize-if-new-use.case';
 import { AuthService } from '../auth.service';
 import { Provider } from '../../../users/domain/ExternalAccountEntity';
 import { PrismaService } from '../../../../providers/prisma/prisma.service';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 
 describe('test RegisterUserFromExternalAccountUseCase', () => {
-  let registerUserFromExternalAccountUseCase: RegisterUserFromExternalAccountUseCase;
+  let registerUserFromExternalAccountUseCase: RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase;
   let prismaService: PrismaService;
   let app: TestingModule;
 
@@ -19,7 +19,7 @@ describe('test RegisterUserFromExternalAccountUseCase', () => {
       imports: [],
       controllers: [],
       providers: [
-        RegisterUserFromExternalAccountUseCase,
+        RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase,
         AuthService,
         PrismaService,
         { provide: IUsersRepository, useClass: PrismaUsersRepository },
@@ -30,8 +30,8 @@ describe('test RegisterUserFromExternalAccountUseCase', () => {
       .useValue({ sendMailWithSuccessRegistration: () => true, sendUserConfirmation: () => true })
       .compile();
 
-    registerUserFromExternalAccountUseCase = app.get<RegisterUserFromExternalAccountUseCase>(
-      RegisterUserFromExternalAccountUseCase,
+    registerUserFromExternalAccountUseCase = app.get<RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase>(
+      RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase,
     );
     prismaService = app.get<PrismaService>(PrismaService);
     await prismaService.user.deleteMany();
@@ -41,26 +41,30 @@ describe('test RegisterUserFromExternalAccountUseCase', () => {
   });
 
   it('should register new user by Google', async () => {
-    const command: RegisterUserFromExternalAccountCommand = {
+    const command: RegisterUserFromExternalAccountAndAuthorizeIfNewCommand = {
       dto: {
         email: 'test1@test.tst',
         displayName: 'dis_pN_ame___433',
         provider: Provider.GOOGLE,
         providerId: 'xxx123456',
       },
+      ip: 'some ip',
+      deviceName: 'some deviceName',
     };
     const result = await registerUserFromExternalAccountUseCase.executeUseCase(command);
 
     expect(result).toBeUndefined();
   });
   it('should add second Google account to exist user', async () => {
-    const command: RegisterUserFromExternalAccountCommand = {
+    const command: RegisterUserFromExternalAccountAndAuthorizeIfNewCommand = {
       dto: {
         email: 'test1@test.tst',
         displayName: 'dis_pN_ame___433n',
         provider: Provider.GOOGLE,
         providerId: 'xxx123456n',
       },
+      ip: 'some ip',
+      deviceName: 'some deviceName',
     };
     const result = await registerUserFromExternalAccountUseCase.executeUseCase(command);
 

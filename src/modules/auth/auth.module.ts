@@ -30,7 +30,7 @@ import { GithubAuthorizationStrategy } from './api/strategies/github-authorizati
 import { GoogleRegistrationStrategy } from './api/strategies/google-registration.strategy';
 import { ValidatorService } from '../../providers/validation/validator.service';
 import { GitHubRegistrationStrategy } from './api/strategies/github-registration.strategy';
-import { RegisterUserFromExternalAccountUseCase } from './application/use-cases/register-user-from-external-account.use-case';
+import { RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase } from './application/use-cases/register-user-from-external-account-and-authorize-if-new-use.case';
 import { ConfirmAddingExternalAccountUseCase } from './application/use-cases/confirm-adding-external-account.use-case';
 import { RejectAddingExternalAccountUseCase } from './application/use-cases/reject-adding-external-account.use-case';
 
@@ -44,7 +44,7 @@ const useCases = [
   GenerateNewTokensUseCase,
   LogoutUseCase,
   CheckPasswordRecoveryCodeUseCase,
-  RegisterUserFromExternalAccountUseCase,
+  RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase,
   ConfirmAddingExternalAccountUseCase,
   RejectAddingExternalAccountUseCase,
 ];

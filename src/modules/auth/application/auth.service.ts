@@ -1,5 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { LoginInputDto } from '../api/input-dto/login.input.dto';
 import { IUsersRepository } from '../../users/infrastructure/users.repository';
 import { OAuth2InputDto } from '../api/input-dto/o-auth2.input.dto';
@@ -7,12 +7,23 @@ import { Profile } from 'passport-google-oauth20';
 import { NotificationException } from '../../../main/validators/result-notification';
 import { NotificationCode } from '../../../configuration/exception.filter';
 import { UserEntity } from '../../users/domain/user.entity';
+import { TokensType } from './types/types';
+import { SessionEntity } from '../../sessions/domain/session.entity';
+import { LoginCommand } from './use-cases/login.use-case';
+import { ApiJwtService } from '../../api-jwt/api-jwt.service';
+import { ISessionsRepository } from '../../sessions/infrastructure/sessions-repository';
+import { OAuthException, OAuthFlowType } from '../../../main/validators/oauth.exception';
+import { HTTP_Status } from '../../../main/enums/http-status.enum';
 
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
 
-  constructor(protected usersRepository: IUsersRepository) {}
+  constructor(
+    protected usersRepository: IUsersRepository,
+    protected apiJwtService: ApiJwtService,
+    protected sessionsRepository: ISessionsRepository,
+  ) {}
 
   /**
    * Checks if the credentials of the user are correct
@@ -33,14 +44,16 @@ export class AuthService {
   async checkCredentialsOfUserOAuth2(dto: OAuth2InputDto): Promise<number | null> {
     const foundUser = await this.usersRepository.findUserByProviderId(dto.providerId);
     if (!foundUser) {
-      this.logger.log(`User with providerId ${dto.providerId} not found`);
-      return null;
+      const message = `User with providerId ${dto.providerId} not found`;
+      this.logger.log(message);
+      throw new OAuthException(message, OAuthFlowType.Authorization, HTTP_Status.UNAUTHORIZED_401);
     }
 
     const externalAccount = foundUser.externalAccounts.find(a => a.providerId === dto.providerId);
     if (!externalAccount.isConfirmed) {
-      this.logger.log(`Account with providerId ${dto.providerId} is not confirmed`);
-      return null;
+      const message = `Account with providerId ${dto.providerId} is not confirmed`;
+      this.logger.log(message);
+      throw new OAuthException(message, OAuthFlowType.Authorization, HTTP_Status.UNAUTHORIZED_401);
     }
 
     return foundUser.id;
@@ -72,20 +85,18 @@ export class AuthService {
    */
   async checkIncomingDataFromExternalAccountAndFindUserByProviderId(profile: Profile, provider: string) {
     if (!profile.emails || profile.emails.length === 0 || !profile.emails[0].value)
-      throw new BadRequestException([
-        {
-          message: `Invalid email from ${provider} or email is not provided`,
-          field: 'email',
-        },
-      ]);
+      throw new OAuthException(
+        `Invalid email from ${provider} or email is not provided`,
+        OAuthFlowType.Registration,
+        HTTP_Status.BAD_REQUEST_400,
+      );
 
     if (!profile.id)
-      throw new BadRequestException([
-        {
-          message: `Invalid ${provider} id or ${provider} id is not provided`,
-          field: `${provider} id`,
-        },
-      ]);
+      throw new OAuthException(
+        `Invalid ${provider} id or ${provider} id is not provided`,
+        OAuthFlowType.Registration,
+        HTTP_Status.BAD_REQUEST_400,
+      );
   }
 
   async checkConfirmationCodeForAddingExternalAccount(
@@ -107,5 +118,18 @@ export class AuthService {
       throw new NotificationException('Confirmation code is invalid', 'code', NotificationCode.BAD_REQUEST);
     }
     return { foundUser: foundUser, providerId: foundConfirmationOfExternalAccount.providerId };
+  }
+
+  async loginUser(command: LoginCommand): Promise<TokensType> {
+    const { userId, deviceName, ip } = command;
+
+    let session = await this.sessionsRepository.newDeviceId();
+    const tokens = await this.apiJwtService.createJWT(userId, session.deviceId);
+    const refreshTokenData = await this.apiJwtService.getRefreshTokenData(tokens.refreshToken);
+
+    session = SessionEntity.initCreate({ ...refreshTokenData, ip, deviceName });
+    await this.sessionsRepository.saveSession(session);
+
+    return tokens;
   }
 }

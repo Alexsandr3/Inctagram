@@ -6,6 +6,8 @@ import { Request } from 'express';
 import { RegisterUserFromExternalAccountInputDto } from '../input-dto/register-user-from-external-account-input.dto';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
 import { AuthService } from '../../application/auth.service';
+import { OAuthException, OAuthFlowType } from '../../../../main/validators/oauth.exception';
+import { HTTP_Status } from '../../../../main/enums/http-status.enum';
 
 @Injectable()
 export class GoogleRegistrationStrategy extends PassportStrategy(Strategy, 'google-registration') {
@@ -36,7 +38,13 @@ export class GoogleRegistrationStrategy extends PassportStrategy(Strategy, 'goog
     await this.authService.checkIncomingDataFromExternalAccountAndFindUserByProviderId(profile, 'Google');
     //create input dto for register user from external account
     const registerUserFromExternalAccountInputDto = RegisterUserFromExternalAccountInputDto.create(profile);
-    await this.validatorService.ValidateInstanceAndThrowError(registerUserFromExternalAccountInputDto);
+
+    try {
+      await this.validatorService.ValidateInstanceAndThrowError(registerUserFromExternalAccountInputDto);
+    } catch (e) {
+      throw new OAuthException('Can`t register', OAuthFlowType.Registration, HTTP_Status.BAD_REQUEST_400);
+    }
+
     //set payload to request
     req.payLoad = registerUserFromExternalAccountInputDto;
     return true;
