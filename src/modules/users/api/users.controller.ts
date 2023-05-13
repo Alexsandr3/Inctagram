@@ -72,7 +72,7 @@ export class UsersController {
       notification.addErrorFromNotificationException(
         new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
       );
-      throw new NotificationErrors('Error', notification);
+      throw new NotificationErrors(notification);
     }
     return profile;
   }

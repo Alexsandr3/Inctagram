@@ -55,7 +55,7 @@ export class SubscriptionsController {
       notification.addErrorFromNotificationException(
         new NotificationException(`Subscription not found`, 'subscription', NotificationCode.NOT_FOUND),
       );
-      throw new NotificationErrors('Error', notification);
+      throw new NotificationErrors(notification);
     }
     return subscription;
   }

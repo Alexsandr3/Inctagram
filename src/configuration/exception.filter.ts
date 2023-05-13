@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { NotificationErrors } from '../main/validators/notification.errors';
 import { ApiErrorResultDto } from '../main/validators/api-error-result.dto';
 import { OAuthException, OAuthFlowType } from '../main/validators/oauth.exception';
+import { NotificationExtension } from '../main/validators/result-notification';
 
 @Catch(Error)
 export class ErrorFilter implements ExceptionFilter {
@@ -54,10 +55,13 @@ export enum NotificationCode {
 
 @Catch(NotificationErrors)
 export class ErrorExceptionFilter implements ExceptionFilter {
+  constructor(private clientUrl) {}
+
   catch(exception: NotificationErrors, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const notificationCode = exception.resultNotification.getCode();
+    const notificationExtensions = exception.resultNotification.extensions;
 
     const codeMap = {
       [NotificationCode.OK]: 200,
@@ -67,10 +71,17 @@ export class ErrorExceptionFilter implements ExceptionFilter {
       [NotificationCode.FORBIDDEN]: 403,
       [NotificationCode.SERVER_ERROR]: 500,
     };
-    const statusCode = codeMap[exception.resultNotification.getCode()] || 500;
+    const statusCode = codeMap[notificationCode] || 500;
+    if (
+      notificationExtensions.length &&
+      notificationExtensions.some(
+        e => e.field === OAuthFlowType.Registration || e.field === OAuthFlowType.Authorization,
+      )
+    )
+      return oAuthExceptionHandle(response, notificationExtensions[0], statusCode, this.clientUrl);
     const errorResult = new ApiErrorResultDto();
     errorResult.statusCode = statusCode;
-    errorResult.messages = mapErrorsToNotification(exception.resultNotification.extensions);
+    errorResult.messages = mapErrorsToNotification(notificationExtensions);
     errorResult.error = NotificationCode[notificationCode];
     return response.status(statusCode).json(errorResult);
   }
@@ -78,23 +89,35 @@ export class ErrorExceptionFilter implements ExceptionFilter {
 
 @Catch(OAuthException)
 export class OAuthExceptionFilter implements ExceptionFilter {
+  constructor(private clientUrl) {}
+
   catch(exception: OAuthException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
     if (exception.key === OAuthFlowType.Authorization) {
-      response.redirect(
-        `${response.req.header('referer')}auth/login/?status_code=${exception.httpCode}&message=${exception.message}`,
-      );
+      response.redirect(`${this.clientUrl}/auth/login?status_code=${exception.httpCode}&message=${exception.message}`);
     } else if (exception.key === OAuthFlowType.Registration) {
       response.redirect(
-        `${response.req.header('referer')}auth/registration/?status_code=${exception.httpCode}&message=${
-          exception.message
-        }`,
+        `${this.clientUrl}/auth/registration?status_code=${exception.httpCode}&message=${exception.message}`,
       );
     }
     return;
   }
+}
+
+function oAuthExceptionHandle(
+  response: Response,
+  exception: NotificationExtension,
+  statusCode: number,
+  clientUrl: string,
+) {
+  if (exception.field === OAuthFlowType.Authorization) {
+    response.redirect(`${clientUrl}/auth/login?status_code=${statusCode}&message=${exception.message}`);
+  } else if (exception.field === OAuthFlowType.Registration) {
+    response.redirect(`${clientUrl}/auth/registration?status_code=${statusCode}&message=${exception.message}`);
+  }
+  return;
 }
 
 export function mapErrorsToNotification(errors: any[]) {
@@ -102,7 +125,6 @@ export function mapErrorsToNotification(errors: any[]) {
   errors.forEach((item: any) => errorResponse.push({ message: item.message, field: item.field }));
   return errorResponse;
 }
-
 /* const errors = {
   400: {
     messages: mapErrorsToNotification(responseBody.message),

@@ -109,7 +109,7 @@ export class PostsController {
       notification.addErrorFromNotificationException(
         new NotificationException(`Post with id: ${postId} not found`, 'post', NotificationCode.NOT_FOUND),
       );
-      throw new NotificationErrors('Error', notification);
+      throw new NotificationErrors(notification);
     }
     return foundPost;
   }
