@@ -79,26 +79,14 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
 
   private getEndDateSubscription(): Date {
     if (this.type === SubscriptionType.MONTHLY) {
-      return new Date(
-        this.dateOfPayment.getFullYear(),
-        this.dateOfPayment.getMonth() + 1,
-        this.dateOfPayment.getDate(),
-      );
+      return new Date(this.startDate.getFullYear(), this.startDate.getMonth() + 1, this.startDate.getDate());
     }
     if (this.type === SubscriptionType.SEMI_ANNUALLY) {
-      return new Date(
-        this.dateOfPayment.getFullYear(),
-        this.dateOfPayment.getMonth() + 6,
-        this.dateOfPayment.getDate(),
-      );
+      return new Date(this.startDate.getFullYear(), this.startDate.getMonth() + 6, this.startDate.getDate());
     }
 
     if (this.type === SubscriptionType.YEARLY) {
-      return new Date(
-        this.dateOfPayment.getFullYear() + 1,
-        this.dateOfPayment.getMonth(),
-        this.dateOfPayment.getDate(),
-      );
+      return new Date(this.startDate.getFullYear() + 1, this.startDate.getMonth(), this.startDate.getDate());
     }
   }
 

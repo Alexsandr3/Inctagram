@@ -17,7 +17,7 @@ import { PaymentsViewModel } from './view-model/payments-view.dto';
 import { PaymentSessionUrlViewModel } from './view-model/payment-session-url-view-view.dto';
 import { CanceledAutoRenewalCommand } from '../application/use-cases/canceled-auto-renewal-use.case';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
-import { CurrentActiveSubscriptionsViewModel } from './view-model/current-subscription-view.dto';
+import { CurrentActiveSubscriptionsViewModel } from './view-model/current-subscriptions-view.dto';
 
 @ApiTags('subscriptions')
 @ApiBearerAuth()

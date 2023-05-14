@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { SubscriptionPriceViewModel } from '../api/view-model/cost-monthly-subscription-view.dto';
 import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
-import { CurrentActiveSubscriptionsViewModel } from '../api/view-model/current-subscription-view.dto';
+import { CurrentActiveSubscriptionsViewModel } from '../api/view-model/current-subscriptions-view.dto';
 import { PaymentSessionUrlViewModel } from '../api/view-model/payment-session-url-view-view.dto';
 import { PaymentsViewModel } from '../api/view-model/payments-view.dto';
 

@@ -14,6 +14,7 @@ export class SuccessSubscriptionHandler {
     const currentSubscription = await this.subscriptionsRepository.getSubscriptionWithStatusPendingByPaymentSessionId(
       event.id,
     );
+    if (!currentSubscription) return;
     //find last created active subscription by customer id
     const lastActiveSubscription = await this.subscriptionsRepository.getLastActiveCreatedSubscriptionByCustomerId(
       currentSubscription.customerId,
