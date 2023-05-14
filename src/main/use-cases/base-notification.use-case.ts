@@ -1,6 +1,6 @@
 import { ResultNotification } from '../validators/result-notification';
-import { NotificationErrors } from '../validators/notification.errors';
 import { Logger } from '@nestjs/common';
+import { NotificationErrors } from '../validators/checker-notification.errors';
 
 export abstract class BaseNotificationUseCase<TCommand, TResult> {
   private readonly logger = new Logger(BaseNotificationUseCase.name);

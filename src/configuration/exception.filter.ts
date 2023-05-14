@@ -1,9 +1,9 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { Response } from 'express';
-import { NotificationErrors } from '../main/validators/notification.errors';
 import { ApiErrorResultDto } from '../main/validators/api-error-result.dto';
 import { OAuthException, OAuthFlowType } from '../main/validators/oauth.exception';
 import { NotificationExtension } from '../main/validators/result-notification';
+import { NotificationErrors } from '../main/validators/checker-notification.errors';
 
 @Catch(Error)
 export class ErrorFilter implements ExceptionFilter {
