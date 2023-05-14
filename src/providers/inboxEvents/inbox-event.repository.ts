@@ -1,19 +1,20 @@
-import { PrismaService } from '../prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { InboxStripeEventEntity } from './inbox-stripe-event.entity';
 
 export abstract class IInboxEventRepository {
-  abstract create(event: any): Promise<void>;
+  abstract create(event: InboxStripeEventEntity): Promise<void>;
 }
 
 @Injectable()
 export class InboxEventRepository implements IInboxEventRepository {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    @InjectRepository(InboxStripeEventEntity)
+    private inboxStripeEventEntityRepository: Repository<InboxStripeEventEntity>,
+  ) {}
 
-  async create(event: any): Promise<void> {
-    await this.prisma.inboxPaymentEvent.create({
-      data: {
-        payload: event,
-      },
-    });
+  async create(event: InboxStripeEventEntity): Promise<void> {
+    await this.inboxStripeEventEntityRepository.save(event);
   }
 }

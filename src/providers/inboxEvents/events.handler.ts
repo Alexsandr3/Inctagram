@@ -1,16 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PaymentEventType } from '../payment/types/payment-event.type';
-import { StripeEventType } from '../../modules/subscriptions/types/stripe-event.type';
 import { IInboxEventRepository } from './inbox-event.repository';
+import Stripe from 'stripe';
+import { InboxStripeEventEntity } from './inbox-stripe-event.entity';
 
 @Injectable()
 export class EventsHandler {
   constructor(private readonly inboxEventRepository: IInboxEventRepository) {}
 
   @OnEvent(PaymentEventType.someOtherEvent)
-  async handle(event: StripeEventType) {
+  async handle(event: Stripe.Event) {
+    //create event instance
+    const instanceEvent = InboxStripeEventEntity.create(event.type, event);
     //save event
-    await this.inboxEventRepository.create(event);
+    await this.inboxEventRepository.create(instanceEvent);
   }
 }
