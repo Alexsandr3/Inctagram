@@ -161,12 +161,16 @@ export class ApiConfigService {
   get COST_SUBSCRIPTION(): number {
     return this.configService.get('subscription.COST_SUBSCRIPTION', { infer: true });
   }
-  get PRICE_ID_MONTHLY(): string {
-    return this.configService.get('subscription.PRICE_ID_MONTHLY', { infer: true });
+  get STRIPE_MONTHLY_SUBSCRIPTION_PRICE_ID(): string {
+    return this.configService.get('subscription.stripe.STRIPE_MONTHLY_SUBSCRIPTION_PRICE_ID', { infer: true });
   }
-  get MONTHLY_SUBSCRIPTION_PRICE_ID(): string {
-    return this.configService.get('subscription.MONTHLY_SUBSCRIPTION_PRICE_ID', { infer: true });
+  get STRIPE_SEMIANNUAL_SUBSCRIPTION_PRICE_ID(): string {
+    return this.configService.get('subscription.stripe.STRIPE_SEMIANNUAL_SUBSCRIPTION_PRICE_ID', { infer: true });
   }
+  get STRIPE_YEARLY_SUBSCRIPTION_PRICE_ID(): string {
+    return this.configService.get('subscription.stripe.STRIPE_YEARLY_SUBSCRIPTION_PRICE_ID', { infer: true });
+  }
+
   get TEST_CLIENT_URL(): string {
     return this.configService.get('dev.TEST_CLIENT_URL', { infer: true });
   }
