@@ -35,7 +35,6 @@ describe('Testing create subscriptions -  e2e', () => {
     const command: CreateSubscriptionInputDto = {
       typeSubscription: SubscriptionType.MONTHLY,
       paymentType: PaymentMethod.STRIPE,
-      autoRenew: true,
       amount: 10,
     };
     const subscription = await subscriptionsHelper.createSubscription<PaymentSessionUrlViewModel>(command, {
@@ -48,7 +47,6 @@ describe('Testing create subscriptions -  e2e', () => {
     const command: CreateSubscriptionInputDto = {
       typeSubscription: SubscriptionType.SEMI_ANNUALLY,
       paymentType: PaymentMethod.STRIPE,
-      autoRenew: false,
       amount: 60,
     };
     const subscription = await subscriptionsHelper.createSubscription<PaymentSessionUrlViewModel>(command, {

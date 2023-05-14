@@ -58,6 +58,7 @@ model EmailConfirmation {
 
   @@map("EmailConfirmations")
 }
+
 model ConfirmationOfExternalAccount {
   providerId         String          @unique
   confirmationCode   String?
@@ -177,10 +178,11 @@ model Post {
 }
 
 model BusinessAccount {
-  userId        Int            @unique
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  subscriptions Subscription[]
+  userId          Int            @unique
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  stipeCustomerId String?
+  subscriptions   Subscription[]
 
   @@map("BusinessAccounts")
 }
@@ -190,6 +192,7 @@ enum SubscriptionType {
   SEMI_ANNUALLY
   YEARLY
 }
+
 enum PaymentType {
   PAYPAL
   STRIPE
@@ -204,10 +207,12 @@ enum StatusSubscriptionType {
 
 model Subscription {
   id                String                 @id @default(uuid())
+  externalSubId     String?
   businessAccountId Int
   customerId        String?
   status            StatusSubscriptionType
   dateOfPayment     DateTime?
+  startDate         DateTime?
   endDate           DateTime?
   type              SubscriptionType
   price             Int
@@ -216,6 +221,8 @@ model Subscription {
   businessAccount   BusinessAccount        @relation(fields: [businessAccountId], references: [userId])
   payments          Payment[]
   renewals          Renewal[]
+  createdAt         DateTime               @default(now())
+  updatedAt         DateTime               @updatedAt
 
   @@map("Subscriptions")
 }
@@ -235,11 +242,11 @@ enum Currency {
 }
 
 enum PaymentStatus {
-  PENDING //The payment is pending or in progress.
-  SUCCESSFUL //The payment was successfully processed
-  CANCELED //The payment was canceled or declined.
-  REFUNDED //The payment has been refunded.
-  FAILED //The payment failed or encountered an error.
+  PENDING // The payment is pending or in progress.
+  SUCCESSFUL // The payment was successfully processed
+  CANCELED // The payment was canceled or declined.
+  REFUNDED // The payment has been refunded.
+  FAILED // The payment failed or encountered an error.
 }
 
 model Payment {
@@ -257,13 +264,4 @@ model Payment {
   subscription   Subscription? @relation(fields: [subscriptionId], references: [id])
 
   @@map("Payments")
-}
-
-model InboxPaymentEvent {
-  id        Int      @id @default(autoincrement())
-  payload   Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("InboxPaymentEvents")
 }

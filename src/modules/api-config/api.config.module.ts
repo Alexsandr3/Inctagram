@@ -63,8 +63,9 @@ import Joi from 'joi';
         RECAPTCHA_ENTERPRISE_PROJECT_ID: Joi.string().required(),
 
         COST_SUBSCRIPTION: Joi.number().required(),
-        PRICE_ID_MONTHLY: Joi.string(),
-        MONTHLY_SUBSCRIPTION_PRICE_ID: Joi.string().required(),
+        STRIPE_MONTHLY_SUBSCRIPTION_PRICE_ID: Joi.string().required(),
+        STRIPE_SEMIANNUAL_SUBSCRIPTION_PRICE_ID: Joi.string().required(),
+        STRIPE_YEARLY_SUBSCRIPTION_PRICE_ID: Joi.string().required(),
 
         IP_RESTRICTION: Joi.boolean(),
         TEST_CLIENT_URL: Joi.string(),

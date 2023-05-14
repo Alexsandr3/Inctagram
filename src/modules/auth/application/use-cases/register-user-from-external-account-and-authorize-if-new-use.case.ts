@@ -8,8 +8,9 @@ import { randomUUID } from 'crypto';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { ConfirmationOfExternalAccountEntity } from '../../domain/confirmation-of-external-account.entity';
 import { TokensType } from '../types/types';
-import { OAuthException, OAuthFlowType } from '../../../../main/validators/oauth.exception';
-import { HTTP_Status } from '../../../../main/enums/http-status.enum';
+import { OAuthFlowType } from '../../../../main/validators/oauth.exception';
+import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationCode } from '../../../../configuration/exception.filter';
 
 /**
  * Registration user from external account
@@ -40,10 +41,10 @@ export class RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase
     //check if user with this external account is already register
     let user = await this.usersRepository.findUserByProviderId(String(dto.providerId));
     if (user)
-      throw new OAuthException(
+      throw new NotificationException(
         `User with ${dto.provider} id: ${dto.providerId} is already register`,
         OAuthFlowType.Registration,
-        HTTP_Status.BAD_REQUEST_400,
+        NotificationCode.BAD_REQUEST,
       );
 
     //check if user with this email is already register

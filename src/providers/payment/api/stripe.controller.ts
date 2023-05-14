@@ -19,11 +19,4 @@ export class StripeController {
   async stripeHook(@Signature() inputData: PaymentInputData) {
     await this.stripePaymentWebhookService.createEventSession(inputData.signature, inputData.body);
   }
-
-  // @Get()
-  // async test(@Param() id: string) {
-  //   // return this.stripePaymentWebhookService.listSubscriptions('price_1N5l2vIW91ghbnFjg7L4b8HR', id);
-  //   // return this.stripePaymentWebhookService.testCreateSession();
-  //   return this.stripePaymentWebhookService.testCreateSession2();
-  // }
 }

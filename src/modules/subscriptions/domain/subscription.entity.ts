@@ -11,10 +11,12 @@ import { StripeEventType } from '../types/stripe-event.type';
 
 export class SubscriptionEntity extends BaseDateEntity implements Subscription {
   id: string;
+  externalSubId: string;
   businessAccountId: number;
   customerId: string;
   status: StatusSubscriptionType;
   dateOfPayment: Date;
+  startDate: Date;
   endDate: Date;
   type: SubscriptionType;
   price: number;
@@ -31,30 +33,36 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
     super();
   }
 
-  static create(
+  static createSubscriptionWithPayment(
     userId: number,
+    customerId: string,
     createSubscriptionDto: CreateSubscriptionInputDto,
     sessionId: string,
-  ): { subscription: SubscriptionEntity; payment: PaymentEntity } {
+  ) {
     const subscription = new SubscriptionEntity();
+    subscription.id = null;
+    subscription.externalSubId = null;
+    subscription.businessAccountId = userId;
+    subscription.customerId = customerId;
     subscription.status = StatusSubscriptionType.PENDING;
     subscription.dateOfPayment = null;
+    subscription.startDate = null;
     subscription.endDate = null;
     subscription.type = createSubscriptionDto.typeSubscription;
     subscription.price = createSubscriptionDto.amount;
     subscription.paymentType = createSubscriptionDto.paymentType;
-    subscription.autoRenew = createSubscriptionDto.autoRenew;
-    subscription.businessAccountId = userId;
-    subscription.customerId = null;
+    subscription.autoRenew = true;
     subscription.payments = [];
     const payment = PaymentEntity.create(sessionId, subscription.id, createSubscriptionDto.amount);
     subscription.payments.push(payment);
-    return { subscription, payment };
+    return subscription;
   }
 
-  changeStatusToActive(event: StripeEventType) {
+  changeStatusToActive(event: StripeEventType, current_period_end: Date) {
+    this.externalSubId = event.subscription;
     this.status = StatusSubscriptionType.ACTIVE;
     this.dateOfPayment = new Date();
+    this.startDate = current_period_end ? current_period_end : this.dateOfPayment;
     this.customerId = event.customer;
     this.endDate = this.getEndDateSubscription();
     this.payments[0].changeStatusToSuccess(event);
@@ -62,6 +70,7 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
   }
 
   changeStatusToFailing(event: StripeEventType) {
+    this.externalSubId = event.subscription;
     this.status = StatusSubscriptionType.DELETED;
     this.customerId = event.customer;
     this.payments[0].changeStatusToFailing(event);
@@ -91,5 +100,13 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
         this.dateOfPayment.getDate(),
       );
     }
+  }
+
+  updateCurrentSubscriptionToInactive() {
+    if (this.autoRenew) {
+      this.autoRenew = false;
+      return this;
+    }
+    return this;
   }
 }

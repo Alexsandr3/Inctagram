@@ -30,11 +30,11 @@ import { ProfileViewModel } from './view-models/profile-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { UpdateProfileCommand } from '../application/use-cases/update-profile.use-case';
 import { NotificationCode } from '../../../configuration/exception.filter';
-import { NotificationErrors } from '../../../main/validators/notification.errors';
 import { ValidationImagePipe } from '../../../main/validators/validation-image.pipe';
 import { DeleteImageAvatarCommand } from '../application/use-cases/delete-image-avatar.use-case';
 import { AvatarsViewModel } from './view-models/avatars-view.dto';
 import { IUsersQueryRepository } from '../infrastructure/users.query-repository';
+import { NotificationErrors } from '../../../main/validators/checker-notification.errors';
 
 @ApiBearerAuth()
 @ApiTags('Profile')
@@ -72,7 +72,7 @@ export class UsersController {
       notification.addErrorFromNotificationException(
         new NotificationException(`Profile not found with ${userId}`, 'profile', NotificationCode.NOT_FOUND),
       );
-      throw new NotificationErrors('Error', notification);
+      throw new NotificationErrors(notification);
     }
     return profile;
   }

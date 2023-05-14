@@ -10,11 +10,21 @@ export class SuccessSubscriptionHandler {
 
   @OnEvent(PaymentEventType.successSubscription)
   async handle(event: StripeEventType) {
-    // find subscription where payments contains paymentSessionId
-    const subscriptionEntity = await this.subscriptionsRepository.getSubscriptionByPaymentSessionId(event.id);
-    // update subscription status to active
-    subscriptionEntity.changeStatusToActive(event);
-    //save subscription
-    await this.subscriptionsRepository.saveSubscriptionWithPayment(subscriptionEntity);
+    // find current subscription with status pending
+    const currentSubscription = await this.subscriptionsRepository.getSubscriptionWithStatusPendingByPaymentSessionId(
+      event.id,
+    );
+    //find last created active subscription by customer id
+    const lastActiveSubscription = await this.subscriptionsRepository.getLastActiveCreatedSubscriptionByCustomerId(
+      currentSubscription.customerId,
+    );
+    let currentPeriodEnd;
+    if (lastActiveSubscription) {
+      currentPeriodEnd = lastActiveSubscription.endDate;
+    }
+    //update subscription status to active
+    currentSubscription.changeStatusToActive(event, currentPeriodEnd);
+    // save subscription
+    await this.subscriptionsRepository.saveSubscriptionWithPayment(currentSubscription);
   }
 }

@@ -19,7 +19,7 @@ export class StripePaymentWebhookService {
       // Extract the object from the event.
       data = event.data.object;
       eventType = event.type;
-      this.eventEmitter.emit(PaymentEventType.someOtherEvent, data);
+      this.eventEmitter.emit(PaymentEventType.someOtherEvent, event);
       switch (eventType) {
         case 'checkout.session.completed':
           this.eventEmitter.emit(PaymentEventType.successSubscription, data);
@@ -40,49 +40,7 @@ export class StripePaymentWebhookService {
     }
   }
 
-  /*  public async listSubscriptions(priceId: string, customerId: string) {
-    return this.stripe.subscriptions.list({
-      customer: customerId,
-      price: priceId,
-    });
-  }
-
-  async testCreateSession() {
-    try {
-      const session = await this.stripe.checkout.sessions.create({
-        mode: 'subscription',
-        payment_method_types: ['card'],
-        client_reference_id: '3',
-        customer_email: 'email@eamil.tr',
-        line_items: [
-          {
-            price_data: {
-              currency: 'usd',
-              product_data: {
-                name: 'Premium Subscription',
-                images: [
-                  'https://nest-public-avatar.s3.eu-central-1.amazonaws.com/Screenshot+2023-05-05+at+09.47.43.png',
-                ],
-              },
-              unit_amount: 3 * 100,
-            },
-            // price: 'price_1N5l2vIW91ghbnFjg7L4b8HR',
-            quantity: 4,
-          },
-        ],
-        // payment_intent_data: {
-        //   metadata: {
-        //     subscription_id: '3апдаыипавдипдэва',
-        //   },
-        // },
-        success_url: 'http://localhost:5003/payments/payments/stripe/success.html?session_id={CHECKOUT_SESSION_ID}',
-        cancel_url: `http://localhost:5003/payments/canceled.html`,
-      });
-      return session;
-    } catch (e) {
-      console.log(e, 'error');
-    }
-  }
+  /*
 
   async testCreateSession2() {
     // For a fully working example, please see:
