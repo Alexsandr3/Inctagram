@@ -30,6 +30,10 @@ export class MailManager {
     await this.emailAdapter.sendEmail(email, url, subject, template);
   }
 
+  /**
+   * Send email to user with success registration message
+   * @param email
+   */
   async sendMailWithSuccessRegistration(email: string) {
     const url = `${this.configService.CLIENT_URL}`;
     const subject = '>Welcome to Inctagram: Your Registration is Complete';
@@ -43,9 +47,9 @@ export class MailManager {
    * @param code
    */
   async sendUserConfirmationCodeForExternalAccount(email: string, code: string) {
-    const url = `${this.configService.CLIENT_URL}/registration/external-account?code=${code}`;
+    const url = `${this.configService.CLIENT_URL}/auth/registration/external-account?code=${code}`;
     const subject = 'Finish registration';
-    const template = `./confirmation.html`; //todo sendUserConfirmationCodeForExternalAccount
+    const template = `./confirmAddition.html`;
     await this.emailAdapter.sendEmail(email, url, subject, template);
   }
 }
