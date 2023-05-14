@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import {
   ActiveSubscriptionViewModel,
   CurrentActiveSubscriptionsViewModel,
-} from '../api/view-model/current-subscription-view.dto';
+} from '../api/view-model/current-subscriptions-view.dto';
 import { PaymentsViewModel } from '../api/view-model/payments-view.dto';
 import { StatusSubscriptionType } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
@@ -26,7 +26,14 @@ export class SubscriptionsQueryRepository implements ISubscriptionsQueryReposito
     });
     return new CurrentActiveSubscriptionsViewModel(
       subscriptions.map(
-        sub => new ActiveSubscriptionViewModel(sub.businessAccountId, sub.externalSubId, sub.startDate, sub.endDate),
+        sub =>
+          new ActiveSubscriptionViewModel(
+            sub.businessAccountId,
+            sub.externalSubId,
+            sub.startDate,
+            sub.endDate,
+            sub.autoRenew,
+          ),
       ),
     );
   }
