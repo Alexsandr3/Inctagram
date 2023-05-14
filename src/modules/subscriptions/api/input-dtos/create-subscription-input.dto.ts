@@ -1,4 +1,4 @@
-import { IsBoolean, IsEnum, IsNumber } from 'class-validator';
+import { IsEnum, IsNumber } from 'class-validator';
 import { SubscriptionType } from '../../types/subscription.type';
 import { PaymentMethod } from '../../types/payment.method';
 
@@ -11,7 +11,4 @@ export class CreateSubscriptionInputDto {
 
   @IsNumber()
   amount: number;
-
-  @IsBoolean()
-  autoRenew: boolean;
 }

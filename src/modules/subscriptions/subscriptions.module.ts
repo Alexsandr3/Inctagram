@@ -13,8 +13,9 @@ import {
   SubscriptionsQueryRepository,
 } from './infrastructure/subscriptions-query.repository';
 import { GetSubscriptionsController } from './api/get-subscriptions.controllers';
+import { CanceledAutoRenewalUseCase } from './application/use-cases/canceled-auto-renewal-use.case';
 
-const useCases = [CreateSubscriptionUseCase];
+const useCases = [CreateSubscriptionUseCase, CanceledAutoRenewalUseCase];
 const handlers = [SuccessSubscriptionHandler, FailedSubscriptionHandler];
 
 @Module({

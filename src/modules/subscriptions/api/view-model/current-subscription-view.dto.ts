@@ -1,13 +1,20 @@
-export class CurrentSubscriptionViewModel {
+export class ActiveSubscriptionViewModel {
   userId: number;
-  customerId: string;
-  dateOfPayment: Date;
+  subscriptionId: string;
+  dateStartOfSubscription: Date;
   endDateOfSubscription: Date;
 
-  constructor(userId: number, customerId: string, dateOfPayment: Date, endDateOfSubscription: Date) {
+  constructor(userId: number, subscriptionId: string, startDate: Date, endDate: Date) {
     this.userId = userId;
-    this.customerId = customerId;
-    this.dateOfPayment = dateOfPayment;
-    this.endDateOfSubscription = endDateOfSubscription;
+    this.subscriptionId = subscriptionId;
+    this.dateStartOfSubscription = startDate;
+    this.endDateOfSubscription = endDate;
+  }
+}
+
+export class CurrentActiveSubscriptionsViewModel {
+  data: ActiveSubscriptionViewModel[];
+  constructor(data: ActiveSubscriptionViewModel[]) {
+    this.data = data;
   }
 }

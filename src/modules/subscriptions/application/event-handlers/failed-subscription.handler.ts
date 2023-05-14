@@ -11,7 +11,9 @@ export class FailedSubscriptionHandler {
   @OnEvent(PaymentEventType.failedSubscription)
   async handle(event: StripeEventType) {
     // find subscription where payments contains paymentSessionId
-    const subscriptionEntity = await this.subscriptionsRepository.getSubscriptionByPaymentSessionId(event.id);
+    const subscriptionEntity = await this.subscriptionsRepository.getSubscriptionWithStatusPendingByPaymentSessionId(
+      event.id,
+    );
     // update subscription status to active
     subscriptionEntity.changeStatusToFailing(event);
     //save subscription

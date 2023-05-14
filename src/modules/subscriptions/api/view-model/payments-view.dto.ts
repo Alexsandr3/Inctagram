@@ -3,7 +3,7 @@ import { PaymentMethod } from '../../types/payment.method';
 
 export class PaymentsViewModel {
   userId: number;
-  customerId: string;
+  subscriptionId: string;
   dateOfPayment: Date;
   endDateOfSubscription: Date;
   price: number;
@@ -12,7 +12,7 @@ export class PaymentsViewModel {
 
   constructor(
     userId: number,
-    customerId: string,
+    subscriptionId: string,
     dateOfPayment: Date,
     endDateOfSubscription: Date,
     price: number,
@@ -20,7 +20,7 @@ export class PaymentsViewModel {
     paymentType: PaymentMethod,
   ) {
     this.userId = userId;
-    this.customerId = customerId;
+    this.subscriptionId = subscriptionId;
     this.dateOfPayment = dateOfPayment;
     this.endDateOfSubscription = endDateOfSubscription;
     this.price = price;

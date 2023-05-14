@@ -1,31 +1,33 @@
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
-import { CurrentSubscriptionViewModel } from '../api/view-model/current-subscription-view.dto';
+import {
+  ActiveSubscriptionViewModel,
+  CurrentActiveSubscriptionsViewModel,
+} from '../api/view-model/current-subscription-view.dto';
 import { PaymentsViewModel } from '../api/view-model/payments-view.dto';
-import { plainToInstance } from 'class-transformer';
 import { StatusSubscriptionType } from '@prisma/client';
+import { plainToInstance } from 'class-transformer';
 
 export abstract class ISubscriptionsQueryRepository {
-  abstract getCurrentSubscription(userId: number): Promise<CurrentSubscriptionViewModel>;
+  abstract getCurrentSubscriptions(userId: number): Promise<CurrentActiveSubscriptionsViewModel>;
   abstract getMyPayments(userId: number): Promise<PaymentsViewModel[]>;
 }
 @Injectable()
 export class SubscriptionsQueryRepository implements ISubscriptionsQueryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async getCurrentSubscription(userId: number): Promise<CurrentSubscriptionViewModel> {
-    console.log('userId', userId);
-    const subscription = await this.prisma.subscription.findFirst({
+  async getCurrentSubscriptions(userId: number): Promise<CurrentActiveSubscriptionsViewModel> {
+    //get current active subscriptions
+    const subscriptions = await this.prisma.subscription.findMany({
       where: {
         businessAccountId: userId,
-        status: 'ACTIVE',
+        status: StatusSubscriptionType.ACTIVE,
       },
     });
-    return new CurrentSubscriptionViewModel(
-      subscription.businessAccountId,
-      subscription.customerId,
-      subscription.dateOfPayment,
-      subscription.endDate,
+    return new CurrentActiveSubscriptionsViewModel(
+      subscriptions.map(
+        sub => new ActiveSubscriptionViewModel(sub.businessAccountId, sub.externalSubId, sub.startDate, sub.endDate),
+      ),
     );
   }
 
@@ -48,10 +50,10 @@ export class SubscriptionsQueryRepository implements ISubscriptionsQueryReposito
       subscription =>
         new PaymentsViewModel(
           userId,
-          subscription.customerId,
+          subscription.externalSubId,
           subscription.dateOfPayment,
           subscription.endDate,
-          subscription.price,
+          subscription.payments[0].amount,
           subscription.type,
           subscription.paymentType,
         ),

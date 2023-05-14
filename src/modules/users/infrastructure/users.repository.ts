@@ -120,6 +120,9 @@ export class PrismaUsersRepository implements IUsersRepository {
     await this.prisma.businessAccount.create({
       data: {
         userId: createdUser.id,
+        subscriptions: {
+          create: [],
+        },
       },
     });
   }
