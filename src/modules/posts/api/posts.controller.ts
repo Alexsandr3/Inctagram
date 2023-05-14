@@ -33,7 +33,7 @@ import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { PostViewModel } from './view-models/post-view.dto';
 import { ProfileViewModel } from '../../users/api/view-models/profile-view.dto';
 import { NotificationCode } from '../../../configuration/exception.filter';
-import { CheckerNotificationErrors } from '../../../main/validators/checker-notification.errors';
+import { NotificationErrors } from '../../../main/validators/notification.errors';
 import { DeletePostCommand } from '../application/use-cases/delete-post-use.case';
 import { PostStatus } from '../domain/post.entity';
 import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
@@ -109,7 +109,7 @@ export class PostsController {
       notification.addErrorFromNotificationException(
         new NotificationException(`Post with id: ${postId} not found`, 'post', NotificationCode.NOT_FOUND),
       );
-      throw new CheckerNotificationErrors('Error', notification);
+      throw new NotificationErrors(notification);
     }
     return foundPost;
   }

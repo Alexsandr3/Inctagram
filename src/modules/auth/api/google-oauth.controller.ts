@@ -18,11 +18,15 @@ import { RegisterUserFromExternalAccountAndAuthorizeIfNewCommand } from '../appl
 import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
 import { GoogleAuthorizationGuard } from './guards/google-authorization.guard';
+import { ApiConfigService } from '../../api-config/api.config.service';
 
 @ApiTags('Google-OAuth2')
 @Controller('auth/google')
 export class GoogleOAuthController {
-  constructor(private readonly commandBus: CommandBus) {}
+  private clientUrl: string;
+  constructor(private readonly commandBus: CommandBus, private readonly apiConfigService: ApiConfigService) {
+    this.clientUrl = apiConfigService.CLIENT_URL;
+  }
 
   @SwaggerDecoratorsByGoogleAuthorization()
   @Get('authorization')
@@ -44,7 +48,7 @@ export class GoogleOAuthController {
     );
     const refreshToken = notification.getData().refreshToken;
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
-    res.redirect(`${refererUrl}auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
+    res.redirect(`${this.clientUrl}/auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
   }
 
   @SwaggerDecoratorsByGoogleRegistration()
@@ -73,7 +77,7 @@ export class GoogleOAuthController {
       res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
     }
 
-    res.redirect(`${refererUrl}auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
+    res.redirect(`${this.clientUrl}/auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
     return;
   }
 }

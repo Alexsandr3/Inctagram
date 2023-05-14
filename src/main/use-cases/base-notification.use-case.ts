@@ -1,7 +1,6 @@
 import { ResultNotification } from '../validators/result-notification';
-import { CheckerNotificationErrors } from '../validators/checker-notification.errors';
+import { NotificationErrors } from '../validators/notification.errors';
 import { Logger } from '@nestjs/common';
-import { OAuthException } from '../validators/oauth.exception';
 
 export abstract class BaseNotificationUseCase<TCommand, TResult> {
   private readonly logger = new Logger(BaseNotificationUseCase.name);
@@ -16,16 +15,13 @@ export abstract class BaseNotificationUseCase<TCommand, TResult> {
       const result = await this.executeUseCase(command);
       if (result) notification.addData(result);
     } catch (e) {
-      if (e instanceof OAuthException) {
-        throw e;
-      }
       notification.addErrorFromNotificationException(e);
       // console.log('BaseNotificationUseCase: ', e);
       this.logger.log('BaseNotificationUseCase:', +JSON.stringify(command));
       this.logger.error(JSON.stringify(e));
     }
 
-    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
+    if (notification.hasError()) throw new NotificationErrors(notification);
 
     return notification;
   }

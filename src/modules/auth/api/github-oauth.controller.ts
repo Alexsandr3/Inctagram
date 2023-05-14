@@ -18,12 +18,15 @@ import { GitHubRegistrationGuard } from './guards/github-registration.guard';
 import { RegisterUserFromExternalAccountAndAuthorizeIfNewCommand } from '../application/use-cases/register-user-from-external-account-and-authorize-if-new-use.case';
 import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { ApiConfigService } from '../../api-config/api.config.service';
 
 @ApiTags('GitHub-OAuth2')
 @Controller('auth/github')
 export class GitHubOauthController {
-  constructor(private readonly commandBus: CommandBus) {}
-
+  private clientUrl: string;
+  constructor(private readonly commandBus: CommandBus, private readonly apiConfigService: ApiConfigService) {
+    this.clientUrl = apiConfigService.CLIENT_URL;
+  }
   @SwaggerDecoratorsByGitHubAuthorization()
   @Get('authorization')
   @UseGuards(GitHubAuthorizationGuard)
@@ -44,7 +47,7 @@ export class GitHubOauthController {
     );
     const refreshToken = notification.getData().refreshToken;
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
-    res.redirect(`${refererUrl}auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
+    res.redirect(`${this.clientUrl}/auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
   }
 
   @SwaggerDecoratorsByGitHubRegistration()
@@ -73,7 +76,7 @@ export class GitHubOauthController {
       res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
     }
 
-    res.redirect(`${refererUrl}auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
+    res.redirect(`${this.clientUrl}/auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
     return;
   }
 }
