@@ -1,6 +1,6 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { Response } from 'express';
-import { NotificationErrors } from '../main/validators/notification.errors';
+import { CheckerNotificationErrors } from '../main/validators/checker-notification.errors';
 import { ApiErrorResultDto } from '../main/validators/api-error-result.dto';
 import { OAuthException, OAuthFlowType } from '../main/validators/oauth.exception';
 
@@ -52,9 +52,9 @@ export enum NotificationCode {
   SERVER_ERROR = 5,
 }
 
-@Catch(NotificationErrors)
+@Catch(CheckerNotificationErrors)
 export class ErrorExceptionFilter implements ExceptionFilter {
-  catch(exception: NotificationErrors, host: ArgumentsHost) {
+  catch(exception: CheckerNotificationErrors, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const notificationCode = exception.resultNotification.getCode();

@@ -1,5 +1,5 @@
 import { ResultNotification } from '../validators/result-notification';
-import { NotificationErrors } from '../validators/notification.errors';
+import { CheckerNotificationErrors } from '../validators/checker-notification.errors';
 import { Logger } from '@nestjs/common';
 import { OAuthException } from '../validators/oauth.exception';
 
@@ -25,7 +25,7 @@ export abstract class BaseNotificationUseCase<TCommand, TResult> {
       this.logger.error(JSON.stringify(e));
     }
 
-    if (notification.hasError()) throw new NotificationErrors('Error', notification);
+    if (notification.hasError()) throw new CheckerNotificationErrors('Error', notification);
 
     return notification;
   }
