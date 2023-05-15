@@ -8,6 +8,8 @@ export abstract class ISessionsRepository {
   abstract saveSession(session: SessionEntity): Promise<void>;
   abstract deleteSessionByDeviceId(deviceId: number): Promise<void>;
   abstract newDeviceId(): Promise<SessionEntity>;
+
+  abstract deleteAllSessionsExceptCurrent(deviceId: number, userId: number): Promise<void>;
 }
 
 @Injectable()
@@ -41,5 +43,14 @@ export class PrismaSessionsRepository implements ISessionsRepository {
       data: {},
     });
     return plainToInstance(SessionEntity, session);
+  }
+
+  async deleteAllSessionsExceptCurrent(deviceId: number, userId: number): Promise<void> {
+    // remove all sessions except current where userId = userId and deviceId != deviceId
+    await this.prisma.session.deleteMany({
+      where: {
+        AND: [{ userId: { equals: userId } }, { deviceId: { not: { equals: deviceId } } }],
+      },
+    });
   }
 }
