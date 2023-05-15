@@ -59,11 +59,14 @@ export class CleanupRepository {
     });
   }
 
-  async getPostsWithStatusDeleted() {
+  async getPostsWithStatusDeleted(tenDaysAgo: Date) {
     //find posts with status deleted and postImage with status deleted
     return this.prisma.post.findMany({
       where: {
         status: Status.DELETED,
+        updatedAt: {
+          lte: tenDaysAgo,
+        },
       },
       include: {
         images: {

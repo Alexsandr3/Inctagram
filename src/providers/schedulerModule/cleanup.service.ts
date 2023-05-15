@@ -28,9 +28,9 @@ export class CleanupService {
     await this.cleanupRepository.saveSubscriptions(subscriptions);
   }
 
-  async removePostWithStatusDeleted() {
+  async removePostWithStatusDeleted(tenDaysAgo: Date) {
     //find posts with status deleted
-    const posts = await this.cleanupRepository.getPostsWithStatusDeleted();
+    const posts = await this.cleanupRepository.getPostsWithStatusDeleted(tenDaysAgo);
     if (posts.length === 0) return;
     //find keys of images for delete from s3
     const keys = posts.reduce((imageUrls, post) => {
