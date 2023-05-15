@@ -488,7 +488,12 @@ describe('OAuth2 -  e2e', () => {
     await authHelper.checkRefreshTokenInCookieAndReturn(response);
 
     const myInfo = await authHelper.me(accessToken);
-    expect(myInfo).toEqual({ userId: expect.any(Number), userName: googleDto.displayName, email: googleDto.email });
+    expect(myInfo).toEqual({
+      userId: expect.any(Number),
+      userName: googleDto.displayName,
+      email: googleDto.email,
+      hasBusinessAccount: false,
+    });
   });
   it('51 - / (GET) - should return 302 and register user by Google account with correcting the name', async () => {
     const dto2: RegisterUserFromExternalAccountInputDto = {
@@ -579,7 +584,7 @@ describe('OAuth2 -  e2e', () => {
     });
 
     const response = await authHelper.googleAuthorization();
-    expect(response.headers['location']).toBe(`${apiConfigService.CLIENT_URL}/auth/login?status_code=204`);
+    expect(response.headers['location']).toBe(`${apiConfigService.CLIENT_URL}/auth/login?status_code=200`);
 
     refreshToken = await authHelper.checkRefreshTokenInCookieAndReturn(response);
   });
@@ -637,7 +642,7 @@ describe('OAuth2 -  e2e', () => {
     });
 
     const response = await authHelper.githubAuthorization();
-    expect(response.headers['location']).toBe(`${apiConfigService.CLIENT_URL}/auth/login?status_code=204`);
+    expect(response.headers['location']).toBe(`${apiConfigService.CLIENT_URL}/auth/login?status_code=200`);
 
     refreshToken = await authHelper.checkRefreshTokenInCookieAndReturn(response);
   });

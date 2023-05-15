@@ -47,7 +47,7 @@ export class GitHubOauthController {
     );
     const refreshToken = notification.getData().refreshToken;
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true, sameSite: 'none' });
-    res.redirect(`${this.clientUrl}/auth/login?status_code=${HTTP_Status.NO_CONTENT_204}`);
+    res.redirect(`${this.clientUrl}/auth/login?status_code=${HTTP_Status.OK_200}`);
   }
 
   @SwaggerDecoratorsByGitHubRegistration()

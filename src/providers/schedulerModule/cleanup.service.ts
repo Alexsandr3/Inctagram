@@ -43,4 +43,9 @@ export class CleanupService {
     //remove posts by ids
     await this.cleanupRepository.removePostsByIds(ids);
   }
+
+  async removeExpiredSessions(currentDate: number) {
+    //need delete sessions if exp date less than current date
+    await this.cleanupRepository.removeExpiredSessions(currentDate);
+  }
 }

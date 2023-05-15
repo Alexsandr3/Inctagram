@@ -97,4 +97,15 @@ export class CleanupRepository {
       }),
     ]);
   }
+
+  async removeExpiredSessions(currentDate: number) {
+    //need delete sessions if exp date less than current date
+    await this.prisma.session.deleteMany({
+      where: {
+        exp: {
+          lte: currentDate,
+        },
+      },
+    });
+  }
 }

@@ -37,4 +37,8 @@ export class SessionEntity implements Session {
     session.deviceName = param.deviceName;
     return session;
   }
+
+  hasOwner(userId: number) {
+    return this.userId === userId;
+  }
 }
