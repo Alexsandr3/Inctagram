@@ -42,6 +42,8 @@ export abstract class IUsersRepository {
   abstract updateUserExternalAccount(user: UserEntity);
 
   abstract deleteUserExternalAccount(foundUser: UserEntity, providerId: string);
+
+  abstract updateExistingUser(user: UserEntity): Promise<void>;
 }
 
 @Injectable()
@@ -347,5 +349,14 @@ export class PrismaUsersRepository implements IUsersRepository {
 
   async deleteUserExternalAccount(user: UserEntity, providerId: string) {
     await this.prisma.user.update({ where: { id: user.id }, data: { externalAccounts: { delete: { providerId } } } });
+  }
+
+  async updateExistingUser(user: UserEntity): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data: {
+        hasBusinessAccount: user.hasBusinessAccount,
+      },
+    });
   }
 }

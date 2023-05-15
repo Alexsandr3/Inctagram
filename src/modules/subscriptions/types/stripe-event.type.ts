@@ -1,3 +1,6 @@
+/**
+ * Stripe Event Type from Stripe API
+ */
 export type StripeEventType = {
   id: string;
   object: string;

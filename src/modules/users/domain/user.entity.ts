@@ -78,4 +78,12 @@ export class UserEntity extends BaseDateEntity implements User {
     const externalAccount = this.externalAccounts.find(a => a.providerId === providerId);
     externalAccount.confirmAccount();
   }
+
+  activateBusinessAccount() {
+    this.hasBusinessAccount = true;
+  }
+
+  deactivateBusinessAccount() {
+    this.hasBusinessAccount = false;
+  }
 }

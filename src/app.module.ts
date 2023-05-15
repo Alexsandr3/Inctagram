@@ -15,6 +15,7 @@ import { PaymentsModule } from './providers/payment/payments.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { InboxEventsModule } from './providers/inboxEvents/inbox-events.module';
+import { SchedulerModule } from './providers/schedulerModule/scheduler.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { InboxEventsModule } from './providers/inboxEvents/inbox-events.module';
     PaymentsModule,
     SubscriptionsModule,
     EventEmitterModule.forRoot(),
+    SchedulerModule,
     InboxEventsModule,
   ],
   controllers: [AppController],

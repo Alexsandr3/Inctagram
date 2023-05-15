@@ -35,25 +35,17 @@ export class PaymentStripeService {
       payment_method_types: ['card'],
       success_url: `${this.serverUrl}` + '/profile/settings/edit?success=true',
       cancel_url: `${this.serverUrl}/profile/settings/edit?success=false`,
-      expires_at: Math.floor(Date.now() / 1000) + 3600 * 1, // Configured to expire after 1 hours
+      expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // Configured to expire after 30 minutes.
       customer: params.customerId,
     } as Stripe.Checkout.SessionCreateParams;
+
     //check customerId coming
     if (!params.customerId) {
       //create customer
       const customer = await this.createCustomer(params.userName, params.email);
       defaultParams['customer'] = customer.id;
     }
-    //check if user has subscription
-    const subscriptions = await this.findSubscriptions(defaultParams['customer']);
     try {
-      if (subscriptions.data.length > 0) {
-        //check if subscription is active
-        if (subscriptions.data[0].status === 'active') {
-          //cancel subscription
-          await this.cancelSubscription(subscriptions.data[0].id);
-        }
-      }
       // Prepare line items from the subscription type
       defaultParams.line_items = this._getLineItems(params.subscriptionType);
       // Create the checkout session
@@ -90,5 +82,14 @@ export class PaymentStripeService {
     return this.stripe.subscriptions.update(subscriptionId, {
       cancel_at_period_end: true,
     });
+  }
+
+  async deactivateLastActiveSubscription(customerId: string, subscriptionId: string) {
+    const subscriptions = await this.findSubscriptions(customerId);
+    //get subscription where id is not equal to customerId
+    const subscription = subscriptions.data.find(subscription => subscription.id !== subscriptionId);
+    if (!subscription) return;
+    //cancel subscription
+    await this.cancelSubscription(subscription.id);
   }
 }

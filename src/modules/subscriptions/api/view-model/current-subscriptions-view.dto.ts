@@ -1,14 +1,14 @@
 export class ActiveSubscriptionViewModel {
   userId: number;
   subscriptionId: string;
-  dateStartOfSubscription: Date;
+  dateOfPayment: Date;
   endDateOfSubscription: Date;
   autoRenewal: boolean;
 
-  constructor(userId: number, subscriptionId: string, startDate: Date, endDate: Date, autoRenewal: boolean) {
+  constructor(userId: number, subscriptionId: string, dateOfPayment: Date, endDate: Date, autoRenewal: boolean) {
     this.userId = userId;
     this.subscriptionId = subscriptionId;
-    this.dateStartOfSubscription = startDate;
+    this.dateOfPayment = dateOfPayment;
     this.endDateOfSubscription = endDate;
     this.autoRenewal = autoRenewal;
   }
