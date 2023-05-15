@@ -12,6 +12,7 @@ import { GoogleAuthorizationGuard } from '../../src/modules/auth/api/guards/goog
 import { IUsersRepository } from '../../src/modules/users/infrastructure/users.repository';
 import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';
 import { GitHubAuthorizationGuard } from '../../src/modules/auth/api/guards/github-authorization.guard';
+import { ApiConfigService } from '../../src/modules/api-config/api.config.service';
 
 jest.setTimeout(120000);
 describe('Authorisation -  e2e', () => {
@@ -232,16 +233,11 @@ describe('Authorisation -  e2e', () => {
   it('32 - / (POST) - should return 200 if password and email correct', async () => {
     const command = { password: correctPassword, email: correctEmail };
     const response = await authHelper.login(command, { expectedCode: 200 });
-    refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+    refreshToken = await authHelper.checkRefreshTokenInCookieAndReturn(response);
 
     expect(response.body.accessToken).toBeDefined();
     expect(response.body).toEqual({ accessToken: expect.any(String) });
     accessToken = response.body.accessToken;
-    expect(response.headers['set-cookie']).toBeDefined();
-    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
-    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
-    expect(response.headers['set-cookie'][0]).toContain('Path=/');
-    expect(response.headers['set-cookie'][0]).toContain('Secure');
   });
 
   //Get myInfo
@@ -297,13 +293,9 @@ describe('Authorisation -  e2e', () => {
   it('39 - / (POST) - should return 200 if password and email correct', async () => {
     const command = { password: 'newPassword', email: correctEmail };
     const response = await authHelper.login(command, { expectedCode: 200 });
-    freshRefreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+    freshRefreshToken = await authHelper.checkRefreshTokenInCookieAndReturn(response);
+
     expect(response.body.accessToken).toBeDefined();
-    expect(response.headers['set-cookie']).toBeDefined();
-    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
-    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
-    expect(response.headers['set-cookie'][0]).toContain('Path=/');
-    expect(response.headers['set-cookie'][0]).toContain('Secure');
   });
 
   //Incorrect data
@@ -328,15 +320,11 @@ describe('Authorisation -  e2e', () => {
     expect(response.messages[0].field).toBe('email');
   });
 
-  //Refresh token
+  //Update refresh token
   it('43 - / (POST) - should return 200 if refreshToken correct', async () => {
     const response = await authHelper.refreshToken({ expectedCode: 200, expectedBody: freshRefreshToken });
     expect(response.body.accessToken).toBeDefined();
-    expect(response.headers['set-cookie']).toBeDefined();
-    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
-    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
-    expect(response.headers['set-cookie'][0]).toContain('Path=/');
-    expect(response.headers['set-cookie'][0]).toContain('Secure');
+    await authHelper.checkRefreshTokenInCookieAndReturn(response);
   });
   it.skip('44 - / (POST) - should return 401 if refreshToken expired', async () => {
     jest.useFakeTimers();
@@ -434,10 +422,12 @@ describe('OAuth2 -  e2e', () => {
   let prismaUsersRepository: IUsersRepository;
   let mailManager: MailManager;
   let emailAdapter: EmailAdapter;
+  let apiConfigService: ApiConfigService;
 
   beforeAll(async () => {
     app = await getAppForE2ETesting({ useRecaptcha: true });
     authHelper = new AuthHelper(app);
+    apiConfigService = app.get<ApiConfigService>(ApiConfigService);
     googleRegistrationGuard = app.get<GoogleRegistrationGuard>(GoogleRegistrationGuard);
     gitHubRegistrationGuard = app.get<GitHubRegistrationGuard>(GitHubRegistrationGuard);
     prismaUsersRepository = app.get<IUsersRepository>(IUsersRepository);
@@ -471,11 +461,13 @@ describe('OAuth2 -  e2e', () => {
   //auth/password-recovery with recaptcha
 
   // Registration by Google account
-  it('50 - / (GET) - should return 204 and register user by Google account', async () => {
+  it('50.1 - / (GET) - should return 204 in header["location"], register and authorize user by Google account', async () => {
     mockGuardForGoogleRegistration(googleDto);
     jest.spyOn(emailAdapter, 'sendEmail');
 
-    await authHelper.googleRegistration();
+    const response = await authHelper.googleRegistration();
+    expect(response.headers['location']).toBe(`${apiConfigService.CLIENT_URL}/auth/login?status_code=204`);
+    refreshToken = await authHelper.checkRefreshTokenInCookieAndReturn(response);
 
     const user = await prismaUsersRepository.findUserByEmail(googleDto.email);
     userId = user.id;
@@ -488,7 +480,17 @@ describe('OAuth2 -  e2e', () => {
     expect(user.externalAccounts[0].providerId).toBe(googleDto.providerId);
     expect(emailAdapter.sendEmail).toBeCalled();
   });
-  it('51 - / (GET) - should return 204 and register user by Google account with correcting the name', async () => {
+  it('50.2 - / (POST, GET) - should update tokens and then get "me"', async () => {
+    const response = await authHelper.refreshToken({ expectedBody: refreshToken });
+
+    accessToken = response.body.accessToken;
+    expect(accessToken).toBeDefined();
+    await authHelper.checkRefreshTokenInCookieAndReturn(response);
+
+    const myInfo = await authHelper.me(accessToken);
+    expect(myInfo).toEqual({ userId: expect.any(Number), userName: googleDto.displayName, email: googleDto.email });
+  });
+  it('51 - / (GET) - should return 302 and register user by Google account with correcting the name', async () => {
     const dto2: RegisterUserFromExternalAccountInputDto = {
       displayName: 'Cho',
       email: 'test2@test.goo',
@@ -558,10 +560,11 @@ describe('OAuth2 -  e2e', () => {
     const user6 = await prismaUsersRepository.findUserByEmail(dto6.email);
     expect(user6.userName).toBe(dto6.displayName + '_0');
   });
-  it('52 - / (GET) - should return 400 if user is already registered', async () => {
+  it('52 - / (GET) - should return 400 in header["location"] if user is already registered', async () => {
     mockGuardForGoogleRegistration(googleDto);
 
-    await authHelper.googleRegistration({ expectedCode: HTTP_Status.BAD_REQUEST_400 });
+    const response = await authHelper.googleRegistration();
+    expect(response.headers['location']).toContain(`${apiConfigService.CLIENT_URL}/auth/registration?status_code=400`);
   });
   // Authorization by Google account
   it('53 - / (GET) - should return 204 and authorize user by Google account', async () => {
@@ -576,17 +579,9 @@ describe('OAuth2 -  e2e', () => {
     });
 
     const response = await authHelper.googleAuthorization();
+    expect(response.headers['location']).toBe(`${apiConfigService.CLIENT_URL}/auth/login?status_code=204`);
 
-    refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
-
-    expect(response.body.accessToken).toBeDefined();
-    expect(response.body).toEqual({ accessToken: expect.any(String) });
-    accessToken = response.body.accessToken;
-    expect(response.headers['set-cookie']).toBeDefined();
-    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
-    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
-    expect(response.headers['set-cookie'][0]).toContain('Path=/');
-    expect(response.headers['set-cookie'][0]).toContain('Secure');
+    refreshToken = await authHelper.checkRefreshTokenInCookieAndReturn(response);
   });
   // Add Google account to existing user
   it('54 - / (GET) - should return 204 and add Google account to existing user', async () => {
@@ -605,16 +600,7 @@ describe('OAuth2 -  e2e', () => {
 
     const user = await prismaUsersRepository.findUserByEmail(dto.email);
 
-    expect(user.userName).not.toBe(dto.displayName);
-    expect(user.email).toBe(dto.email.toLowerCase());
-    expect(user.isConfirmed).toBe(true);
-    expect(user.externalAccounts.length).toBe(2);
-    const addedExternalAccount = user.externalAccounts.find(a => a.providerId === dto.providerId);
-    expect(addedExternalAccount.displayName).toBe(dto.displayName);
-    expect(addedExternalAccount.email).toBe(dto.email.toLowerCase());
-    expect(addedExternalAccount.provider).toBe(dto.provider);
-    expect(addedExternalAccount.providerId).toBe(dto.providerId);
-    expect(addedExternalAccount.isConfirmed).toBe(false);
+    authHelper.checkAddedExternalAccount(dto, user);
 
     confirmationCode = sendEmailConfirmationMessage.mock.lastCall[1];
     expect(emailAdapter.sendEmail).toBeCalled();
@@ -623,7 +609,9 @@ describe('OAuth2 -  e2e', () => {
   it('55 - / (GET) - should return 204 and register user by GitHub account', async () => {
     mockGuardForGitHubRegistration(gitHubDto);
 
-    await authHelper.gitHubRegistration();
+    const response = await authHelper.gitHubRegistration();
+    expect(response.headers['location']).toBe(`${apiConfigService.CLIENT_URL}/auth/login?status_code=204`);
+    await authHelper.checkRefreshTokenInCookieAndReturn(response);
 
     const user = await prismaUsersRepository.findUserByEmail(gitHubDto.email);
     userId = user.id;
@@ -649,17 +637,9 @@ describe('OAuth2 -  e2e', () => {
     });
 
     const response = await authHelper.githubAuthorization();
+    expect(response.headers['location']).toBe(`${apiConfigService.CLIENT_URL}/auth/login?status_code=204`);
 
-    refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
-
-    expect(response.body.accessToken).toBeDefined();
-    expect(response.body).toEqual({ accessToken: expect.any(String) });
-    accessToken = response.body.accessToken;
-    expect(response.headers['set-cookie']).toBeDefined();
-    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
-    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
-    expect(response.headers['set-cookie'][0]).toContain('Path=/');
-    expect(response.headers['set-cookie'][0]).toContain('Secure');
+    refreshToken = await authHelper.checkRefreshTokenInCookieAndReturn(response);
   });
   // Add GitHub account to existing user
   it('57 - / (GET) - should return 204 and add GitHub account to existing user', async () => {
@@ -675,21 +655,18 @@ describe('OAuth2 -  e2e', () => {
 
     const user = await prismaUsersRepository.findUserByEmail(dto.email);
 
-    expect(user.userName).not.toBe(dto.displayName);
-    expect(user.email).toBe(dto.email.toLowerCase());
-    expect(user.isConfirmed).toBe(true);
-    expect(user.externalAccounts.length).toBe(2);
-    const addedExternalAccount = user.externalAccounts.find(a => a.providerId === dto.providerId);
-    expect(addedExternalAccount.displayName).toBe(dto.displayName);
-    expect(addedExternalAccount.email).toBe(dto.email.toLowerCase());
-    expect(addedExternalAccount.provider).toBe(dto.provider);
-    expect(addedExternalAccount.providerId).toBe(dto.providerId);
-    expect(addedExternalAccount.isConfirmed).toBe(false);
+    authHelper.checkAddedExternalAccount(dto, user);
   });
   // Confirm adding external account to user
-  it('60 - / (POST) - should return 204 if confirmationCode is correct', async () => {
+  it('60 - / (POST) - should return 204 if confirmationCode is correct and authorize user', async () => {
     const command = { confirmationCode: confirmationCode };
-    await authHelper.confirmAddingExternalAccount(command);
+    const response = await authHelper.confirmAddingExternalAccount(command);
+
+    refreshToken = await authHelper.checkRefreshTokenInCookieAndReturn(response);
+
+    expect(response.body.accessToken).toBeDefined();
+    expect(response.body).toEqual({ accessToken: expect.any(String) });
+    accessToken = response.body.accessToken;
   });
   it('61 - / (POST) - should return 400 if adding external account is already confirmed', async () => {
     const command = { confirmationCode: confirmationCode };

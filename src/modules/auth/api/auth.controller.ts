@@ -135,7 +135,7 @@ export class AuthController {
    */
   @SwaggerDecoratorsByConfirmAddingExternalAccount()
   @Post('confirm-external-account')
-  @HttpCode(HTTP_Status.NO_CONTENT_204)
+  @HttpCode(HTTP_Status.OK_200)
   async confirmAddingExternalAccount(
     @Ip() ip: string,
     @Headers('user-agent') deviceName = 'unknown',

@@ -14,6 +14,8 @@ import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { MeViewDto } from '../../src/modules/auth/api/view-dto/me.view.dto';
 import { googleEndpoints } from '../../src/modules/auth/api/routing/google.routing';
 import { githubEndpoints } from '../../src/modules/auth/api/routing/github.routing';
+import { UserEntity } from '../../src/modules/users/domain/user.entity';
+import { RegisterUserFromExternalAccountInputDto } from '../../src/modules/auth/api/input-dto/register-user-from-external-account-input.dto';
 
 export class AuthHelper {
   constructor(private readonly app: INestApplication) {}
@@ -40,23 +42,21 @@ export class AuthHelper {
     config: {
       expectedBody?: any;
       expectedCode?: number;
-    } = { expectedCode: HTTP_Status.NO_CONTENT_204 },
-  ): Promise<any> {
+    } = { expectedCode: HTTP_Status.FOUND_302 },
+  ): Promise<request.Test> {
     // default expected code is 204 or code mistake from config
     // send request for create user
-    const response = await request(this.app.getHttpServer())
+    return request(this.app.getHttpServer())
       .get(googleEndpoints.googleRegistrationHandler())
       .expect(config.expectedCode);
-
-    return response.body;
   }
 
   async googleAuthorization(
     config: {
       expectedBody?: any;
       expectedCode?: number;
-    } = { expectedCode: HTTP_Status.OK_200 },
-  ): Promise<any> {
+    } = { expectedCode: HTTP_Status.FOUND_302 },
+  ): Promise<request.Test> {
     // default expected code is 200 or code mistake from config
     // send request for authorize user
     return request(this.app.getHttpServer())
@@ -68,23 +68,21 @@ export class AuthHelper {
     config: {
       expectedBody?: any;
       expectedCode?: number;
-    } = { expectedCode: HTTP_Status.NO_CONTENT_204 },
-  ): Promise<any> {
+    } = { expectedCode: HTTP_Status.FOUND_302 },
+  ): Promise<request.Test> {
     // default expected code is 204 or code mistake from config
     // send request for create user
-    const response = await request(this.app.getHttpServer())
+    return request(this.app.getHttpServer())
       .get(githubEndpoints.githubRegistrationHandler())
       .expect(config.expectedCode);
-
-    return response.body;
   }
 
   async githubAuthorization(
     config: {
       expectedBody?: any;
       expectedCode?: number;
-    } = { expectedCode: HTTP_Status.OK_200 },
-  ): Promise<any> {
+    } = { expectedCode: HTTP_Status.FOUND_302 },
+  ): Promise<request.Test> {
     // default expected code is 200 or code mistake from config
     // send request for authorize user
     return request(this.app.getHttpServer())
@@ -115,17 +113,16 @@ export class AuthHelper {
     config: {
       expectedBody?: any;
       expectedCode?: number;
-    } = { expectedCode: HTTP_Status.NO_CONTENT_204 },
-  ): Promise<any> {
+    } = { expectedCode: HTTP_Status.OK_200 },
+  ): Promise<request.Test> {
     // default expected code is 204 or code mistake from config
 
     // confirm adding ExternalAccount
-    const response = await request(this.app.getHttpServer())
+    return request(this.app.getHttpServer())
       .post(authEndpoints.confirmAddingExternalAccount())
+      .set(`User-Agent`, `for test`)
       .send(command)
       .expect(config.expectedCode);
-
-    return response.body;
   }
 
   async rejectAddingExternalAccount(
@@ -301,13 +298,10 @@ export class AuthHelper {
     let refreshToken: string;
     const command3 = { password: command.password, email: command.email };
     const response = await this.login(command3, { expectedCode: 200 });
-    refreshToken = response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+    refreshToken = await this.checkRefreshTokenInCookieAndReturn(response);
+
     expect(response.body.accessToken).toBeDefined();
-    expect(response.headers['set-cookie']).toBeDefined();
-    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
-    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
-    expect(response.headers['set-cookie'][0]).toContain('Path=/');
-    expect(response.headers['set-cookie'][0]).toContain('Secure');
+
     return response.body.accessToken;
   }
 
@@ -318,5 +312,29 @@ export class AuthHelper {
       .expect(statusCode);
 
     return response.body;
+  }
+
+  //return refreshToken after check it
+  async checkRefreshTokenInCookieAndReturn(response: request.Response): Promise<string> {
+    expect(response.headers['set-cookie']).toBeDefined();
+    expect(response.headers['set-cookie'][0]).toContain('refreshToken');
+    expect(response.headers['set-cookie'][0]).toContain('HttpOnly');
+    expect(response.headers['set-cookie'][0]).toContain('Path=/');
+    expect(response.headers['set-cookie'][0]).toContain('Secure');
+
+    return response.headers['set-cookie'][0].split(';')[0].split('=')[1];
+  }
+
+  checkAddedExternalAccount(dto: RegisterUserFromExternalAccountInputDto, user: UserEntity) {
+    expect(user.userName).not.toBe(dto.displayName);
+    expect(user.email).toBe(dto.email.toLowerCase());
+    expect(user.isConfirmed).toBe(true);
+    expect(user.externalAccounts.length).toBe(2);
+    const addedExternalAccount = user.externalAccounts.find(a => a.providerId === dto.providerId);
+    expect(addedExternalAccount.displayName).toBe(dto.displayName);
+    expect(addedExternalAccount.email).toBe(dto.email.toLowerCase());
+    expect(addedExternalAccount.provider).toBe(dto.provider);
+    expect(addedExternalAccount.providerId).toBe(dto.providerId);
+    expect(addedExternalAccount.isConfirmed).toBe(false);
   }
 }
