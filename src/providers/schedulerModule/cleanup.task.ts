@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
 import { CleanupService } from './cleanup.service';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 @Injectable()
 export class CleanupTask {
@@ -18,5 +18,10 @@ export class CleanupTask {
     //check active subscriptions where endDate is equal to current date
     const currentDate = new Date();
     await this.cleanupService.checkActiveSubscriptions(currentDate);
+  }
+
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  public async handlerCheckPostWithStatusDeleted() {
+    await this.cleanupService.removePostWithStatusDeleted();
   }
 }

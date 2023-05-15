@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { StatusSubscriptionType } from '@prisma/client';
+import { Status, StatusSubscriptionType } from '@prisma/client';
 import { SubscriptionEntity } from '../../modules/subscriptions/domain/subscription.entity';
 import { plainToInstance } from 'class-transformer';
 
@@ -57,5 +57,41 @@ export class CleanupRepository {
         autoRenew: false,
       },
     });
+  }
+
+  async getPostsWithStatusDeleted() {
+    //find posts with status deleted and postImage with status deleted
+    return this.prisma.post.findMany({
+      where: {
+        status: Status.DELETED,
+      },
+      include: {
+        images: {
+          where: {
+            status: Status.DELETED,
+          },
+        },
+      },
+    });
+  }
+
+  async removePostsByIds(ids: number[]) {
+    //remove posts by ids and imagesPost by postId
+    await this.prisma.$transaction([
+      this.prisma.postImage.deleteMany({
+        where: {
+          postId: {
+            in: ids,
+          },
+        },
+      }),
+      this.prisma.post.deleteMany({
+        where: {
+          id: {
+            in: ids,
+          },
+        },
+      }),
+    ]);
   }
 }

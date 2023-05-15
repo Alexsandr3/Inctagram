@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CleanupRepository } from './cleanup.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SubscriptionEventType } from '../../main/subscription-event.type';
+import { PostsEventType } from '../../main/posts-event.type';
 
 @Injectable()
 export class CleanupService {
@@ -25,5 +26,21 @@ export class CleanupService {
     });
     //save subscriptions
     await this.cleanupRepository.saveSubscriptions(subscriptions);
+  }
+
+  async removePostWithStatusDeleted() {
+    //find posts with status deleted
+    const posts = await this.cleanupRepository.getPostsWithStatusDeleted();
+    if (posts.length === 0) return;
+    //find keys of images for delete from s3
+    const keys = posts.reduce((imageUrls, post) => {
+      return imageUrls.concat(post.images.map(image => image.url));
+    }, []);
+    //trigger event for delete images from s3
+    this.eventEmitter.emit(PostsEventType.deleteImages, keys);
+    //filter ids of posts
+    const ids = posts.map(post => post.id);
+    //remove posts by ids
+    await this.cleanupRepository.removePostsByIds(ids);
   }
 }
