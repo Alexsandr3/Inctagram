@@ -26,4 +26,12 @@ export class CleanupTask {
     const tenDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
     await this.cleanupService.removePostWithStatusDeleted(tenDaysAgo);
   }
+
+  @Cron(CronExpression.EVERY_10_SECONDS)
+  public async handlerCheckExpiredSessions() {
+    //need delete sessions if exp date less than current date
+    //the Date in seconds
+    const currentDate = Math.floor(Date.now() / 1000);
+    await this.cleanupService.removeExpiredSessions(currentDate);
+  }
 }
