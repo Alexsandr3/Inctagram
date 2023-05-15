@@ -9,6 +9,7 @@ import { UpdateProfileUseCase } from './application/use-cases/update-profile.use
 import { ImagesEditorService } from '../images/application/images-editor.service';
 import { ImagesModule } from '../images/images.module';
 import { DeleteImageAvatarUseCase } from './application/use-cases/delete-image-avatar.use-case';
+import { UsersEventHandlerService } from './application/users-event-handler.service';
 
 const useCases = [UploadImageAvatarUseCase, UpdateProfileUseCase, DeleteImageAvatarUseCase];
 
@@ -17,6 +18,7 @@ const useCases = [UploadImageAvatarUseCase, UpdateProfileUseCase, DeleteImageAva
   controllers: [UsersController],
   providers: [
     ...useCases,
+    UsersEventHandlerService,
     {
       provide: IUsersRepository,
       useClass: PrismaUsersRepository,
