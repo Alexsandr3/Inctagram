@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 import { SubscriptionEntity } from '../domain/subscription.entity';
-import { StatusSubscriptionType } from '../domain/status-subscription.type';
+import { StatusSubscriptionType } from '../types/status-subscription.type';
 import { PaymentStatus } from '../types/paymentStatus';
 
 export abstract class ISubscriptionsRepository {

@@ -26,13 +26,6 @@ export class BusinessAccountEntity extends BaseDateEntity implements BusinessAcc
     customerId: string,
     createSubscriptionDto: CreateSubscriptionInputDto,
   ): BusinessAccountEntity {
-    //if there is a subscription change status to inactive
-    // if (this.subscriptions.length > 0) {
-    //   //map current subscription with status active and set autoRenew to false
-    //   this.subscriptions = this.subscriptions.map(s => {
-    //     return s.updateCurrentSubscriptionToInactive();
-    //   });
-    // }
     this.stipeCustomerId = customerId;
     //create new subscription
     const subscription = SubscriptionEntity.createSubscriptionWithPayment(

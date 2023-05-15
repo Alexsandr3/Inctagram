@@ -6,7 +6,7 @@ import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { PaymentEntity } from './payment.entity';
 import { RenewalEntity } from './renewal.entity';
 import { CreateSubscriptionInputDto } from '../api/input-dtos/create-subscription-input.dto';
-import { StatusSubscriptionType } from './status-subscription.type';
+import { StatusSubscriptionType } from '../types/status-subscription.type';
 import { StripeEventType } from '../types/stripe-event.type';
 
 export class SubscriptionEntity extends BaseDateEntity implements Subscription {

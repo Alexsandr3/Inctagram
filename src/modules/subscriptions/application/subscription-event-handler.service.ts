@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ISubscriptionsRepository } from '../infrastructure/subscriptions.repository';
-import { PaymentEventType } from '../../../providers/payment/types/payment-event.type';
+import { PaymentEventType } from '../../../main/payment-event.type';
 import { StripeEventType } from '../types/stripe-event.type';
-import { SubscriptionEventType } from '../subscription-event.type';
+import { SubscriptionEventType } from '../../../main/subscription-event.type';
 import { PaymentStripeService } from '../../../providers/payment/application/payment-stripe.service';
 
 @Injectable()
@@ -14,6 +14,10 @@ export class SubscriptionEventHandlerService {
     private readonly paymentStripeService: PaymentStripeService,
   ) {}
 
+  /**
+   * Handle successful stripe event
+   * @param event
+   */
   @OnEvent(PaymentEventType.successSubscription)
   async handleSuccessfulStripeEvent(event: StripeEventType) {
     // find current subscription with status pending
@@ -41,6 +45,10 @@ export class SubscriptionEventHandlerService {
     this.eventEmitter.emit(SubscriptionEventType.addActiveSubscription, currentSubscription);
   }
 
+  /**
+   * Handle failed stripe event
+   * @param event
+   */
   @OnEvent(PaymentEventType.failedSubscription)
   async handleFailedSubscriptionEventFromStripe(event: StripeEventType) {
     // find subscription where payments contains paymentSessionId
