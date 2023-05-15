@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Stripe } from 'stripe';
 import { ApiConfigService } from '../../../modules/api-config/api.config.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PaymentEventType } from '../types/payment-event.type';
+import { PaymentEventType } from '../../../main/payment-event.type';
 
 @Injectable()
 export class StripePaymentWebhookService {
