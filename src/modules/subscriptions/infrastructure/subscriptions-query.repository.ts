@@ -17,12 +17,14 @@ export class SubscriptionsQueryRepository implements ISubscriptionsQueryReposito
   constructor(private readonly prisma: PrismaService) {}
 
   async getCurrentSubscriptions(userId: number): Promise<CurrentActiveSubscriptionsViewModel> {
+    if (!userId) return new CurrentActiveSubscriptionsViewModel([]);
     //get current active subscriptions
     const subscriptions = await this.prisma.subscription.findMany({
       where: {
         businessAccountId: userId,
         status: StatusSubscriptionType.ACTIVE,
       },
+      orderBy: { dateOfPayment: 'asc' },
     });
     return new CurrentActiveSubscriptionsViewModel(
       subscriptions.map(
@@ -30,7 +32,7 @@ export class SubscriptionsQueryRepository implements ISubscriptionsQueryReposito
           new ActiveSubscriptionViewModel(
             sub.businessAccountId,
             sub.externalSubId,
-            sub.startDate,
+            sub.dateOfPayment,
             sub.endDate,
             sub.autoRenew,
           ),
@@ -39,6 +41,7 @@ export class SubscriptionsQueryRepository implements ISubscriptionsQueryReposito
   }
 
   async getMyPayments(userId: number): Promise<PaymentsViewModel[]> {
+    if (!userId) return [];
     //find all subscriptions for current user
     const subscription = await this.prisma.subscription.findMany({
       where: {

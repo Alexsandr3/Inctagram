@@ -11,7 +11,7 @@ export abstract class ISubscriptionsRepository {
 
   abstract getSubscriptionWithStatusPendingByPaymentSessionId(id: string): Promise<SubscriptionEntity>;
 
-  abstract saveSubscriptionWithPayment(subscriptionEntity: SubscriptionEntity);
+  abstract saveSubscriptionWithPayment(subscriptionEntity: SubscriptionEntity): Promise<void>;
 
   abstract updateBusinessAccountWithSubscriptionAndPayment(businessAccount: BusinessAccountEntity): Promise<void>;
 
@@ -46,7 +46,7 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
     return plainToInstance(SubscriptionEntity, subscription);
   }
 
-  async saveSubscriptionWithPayment(subscriptionEntity: SubscriptionEntity) {
+  async saveSubscriptionWithPayment(subscriptionEntity: SubscriptionEntity): Promise<void> {
     //create subscription and payment in one transaction
     return this.prisma.$transaction(async tx => {
       await tx.subscription.update({

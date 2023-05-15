@@ -97,4 +97,13 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
     }
     return this;
   }
+
+  updateFinishedSubscription() {
+    if (this.endDate < new Date()) {
+      this.status = StatusSubscriptionType.FINISHED;
+      this.autoRenew = false;
+      return this;
+    }
+    return this;
+  }
 }
