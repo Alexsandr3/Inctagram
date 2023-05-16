@@ -167,13 +167,14 @@ export class AuthHelper {
       expectedBody?: any;
       expectedCode?: number;
     } = {},
+    typeDevice: string = `for test`,
   ): Promise<any> {
     // default expected code is 200 or code mistake from config
     const expectedCode = config.expectedCode ?? HTTP_Status.OK_200;
     // send request for send email
     const response = await request(this.app.getHttpServer())
       .post(authEndpoints.login())
-      .set(`User-Agent`, `for test`)
+      .set(`User-Agent`, typeDevice)
       .send(command)
       .expect(expectedCode);
     if (expectedCode === HTTP_Status.OK_200) {
@@ -279,6 +280,7 @@ export class AuthHelper {
       expectedBody?: any;
       expectedCode?: number;
     } = {},
+    addCookie: boolean = false,
   ): Promise<any> {
     const mailManager = this.app.get<MailManager>(MailManager);
     const emailAdapter = this.app.get<EmailAdapter>(EmailAdapter);
@@ -301,6 +303,10 @@ export class AuthHelper {
     refreshToken = await this.checkRefreshTokenInCookieAndReturn(response);
 
     expect(response.body.accessToken).toBeDefined();
+    //if addCookie is true return refreshToken and accessToken
+    if (addCookie) {
+      return { accessToken: response.body.accessToken, refreshToken: refreshToken };
+    }
 
     return response.body.accessToken;
   }
