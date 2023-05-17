@@ -2,47 +2,45 @@ import { Test, TestingModuleBuilder } from '@nestjs/testing';
 import { AppModule } from '../../src/app.module';
 import { baseAppConfig } from '../../src/configuration/app.config';
 import { DataSource } from 'typeorm';
-import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { PrismaClient } from '@prisma/client';
+import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { GoogleEnterpriseRecaptchaGuard } from '../../src/providers/recaptcha/google-enterprise-recaptcha.guard';
 import { GoogleRegistrationGuard } from '../../src/modules/auth/api/guards/google-registration.guard';
+import { truncateDBTablesPrisma } from './truncateDBTablesPrisma';
+import { truncateDBTablesTypeOrm } from './truncateDBTablesTypeOrm';
 import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';
-
-/**
- * Clear all tables in DB (Postgres) using Prisma
- * @param prisma
- */
-async function truncateDBTablesPrisma(prisma: PrismaClient): Promise<void> {
-  const models = Object.keys(prisma)
-    .filter(item => {
-      return !(item.startsWith('_') || item.endsWith('$extends'));
-    })
-    .map(str => {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    })
-    .map(model => model + 's');
-  for (const model of models) {
-    await prisma.$queryRawUnsafe(`TRUNCATE TABLE "${model}" CASCADE;`);
-  }
-}
-
-export async function truncateDBTables(connection: DataSource): Promise<void> {
-  const entities = connection.entityMetadatas;
-  for (const entity of entities) {
-    const repository = connection.getRepository(entity.name);
-    await repository.query(`TRUNCATE TABLE "${entity.tableName}" CASCADE;`);
-  }
-}
+import { PaymentStripeService } from '../../src/providers/payment/application/payment-stripe.service';
+import { sessionTestType } from '../subscriptions/session.test.type';
 
 const prisma = new PrismaClient();
 
+export interface E2ETestingOptions {
+  useMailer?: boolean;
+  useRecaptcha?: boolean;
+  useGoogleAuth?: boolean;
+  useGitHubAuth?: boolean;
+  useStripeService?: boolean;
+  // [key: string]: boolean;
+}
+
+const defaultE2ETestingOptions: E2ETestingOptions = {
+  useMailer: false,
+  useRecaptcha: false,
+  useGoogleAuth: false,
+  useGitHubAuth: false,
+  useStripeService: false,
+};
+
+const providersToMock = new Map<any, { useValue: any }>([
+  [EmailAdapter, { useValue: { sendEmail: () => 'SENT EMAIL' } }],
+  [GoogleEnterpriseRecaptchaGuard, { useValue: { canActivate: () => true } }],
+  [GoogleRegistrationGuard, { useValue: { canActivate: () => true } }],
+  [GitHubRegistrationGuard, { useValue: { canActivate: () => true } }],
+  [PaymentStripeService, { useValue: { createSession: () => sessionTestType } }],
+]);
+
 export const getAppForE2ETesting = async (
-  mocks: { useMailer?: boolean; useRecaptcha?: boolean; useGoogleAuth?: boolean; useGitHubAuth?: boolean } = {
-    useMailer: false,
-    useRecaptcha: false,
-    useGoogleAuth: false,
-    useGitHubAuth: false,
-  },
+  mocks: E2ETestingOptions = defaultE2ETestingOptions,
   setupModuleBuilder?: (appModuleBuilder: TestingModuleBuilder) => void,
 ) => {
   let appModule: TestingModuleBuilder = await Test.createTestingModule({
@@ -59,9 +57,16 @@ export const getAppForE2ETesting = async (
   baseAppConfig(app);
   await app.init();
   const connection = appCompile.get(DataSource); //If you need to use Prisma, you need to  exchange  PrismaClient instead of DataSource
-  await truncateDBTables(connection);
+  await truncateDBTablesTypeOrm(connection);
   await truncateDBTablesPrisma(prisma).finally(async () => {
     await prisma.$disconnect();
   }); // очищаем таблицы перед каждым запуском тестов
   return app;
 };
+
+// providersToMock.forEach((value, key) => {
+//   if (!mocks[key.name]) {
+//     console.log(`[E2E] Mocking ${key.name}`);
+//     appModule.overrideProvider(key).useValue(value.useValue);
+//   }
+// });
