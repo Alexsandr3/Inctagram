@@ -25,7 +25,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
         status,
       },
       include: {
-        images: { where: { status: 'PUBLISHED' }, orderBy: { id: 'desc' } },
+        images: { where: { status: 'PUBLISHED' }, orderBy: { id: 'asc' } },
       },
     });
     if (!foundPost) return null;
@@ -46,7 +46,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
       skip: paginationInputModel.skip, //(page - 1) * limit,
       take: paginationInputModel.getPageSize(), //limit
       include: {
-        images: { where: { status: 'PUBLISHED' }, orderBy: { id: 'desc' } },
+        images: { where: { status: 'PUBLISHED' }, orderBy: { id: 'asc' } },
       },
     });
     const total = await this.prisma.post.count({

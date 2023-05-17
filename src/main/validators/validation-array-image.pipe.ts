@@ -10,6 +10,10 @@ export class ValidationArrayImagePipe<T extends BaseParametersImageValidation>
   constructor(private readonly options: T) {}
   async transform(images: Express.Multer.File[]): Promise<Express.Multer.File[]> {
     const { contentTypes } = this.options;
+    if (images.length > 10)
+      throw new BadRequestException([
+        { message: `The number of files is too large, please upload the file less than 10`, field: 'file' },
+      ]);
     // checking types of all files in the array
     for (const file of images) {
       //check if size of file is more than 20MB
