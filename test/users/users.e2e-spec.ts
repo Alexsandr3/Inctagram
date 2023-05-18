@@ -149,8 +149,39 @@ describe('Update-profile -  e2e', () => {
       aboutMe: null,
     });
     firstUserProfile = changedProfile;
+
+    const command2 = {
+      aboutMe: 'null',
+    };
+    await usersHelper.updateProfile(command2, {
+      expectedBody: accessToken,
+      expectedCode: HTTP_Status.NO_CONTENT_204,
+    });
+    const changedProfile2 = await usersHelper.getMyProfile(accessToken);
+
+    expect(changedProfile2).toEqual({
+      ...firstUserProfile,
+      aboutMe: 'null',
+    });
+    firstUserProfile = changedProfile2;
   });
-  it('22 - / (PUT) - should return 400 if userName is not unique', async () => {
+  it('22 - / (PUT) - should return 204 and delete set null in delete property', async () => {
+    const command = {
+      aboutMe: '',
+    };
+    await usersHelper.updateProfile(command, {
+      expectedBody: accessToken,
+      expectedCode: HTTP_Status.NO_CONTENT_204,
+    });
+    const changedProfile = await usersHelper.getMyProfile(accessToken);
+
+    expect(changedProfile).toEqual({
+      ...firstUserProfile,
+      aboutMe: null,
+    });
+    firstUserProfile = changedProfile;
+  });
+  it('23 - / (PUT) - should return 400 if userName is not unique', async () => {
     const command = {
       userName: correctUserName_second_user,
     };
