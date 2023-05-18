@@ -16,7 +16,6 @@ export class CleanupService {
   async checkActiveSubscriptions(currentDate: Date) {
     //find active subscriptions where endDate is equal to current date
     const subscriptions = await this.cleanupRepository.getActiveSubscriptionsWithPayments(currentDate);
-    console.log('subscriptions', subscriptions);
     if (subscriptions.length === 0) {
       return;
     }

@@ -17,7 +17,7 @@ export class ApiJwtService {
     const secretRT = this.apiConfigService.REFRESH_TOKEN_SECRET;
     const expiresInRT = this.apiConfigService.EXPIRED_REFRESH;
 
-    const accessToken = this.jwtService.sign({ userId });
+    const accessToken = this.jwtService.sign({ userId, deviceId });
     const refreshToken = this.jwtService.sign({ userId, deviceId }, { secret: secretRT, expiresIn: expiresInRT });
 
     return { accessToken, refreshToken };
