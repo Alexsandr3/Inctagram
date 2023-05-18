@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { CleanupRepository } from './cleanup.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { SubscriptionEventType } from '../../main/subscription-event.type';
 import { PostsEventType } from '../../main/posts-event.type';
+import { SubscriptionEventType } from '../../main/subscription-event.type';
 
 @Injectable()
 export class CleanupService {
@@ -17,12 +17,12 @@ export class CleanupService {
     //find active subscriptions where endDate is equal to current date
     const subscriptions = await this.cleanupRepository.getActiveSubscriptionsWithPayments(currentDate);
     if (subscriptions.length === 0) {
-      this.eventEmitter.emit(SubscriptionEventType.notExistingActiveSubscription, 'No active subscriptions found');
       return;
     }
     //update subscription status to inactive
     subscriptions.forEach(subscription => {
       subscription.updateFinishedSubscription();
+      this.eventEmitter.emit(SubscriptionEventType.notExistingActiveSubscription, subscription.businessAccountId);
     });
     //save subscriptions
     await this.cleanupRepository.saveSubscriptions(subscriptions);

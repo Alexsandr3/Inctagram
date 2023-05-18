@@ -7,13 +7,13 @@ import { SubscriptionType } from '../../../modules/subscriptions/types/subscript
 export class PaymentStripeService {
   private logger = new Logger(PaymentStripeService.name);
   private stripe = new Stripe(this.configService.API_KEY_STRIPE, { apiVersion: '2022-11-15' });
-  serverUrl: string;
+  clientUrl: string;
   monthlySubscriptionPriceId: string;
   semiAnnuallySubscriptionPriceId: string;
   yearlySubscriptionPriceId: string;
 
   constructor(private readonly configService: ApiConfigService) {
-    this.serverUrl = this.configService.TEST_CLIENT_URL;
+    this.clientUrl = this.configService.CLIENT_URL;
     this.monthlySubscriptionPriceId = this.configService.STRIPE_MONTHLY_SUBSCRIPTION_PRICE_ID;
     this.semiAnnuallySubscriptionPriceId = this.configService.STRIPE_SEMIANNUAL_SUBSCRIPTION_PRICE_ID;
     this.yearlySubscriptionPriceId = this.configService.STRIPE_YEARLY_SUBSCRIPTION_PRICE_ID;
@@ -28,13 +28,13 @@ export class PaymentStripeService {
     email: string;
     userName: string;
     subscriptionType: SubscriptionType;
-  }) {
+  }): Promise<Stripe.Response<Stripe.Checkout.Session>> {
     //default params for create session
     const defaultParams = {
       mode: 'subscription',
       payment_method_types: ['card'],
-      success_url: `${this.serverUrl}` + '/profile/settings/edit?success=true',
-      cancel_url: `${this.serverUrl}/profile/settings/edit?success=false`,
+      success_url: `${this.clientUrl}` + '/profile/settings/edit?success=true',
+      cancel_url: `${this.clientUrl}/profile/settings/edit?success=false`,
       expires_at: Math.floor(Date.now() / 1000) + 30 * 60, // Configured to expire after 30 minutes.
       customer: params.customerId,
     } as Stripe.Checkout.SessionCreateParams;
@@ -84,7 +84,7 @@ export class PaymentStripeService {
     });
   }
 
-  async deactivateLastActiveSubscription(customerId: string, subscriptionId: string) {
+  async deactivateLastActiveSubscription(customerId: string, subscriptionId: string): Promise<void> {
     const subscriptions = await this.findSubscriptions(customerId);
     //get subscription where id is not equal to customerId
     const subscription = subscriptions.data.find(subscription => subscription.id !== subscriptionId);

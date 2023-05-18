@@ -68,7 +68,7 @@ describe('Testing new flow upload files and create post -  e2e', () => {
     expect(response.messages[0].field).toBe('file');
   });
   it('04 - / (POST) - should return 400 if size of image > 5mb', async () => {
-    let nameFile = '/images/River_5mb.jpeg';
+    let nameFile = '/images/europe_24.9mb.png';
     const body = { description: 'New super description', nameFile: [nameFile] };
     const response = await postsHelper.createPost<ApiErrorResultDto>(body, { token: accessToken, expectedCode: 400 });
     expect(response.messages[0].field).toBe('file');
@@ -138,7 +138,6 @@ describe('Testing new flow upload files and create post -  e2e', () => {
       token: accessToken,
       expectedCode: 200,
     });
-    console.log(responseBody, 'responseBody');
     expect(responseBody).toBeDefined();
     expect(responseBody.items).toHaveLength(2);
     expect(responseBody.items[0].id).toBe(post2.id);
@@ -196,14 +195,14 @@ describe('Testing new flow upload files and create post -  e2e', () => {
     expect(responseBody.images[0].versions.huge).toHaveProperty('height');
     expect(responseBody.images[0].versions.huge).toEqual({
       url: expect.any(String),
-      width: ImageSizeConfig.HUGE_HD16_9.defaultWidth,
-      height: ImageSizeConfig.HUGE_HD16_9.defaultHeight,
+      width: ImageSizeConfig.HUGE_HD1_1.defaultWidth,
+      height: ImageSizeConfig.HUGE_HD1_1.defaultHeight,
       fileSize: expect.any(Number),
     });
     expect(responseBody.images[1].versions.huge).toEqual({
       url: expect.any(String),
-      width: ImageSizeConfig.HUGE_HD1_1.defaultWidth,
-      height: ImageSizeConfig.HUGE_HD1_1.defaultHeight,
+      width: ImageSizeConfig.HUGE_HD16_9.defaultWidth,
+      height: ImageSizeConfig.HUGE_HD16_9.defaultHeight,
       fileSize: expect.any(Number),
     });
     expect(responseBody.images[2].versions.huge).toEqual({
@@ -220,14 +219,14 @@ describe('Testing new flow upload files and create post -  e2e', () => {
     expect(responseBody.images[0].versions.large).toHaveProperty('url');
     expect(responseBody.images[0].versions.large).toEqual({
       url: expect.any(String),
-      width: ImageSizeConfig.LARGE16_9.defaultWidth,
-      height: ImageSizeConfig.LARGE16_9.defaultHeight,
+      width: ImageSizeConfig.LARGE1_1.defaultWidth,
+      height: ImageSizeConfig.LARGE1_1.defaultHeight,
       fileSize: expect.any(Number),
     });
     expect(responseBody.images[1].versions.large).toEqual({
       url: expect.any(String),
-      width: ImageSizeConfig.LARGE1_1.defaultWidth,
-      height: ImageSizeConfig.LARGE1_1.defaultHeight,
+      width: ImageSizeConfig.LARGE16_9.defaultWidth,
+      height: ImageSizeConfig.LARGE16_9.defaultHeight,
       fileSize: expect.any(Number),
     });
     expect(responseBody.images[2].versions.large).toEqual({

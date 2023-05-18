@@ -54,6 +54,7 @@ export class UpdateProfileInputDto {
    * About me
    */
   @ApiProperty({ nullable: true, required: false })
+  @Transform(({ value }) => (typeof value === 'string' ? (value.trim() ? value.trim() : null) : value))
   @MaxLength(200)
   @IsString()
   @IsOptional()

@@ -17,11 +17,55 @@ export class SubscriptionsHelper {
   ): Promise<T> {
     // default expected code is 201 or code mistake from config
     const expectedCode = config.expectedCode ?? HTTP_Status.CREATED_201;
-    // send request for create user
     const response = await request(this.app.getHttpServer())
       .post(subscriptionsEndpoints.createSubscriptions())
       .auth(config.token, { type: 'bearer' })
       .send(command)
+      .expect(expectedCode);
+
+    return response.body;
+  }
+
+  async getCurrentSubscriptions<T>(
+    config: {
+      token?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<T> {
+    // default expected code is 200 or code mistake from config
+    const expectedCode = config.expectedCode ?? HTTP_Status.OK_200;
+    const response = await request(this.app.getHttpServer())
+      .get(subscriptionsEndpoints.getCurrentSubscriptions())
+      .auth(config.token, { type: 'bearer' })
+      .expect(expectedCode);
+
+    return response.body;
+  }
+  async getCurrentCostSubscription<T>(
+    config: {
+      expectedCode?: number;
+    } = {},
+  ): Promise<T> {
+    // default expected code is 200 or code mistake from config
+    const expectedCode = config.expectedCode ?? HTTP_Status.OK_200;
+    const response = await request(this.app.getHttpServer())
+      .get(subscriptionsEndpoints.getCurrentCostSubscription())
+      .expect(expectedCode);
+
+    return response.body;
+  }
+
+  async canceledAutoRenewal(
+    config: {
+      token?: any;
+      expectedCode?: number;
+    } = {},
+  ): Promise<void> {
+    // default expected code is 204 or code mistake from config
+    const expectedCode = config.expectedCode ?? HTTP_Status.NO_CONTENT_204;
+    const response = await request(this.app.getHttpServer())
+      .post(subscriptionsEndpoints.canceledAutoRenewal())
+      .auth(config.token, { type: 'bearer' })
       .expect(expectedCode);
 
     return response.body;

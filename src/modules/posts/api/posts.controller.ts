@@ -59,7 +59,7 @@ export class PostsController {
   @SwaggerDecoratorsByFormDataForArrayFileWith()
   @Post()
   @HttpCode(HTTP_Status.CREATED_201)
-  @UseInterceptors(FilesInterceptor('files', 10))
+  @UseInterceptors(FilesInterceptor('files'))
   async createPostWithUploadImages(
     @CurrentUserId() userId: number,
     @UploadedFiles(new ValidationArrayImagePipe(typeImagePost))

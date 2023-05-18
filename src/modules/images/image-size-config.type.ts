@@ -1,3 +1,11 @@
+/**
+ * size config for image:
+ * huge [HD] 1:1 (1440x1440), 4:5 (1152x1440), 16:9 (1440x810);
+ * large [LARGE] 1:1 (360x360), 4:5 (360x450), 16:9 (360x202);
+ * medium [MEDIUM] (192x192);
+ * small [SMALL] (160x90);
+ * thumbnail [THUMBNAIL] (45x45)
+ */
 export const ImageSizeConfig = {
   HUGE_HD1_1: {
     key: '1:1',

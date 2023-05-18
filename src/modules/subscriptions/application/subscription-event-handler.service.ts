@@ -3,8 +3,8 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ISubscriptionsRepository } from '../infrastructure/subscriptions.repository';
 import { PaymentEventType } from '../../../main/payment-event.type';
 import { StripeEventType } from '../types/stripe-event.type';
-import { SubscriptionEventType } from '../../../main/subscription-event.type';
 import { PaymentStripeService } from '../../../providers/payment/application/payment-stripe.service';
+import { IUsersRepository } from '../../users/infrastructure/users.repository';
 
 @Injectable()
 export class SubscriptionEventHandlerService {
@@ -12,6 +12,7 @@ export class SubscriptionEventHandlerService {
     private readonly subscriptionsRepository: ISubscriptionsRepository,
     private eventEmitter: EventEmitter2,
     private readonly paymentStripeService: PaymentStripeService,
+    private readonly usersRepository: IUsersRepository,
   ) {}
 
   /**
@@ -35,14 +36,14 @@ export class SubscriptionEventHandlerService {
       lastActiveSubscription.updateCurrentSubscriptionToInactive();
       await this.subscriptionsRepository.saveSubscriptionWithPayment(lastActiveSubscription);
     }
-    //update subscription status to active
     currentSubscription.changeStatusToActive(event, currentPeriodEnd);
-    // save subscription
     await this.subscriptionsRepository.saveSubscriptionWithPayment(currentSubscription);
     //find the last active subscription by customer ID and deactivate it
     await this.paymentStripeService.deactivateLastActiveSubscription(event.customer, event.subscription);
-    //throw event subscription success for change status has active business account
-    this.eventEmitter.emit(SubscriptionEventType.addActiveSubscription, currentSubscription);
+    const user = await this.usersRepository.findById(currentSubscription.businessAccountId);
+    //activate user - hasActiveBusinessAccount = true
+    user.activateBusinessAccount();
+    await this.usersRepository.updateExistingUser(user);
   }
 
   /**

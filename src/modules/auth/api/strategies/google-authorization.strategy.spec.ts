@@ -1,12 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GoogleAuthorizationStrategy } from './google-authorization.strategy';
-import { AuthService } from '../../application/auth.service';
 import { ApiConfigModule } from '../../../api-config/api.config.module';
 import { Profile } from 'passport-google-oauth20';
-import { UnauthorizedException } from '@nestjs/common';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 import { UserEntity } from '../../../users/domain/user.entity';
 import { ExternalAccountEntity } from '../../../users/domain/ExternalAccountEntity';
+import { ISessionsRepository, PrismaSessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
+import { AuthService } from '../../application/auth.service';
+import { ApiJwtService } from '../../../api-jwt/api-jwt.service';
+import { OAuthException } from '../../../../main/validators/oauth.exception';
 
 describe('test GoogleAuthorizationStrategy', () => {
   let app: TestingModule;
@@ -28,7 +30,9 @@ describe('test GoogleAuthorizationStrategy', () => {
       providers: [
         GoogleAuthorizationStrategy,
         AuthService,
+        ApiJwtService,
         { provide: IUsersRepository, useClass: PrismaUsersRepository },
+        { provide: ISessionsRepository, useClass: PrismaSessionsRepository },
       ],
     })
       .overrideProvider(IUsersRepository)
@@ -43,6 +47,10 @@ describe('test GoogleAuthorizationStrategy', () => {
           return user;
         },
       })
+      .overrideProvider(ISessionsRepository)
+      .useValue({})
+      .overrideProvider(ApiJwtService)
+      .useValue({})
       .compile();
 
     strategy = app.get<GoogleAuthorizationStrategy>(GoogleAuthorizationStrategy);
@@ -63,7 +71,7 @@ describe('test GoogleAuthorizationStrategy', () => {
   it('should throw UnauthorizedException when user is not exist', async () => {
     jest.spyOn(usersRepository, 'findUserByProviderId').mockResolvedValueOnce(null);
     await expect(strategy.validate('invalidAccessToken', 'invalidRefreshToken', profile)).rejects.toThrow(
-      UnauthorizedException,
+      OAuthException,
     );
   });
   it('should throw UnauthorizedException when user is not confirm added account', async () => {
@@ -77,7 +85,7 @@ describe('test GoogleAuthorizationStrategy', () => {
       return user;
     });
     await expect(strategy.validate('invalidAccessToken', 'invalidRefreshToken', profile)).rejects.toThrow(
-      UnauthorizedException,
+      OAuthException,
     );
   });
 

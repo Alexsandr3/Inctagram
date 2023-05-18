@@ -35,7 +35,7 @@ export class SubscriptionsController {
   async createSubscription(
     @CurrentUserId() userId: number,
     @Body() createSubscriptionDto: CreateSubscriptionInputDto,
-    // @Res({ passthrough: true }) res: Response,
+    // @Res({ passthrough: true }) res: Response, //import { Response } from 'express';
   ): Promise<PaymentSessionUrlViewModel> {
     const notification = await this.commandBus.execute<CreateSubscriptionCommand, ResultNotification<string>>(
       new CreateSubscriptionCommand(userId, createSubscriptionDto),
