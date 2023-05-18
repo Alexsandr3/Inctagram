@@ -28,7 +28,7 @@ export class PaymentStripeService {
     email: string;
     userName: string;
     subscriptionType: SubscriptionType;
-  }) {
+  }): Promise<Stripe.Response<Stripe.Checkout.Session>> {
     //default params for create session
     const defaultParams = {
       mode: 'subscription',
@@ -84,7 +84,7 @@ export class PaymentStripeService {
     });
   }
 
-  async deactivateLastActiveSubscription(customerId: string, subscriptionId: string) {
+  async deactivateLastActiveSubscription(customerId: string, subscriptionId: string): Promise<void> {
     const subscriptions = await this.findSubscriptions(customerId);
     //get subscription where id is not equal to customerId
     const subscription = subscriptions.data.find(subscription => subscription.id !== subscriptionId);

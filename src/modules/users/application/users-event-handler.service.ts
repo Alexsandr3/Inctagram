@@ -10,20 +10,6 @@ export class UsersEventHandlerService {
   constructor(private readonly usersRepository: IUsersRepository) {}
 
   /**
-   * Activate user business account
-   * @param subscription
-   */
-  @OnEvent(SubscriptionEventType.addActiveSubscription)
-  async activateUserBusinessAccount(subscription: SubscriptionEntity) {
-    //find user by business account id from subscription
-    const user = await this._findUserByBusinessAccountId(subscription.businessAccountId);
-    //activate user - hasActiveBusinessAccount = true
-    user.activateBusinessAccount();
-    //save user
-    await this._saveUser(user);
-  }
-
-  /**
    * Deactivate user business account
    * @param subscription
    */

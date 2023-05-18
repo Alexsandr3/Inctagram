@@ -72,7 +72,6 @@ describe('Authorisation -  e2e', () => {
   it('03_4 - / (POST) - should return 400 if userName is incorrect', async () => {
     const command = { password: 'qwerty', email: 'fortesting@jive.com', userName: 'D name'.repeat(31) };
     const response: ApiErrorResultDto = await authHelper.registrationUser(command, { expectedCode: 400 });
-    console.log(response);
     expect(response.messages).toHaveLength(1);
     expect(response.messages[0].field).toBe('userName');
   });
