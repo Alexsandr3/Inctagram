@@ -11,16 +11,23 @@ datasource db {
   url      = env("PRISMA_DATABASE_URL")
 }
 
+enum UserStatus {
+  PENDING
+  ACTIVE
+  BANNED
+  DELETED
+}
+
 model User {
   id                 Int                @id @default(autoincrement())
   userName           String             @unique
   email              String             @unique // @map("email" varchar(255) COLLATE "C")
   passwordHash       String
-  isConfirmed        Boolean
   createdAt          DateTime           @default(now()) //, map: "created_at::timestamptz"
   updatedAt          DateTime           @updatedAt
   emailConfirmation  EmailConfirmation?
   profile            Profile?
+  status             UserStatus         @default(PENDING)
   sessions           Session[]
   posts              Post[]
   externalAccounts   ExternalAccount[]
