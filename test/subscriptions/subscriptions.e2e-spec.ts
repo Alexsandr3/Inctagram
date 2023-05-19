@@ -12,7 +12,10 @@ import {
   SubscriptionPriceViewModel,
 } from '../../src/modules/subscriptions/api/view-model/cost-monthly-subscription-view.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { checkoutSessionCompletedForTestSubscription } from './helpers/checkoutSessionCompletedForTestSubscription';
+import {
+  checkoutSessionCompletedForTestSubscription,
+  checkoutSessionCompletedForTestSubscription2,
+} from './helpers/checkoutSessionCompletedForTestSubscription';
 import { PaymentEventType } from '../../src/main/payment-event.type';
 import { PaymentStripeService } from '../../src/providers/payment/application/payment-stripe.service';
 import { LoginInputDto } from '../../src/modules/auth/api/input-dto/login.input.dto';
@@ -23,6 +26,7 @@ describe('Testing create subscriptions -  e2e', () => {
   let authHelper: AuthHelper;
   let subscriptionsHelper: SubscriptionsHelper;
   let eventEmitter: EventEmitter2;
+  let paymentStripeService: PaymentStripeService;
 
   beforeAll(async () => {
     app = await getAppForE2ETesting();
@@ -110,6 +114,7 @@ describe('Testing create subscriptions -  e2e', () => {
   it('07 - / (DELETE) - should delete autoRenewal for current user', async () => {
     await subscriptionsHelper.canceledAutoRenewal({ token: accessToken, expectedCode: 204 });
   });
+  let endDateOfSubscription: string;
   it('08 - / (GET) - should get all subscriptions for current user', async () => {
     const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
       token: accessToken,
@@ -121,12 +126,40 @@ describe('Testing create subscriptions -  e2e', () => {
     expect(body.data[0].endDateOfSubscription).toEqual(expect.any(String));
     expect(body.data[0].autoRenewal).toBe(false);
   });
+  //Create a subscription
+  it('09 - / (POST) - should create subscriptions for current user', async () => {
+    const command: CreateSubscriptionInputDto = {
+      typeSubscription: SubscriptionType.YEARLY,
+      paymentType: PaymentMethod.STRIPE,
+      amount: costSubscription[2].amount,
+    };
+    const subscription = await subscriptionsHelper.createSubscription<PaymentSessionUrlViewModel>(command, {
+      token: accessToken,
+      expectedCode: 201,
+    });
+    expect(subscription.url).toEqual(expect.any(String));
+    //call success payment event
+    eventEmitter.emit(PaymentEventType.successSubscription, checkoutSessionCompletedForTestSubscription2.data.object);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+  });
+  it('10 - / (GET) - should get all subscriptions for current user', async () => {
+    const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
+      token: accessToken,
+      expectedCode: 200,
+    });
+    expect(body).toEqual(expect.any(Object));
+    expect(body.hasAutoRenewal).toBe(true);
+    expect(body.data).toHaveLength(2);
+    expect(body.data[0].autoRenewal).toBe(false);
+    expect(body.data[1].autoRenewal).toBe(true);
+  });
+
   //Check the status of the subscription after 1 month
-  it.skip('09 - / (GET) - should get all subscriptions for current user', async () => {
+  it.skip('13 - / (GET) - should get all subscriptions for current user', async () => {
     jest.useFakeTimers();
     //after 1 month
     jest.advanceTimersByTime(1000 * 60 * 60 * 24 * 30);
-    await new Promise(resolve => setTimeout(resolve, 6000));
+    // await new Promise(resolve => setTimeout(resolve, 6000));
     const command: LoginInputDto = { email: correctEmail_first_user, password: '12345678' };
     const accessToken2 = await authHelper.login(command, { expectedCode: 200 });
     const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
@@ -137,14 +170,14 @@ describe('Testing create subscriptions -  e2e', () => {
   });
 });
 
-describe('Create session  -  e2e', () => {
+describe('Create session for   -  e2e', () => {
   let app: INestApplication;
   let authHelper: AuthHelper;
   let subscriptionsHelper: SubscriptionsHelper;
   let eventEmitter: EventEmitter2;
 
   beforeAll(async () => {
-    app = await getAppForE2ETesting();
+    app = await getAppForE2ETesting({ useStripeService: true });
     authHelper = new AuthHelper(app);
     subscriptionsHelper = new SubscriptionsHelper(app);
     eventEmitter = app.get<EventEmitter2>(EventEmitter2);
