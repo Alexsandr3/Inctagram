@@ -12,7 +12,7 @@ import {
 } from './infrastructure/subscriptions-query.repository';
 import { GetSubscriptionsController } from './api/get-subscriptions.controllers';
 import { CanceledAutoRenewalUseCase } from './application/use-cases/canceled-auto-renewal-use.case';
-import { SubscriptionEventHandlerService } from './application/subscription-event-handler.service';
+import { SubscriptionEventHandler } from './application/subscription-event-handler';
 
 const useCases = [CreateSubscriptionUseCase, CanceledAutoRenewalUseCase];
 
@@ -21,7 +21,7 @@ const useCases = [CreateSubscriptionUseCase, CanceledAutoRenewalUseCase];
   controllers: [SubscriptionsController, GetSubscriptionsController],
   providers: [
     ...useCases,
-    SubscriptionEventHandlerService,
+    SubscriptionEventHandler,
     {
       provide: ISubscriptionsRepository,
       useClass: SubscriptionsRepository,

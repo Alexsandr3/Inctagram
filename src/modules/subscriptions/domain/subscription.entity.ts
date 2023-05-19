@@ -90,7 +90,7 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
     }
   }
 
-  updateCurrentSubscriptionToInactive() {
+  disableAutoRenewal() {
     if (this.autoRenew) {
       this.autoRenew = false;
       return this;
