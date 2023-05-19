@@ -10,7 +10,7 @@ import { truncateDBTablesPrisma } from './truncateDBTablesPrisma';
 import { truncateDBTablesTypeOrm } from './truncateDBTablesTypeOrm';
 import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';
 import { PaymentStripeService } from '../../src/providers/payment/application/payment-stripe.service';
-import { PaymentStripeServiceMock } from '../subscriptions/payment-stripe-service.mock';
+import { PaymentStripeServiceMock } from '../subscriptions/helpers/payment-stripe-service.mock';
 
 const prisma = new PrismaClient();
 

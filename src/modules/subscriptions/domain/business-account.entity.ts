@@ -40,7 +40,7 @@ export class BusinessAccountEntity extends BaseDateEntity implements BusinessAcc
 
   changeStatusToCanceledAutoRenewal() {
     this.subscriptions = this.subscriptions.map(s => {
-      return s.updateCurrentSubscriptionToInactive();
+      return s.disableAutoRenewal();
     });
     return this;
   }

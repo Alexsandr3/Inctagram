@@ -1,7 +1,7 @@
-import { SubscriptionType } from '../../src/modules/subscriptions/types/subscription.type';
+import { SubscriptionType } from '../../../src/modules/subscriptions/types/subscription.type';
 import { Stripe } from 'stripe';
-import { sessionTestType } from './session.test.type';
-import { activeSubscriptionType } from './active.subcription.type';
+import { sessionForTestSubscription } from './sessionForTestSubscription';
+import { activeSubscriptionForTestSubscription } from './active.subcription.type';
 
 export class PaymentStripeServiceMock {
   constructor(e) {}
@@ -16,12 +16,12 @@ export class PaymentStripeServiceMock {
     userName: string;
     subscriptionType: SubscriptionType;
   }): Promise<Stripe.Response<Stripe.Checkout.Session>> {
-    return sessionTestType as Stripe.Response<Stripe.Checkout.Session>;
+    return sessionForTestSubscription as Stripe.Response<Stripe.Checkout.Session>;
   }
 
   async findSubscriptions(customerId: string): Promise<Stripe.ApiListPromise<Stripe.Subscription>> {
     // @ts-ignore
-    return activeSubscriptionType;
+    return activeSubscriptionForTestSubscription;
   }
   async cancelSubscription(subscriptionId: string): Promise<Stripe.Response<Stripe.Subscription>> {
     return;

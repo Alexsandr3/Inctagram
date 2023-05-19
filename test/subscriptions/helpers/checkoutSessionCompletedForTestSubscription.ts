@@ -1,4 +1,4 @@
-export const checkoutSessionCompleted = {
+export const checkoutSessionCompletedForTestSubscription = {
   id: 'evt_1N7cx3IW91ghbnFj83zN1DMJ',
   data: {
     object: {

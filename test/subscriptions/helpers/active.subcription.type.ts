@@ -1,4 +1,4 @@
-export const activeSubscriptionType = {
+export const activeSubscriptionForTestSubscription = {
   object: 'list',
   data: [
     {

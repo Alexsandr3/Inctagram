@@ -12,8 +12,10 @@ import {
   SubscriptionPriceViewModel,
 } from '../../src/modules/subscriptions/api/view-model/cost-monthly-subscription-view.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { checkoutSessionCompleted } from './checkout.session.completed';
+import { checkoutSessionCompletedForTestSubscription } from './helpers/checkoutSessionCompletedForTestSubscription';
 import { PaymentEventType } from '../../src/main/payment-event.type';
+import { PaymentStripeService } from '../../src/providers/payment/application/payment-stripe.service';
+import { LoginInputDto } from '../../src/modules/auth/api/input-dto/login.input.dto';
 
 jest.setTimeout(120000);
 describe('Testing create subscriptions -  e2e', () => {
@@ -80,7 +82,7 @@ describe('Testing create subscriptions -  e2e', () => {
     });
     expect(subscription.url).toEqual(expect.any(String));
     //call success payment event
-    eventEmitter.emit(PaymentEventType.successSubscription, checkoutSessionCompleted.data.object);
+    eventEmitter.emit(PaymentEventType.successSubscription, checkoutSessionCompletedForTestSubscription.data.object);
     await new Promise(resolve => setTimeout(resolve, 2000));
   });
 
@@ -119,8 +121,8 @@ describe('Testing create subscriptions -  e2e', () => {
     expect(body.data[0].endDateOfSubscription).toEqual(expect.any(String));
     expect(body.data[0].autoRenewal).toBe(false);
   });
-  /* //Check the status of the subscription after 1 month
-  it('09 - / (GET) - should get all subscriptions for current user', async () => {
+  //Check the status of the subscription after 1 month
+  it.skip('09 - / (GET) - should get all subscriptions for current user', async () => {
     jest.useFakeTimers();
     //after 1 month
     jest.advanceTimersByTime(1000 * 60 * 60 * 24 * 30);
@@ -132,24 +134,77 @@ describe('Testing create subscriptions -  e2e', () => {
       expectedCode: 200,
     });
     console.log(body);
-  });*/
+  });
 });
 
-/*  it.skip('04 - / (POST) - should create subscriptions for current user', async () => {
-  const command: CreateSubscriptionInputDto = {
-    typeSubscription: SubscriptionType.MONTHLY,
-    paymentType: PaymentMethod.STRIPE,
-    amount: costMonthlySubscription,
-  };
-  const paymentStripeService = app.get<PaymentStripeService>(PaymentStripeService);
-  const sessionFromStripe = jest.spyOn(paymentStripeService, 'createSession');
-  const subscription = await subscriptionsHelper.createSubscription<PaymentSessionUrlViewModel>(command, {
-    token: accessToken,
-    expectedCode: 201,
+describe('Create session  -  e2e', () => {
+  let app: INestApplication;
+  let authHelper: AuthHelper;
+  let subscriptionsHelper: SubscriptionsHelper;
+  let eventEmitter: EventEmitter2;
+
+  beforeAll(async () => {
+    app = await getAppForE2ETesting();
+    authHelper = new AuthHelper(app);
+    subscriptionsHelper = new SubscriptionsHelper(app);
+    eventEmitter = app.get<EventEmitter2>(EventEmitter2);
   });
-  const { value } = sessionFromStripe.mock.results[0];
-  expect(paymentStripeService.createSession).toBeCalled();
-  expect(subscription.url).toEqual(expect.any(String));
-  customerId = value.customer as string;
-  sessionId = value.id as string;
-});*/
+
+  afterAll(async () => {
+    await app.close();
+  });
+  // Registration correct data
+  let accessToken: string;
+  let correctEmail_first_user = 'test@admin.com';
+  let correctUserName_first_user = 'TestsMan';
+  const costMonthlySubscription = 10; //change for tests
+  it('01 - / (POST) - should create user and returned accessToken', async () => {
+    const command = { password: '12345678', email: correctEmail_first_user, userName: correctUserName_first_user };
+    accessToken = await authHelper.createUser(command, { expectedCode: 204 });
+  });
+  //The user wants all active subscriptions
+  it('02 - / (GET) - should get all subscriptions for current user', async () => {
+    const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
+      token: accessToken,
+      expectedCode: 200,
+    });
+    expect(body).toEqual(expect.any(Object));
+    expect(body.hasAutoRenewal).toBe(false);
+    expect(body.data).toHaveLength(0);
+  });
+  //Get the cost of the subscription
+
+  it('03 - / (GET) - should return the cost of the subscription with status 200', async () => {
+    const body = await subscriptionsHelper.getCurrentCostSubscription<SubscriptionPriceViewModel>({
+      expectedCode: 200,
+    });
+    expect(body.data).toHaveLength(3);
+    expect(body.data[0].amount).toEqual(costMonthlySubscription);
+    expect(body.data[0].typeDescription).toEqual(SubscriptionType.MONTHLY);
+    expect(body.data[1].amount).toEqual(costMonthlySubscription * 5);
+    expect(body.data[1].typeDescription).toEqual(SubscriptionType.SEMI_ANNUALLY);
+    expect(body.data[2].amount).toEqual(costMonthlySubscription * 10);
+    expect(body.data[2].typeDescription).toEqual(SubscriptionType.YEARLY);
+  });
+
+  let customerId: string;
+  let sessionId: string;
+  it('04 - / (POST) - should create subscriptions for current user', async () => {
+    const command: CreateSubscriptionInputDto = {
+      typeSubscription: SubscriptionType.MONTHLY,
+      paymentType: PaymentMethod.STRIPE,
+      amount: costMonthlySubscription,
+    };
+    const paymentStripeService = app.get<PaymentStripeService>(PaymentStripeService);
+    const sessionFromStripe = jest.spyOn(paymentStripeService, 'createSession');
+    const subscription = await subscriptionsHelper.createSubscription<PaymentSessionUrlViewModel>(command, {
+      token: accessToken,
+      expectedCode: 201,
+    });
+    const { value } = sessionFromStripe.mock.results[0];
+    expect(paymentStripeService.createSession).toBeCalled();
+    expect(subscription.url).toEqual(expect.any(String));
+    customerId = value.customer as string;
+    sessionId = value.id as string;
+  });
+});

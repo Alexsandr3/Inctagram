@@ -1,4 +1,4 @@
-export const sessionTestType = {
+export const sessionForTestSubscription = {
   id: 'cs_test_a1oPmhIhfTC4MMonYARDeQfm9PzguRN0Ammc8YK9q0TAcHODJZp0tQGh41',
   object: 'checkout.session',
   after_expiration: null,
