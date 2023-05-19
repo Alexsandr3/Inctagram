@@ -10,7 +10,7 @@ export class PostsHelper {
   constructor(private readonly app: INestApplication) {}
 
   async createPost<T = PostViewModel>(
-    body: {
+    needBody: {
       description: string;
       nameFile: string[];
     },
@@ -23,21 +23,27 @@ export class PostsHelper {
     const expectedCode = config.expectedCode ?? HTTP_Status.CREATED_201;
     // create file
     const files = [];
-    for (const file of body.nameFile) {
+    for (const file of needBody.nameFile) {
       files.push(fs.createReadStream(__dirname + '/../' + file));
     }
     // send request for create user
-    const response = await request(this.app.getHttpServer())
+    let response = request(this.app.getHttpServer())
       .post(postsEndpoints.createPostWithUploadImages())
       .auth(config.token, { type: 'bearer' })
-      .field('description', body.description)
-      .set('content-type', 'multipart/form-data')
-      .attach('files', files[0], body.nameFile[0])
-      .attach('files', files[1], body.nameFile[1])
-      .attach('files', files[2], body.nameFile[2])
-      .expect(expectedCode);
+      .field('description', needBody.description)
+      .set('content-type', 'multipart/form-data');
+    // .attach('files', files[0], body.nameFile[0])
+    // .attach('files', files[1], body.nameFile[1])
+    // .attach('files', files[2], body.nameFile[2])
+    // .expect(expectedCode);
 
-    return response.body;
+    for (const file of files) {
+      response = response.attach('files', file, file.path);
+    }
+
+    const { body } = await response.expect(expectedCode);
+
+    return body;
   }
 
   async deleteImage(query: { uploadId: string; postId: number }, config: { expectedCode: number; token: string }) {
