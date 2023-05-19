@@ -32,13 +32,8 @@ export class ConfirmRegistrationUseCase
       await this.usersRepository.findUserWithEmailConfirmationByConfirmationCode(confirmationCode);
     if (!foundUser) throw new NotificationException('User not found', null, NotificationCode.NOT_FOUND);
 
-    if (
-      foundUser.isConfirmed ||
-      foundEmailConfirmation.codeExpirationDate < new Date() ||
-      foundEmailConfirmation.confirmationCode !== confirmationCode
-    ) {
+    if (foundUser.validateConfirmationCodeAndStatus(foundEmailConfirmation, confirmationCode))
       throw new NotificationException('Confirmation code is invalid', 'code', NotificationCode.BAD_REQUEST);
-    }
 
     foundUser.confirmUser();
     await this.usersRepository.updateUser(foundUser);

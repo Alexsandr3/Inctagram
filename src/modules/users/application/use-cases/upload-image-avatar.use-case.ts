@@ -43,7 +43,7 @@ export class UploadImageAvatarUseCase
     const result: BaseImageEntity[] = await this.imagesEditor.generateAndSaveImages(user.id, [file], type);
     const avatars = result.map(i => AvatarEntity.initCreate(userId, i));
     //result is array of instances images need to save
-    if (!user.profile.avatars || user.profile.avatars.length === 0) {
+    if (user.hasProfileAvatar()) {
       await this.usersRepository.addAvatars(userId, avatars);
     } else {
       await this.usersRepository.updateAvatars(userId, avatars);

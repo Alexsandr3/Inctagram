@@ -38,7 +38,7 @@ export class NewPasswordUseCase
     if (!passwordRecovery) {
       throw new NotificationException('Password recovery code is invalid', 'code', NotificationCode.BAD_REQUEST);
     }
-    if (new Date() > passwordRecovery.expirationDate) {
+    if (passwordRecovery.isExpired()) {
       await this.passwordRepository.deletePassRecovery(recoveryCode);
       throw new NotificationException('Password recovery code is expired', 'code', NotificationCode.BAD_REQUEST);
     }

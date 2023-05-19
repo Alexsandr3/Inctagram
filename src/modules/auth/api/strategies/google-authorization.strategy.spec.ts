@@ -4,7 +4,7 @@ import { ApiConfigModule } from '../../../api-config/api.config.module';
 import { Profile } from 'passport-google-oauth20';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 import { UserEntity } from '../../../users/domain/user.entity';
-import { ExternalAccountEntity } from '../../../users/domain/ExternalAccountEntity';
+import { ExternalAccountEntity } from '../../../users/domain/external-account.entity';
 import { ISessionsRepository, PrismaSessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
 import { AuthService } from '../../application/auth.service';
 import { ApiJwtService } from '../../../api-jwt/api-jwt.service';

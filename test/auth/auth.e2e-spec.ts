@@ -7,7 +7,7 @@ import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import { GoogleRegistrationGuard } from '../../src/modules/auth/api/guards/google-registration.guard';
 import { RegisterUserFromExternalAccountInputDto } from '../../src/modules/auth/api/input-dto/register-user-from-external-account-input.dto';
-import { Provider } from '../../src/modules/users/domain/ExternalAccountEntity';
+import { Provider } from '../../src/modules/users/domain/external-account.entity';
 import { GoogleAuthorizationGuard } from '../../src/modules/auth/api/guards/google-authorization.guard';
 import { IUsersRepository } from '../../src/modules/users/infrastructure/users.repository';
 import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';

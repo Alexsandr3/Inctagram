@@ -5,7 +5,7 @@ import { Profile } from 'passport-google-oauth20';
 import { UnauthorizedException } from '@nestjs/common';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 import { UserEntity } from '../../../users/domain/user.entity';
-import { ExternalAccountEntity } from '../../../users/domain/ExternalAccountEntity';
+import { ExternalAccountEntity } from '../../../users/domain/external-account.entity';
 import { GithubAuthorizationStrategy } from './github-authorization.strategy';
 
 describe('test GithubAuthorizationStrategy', () => {

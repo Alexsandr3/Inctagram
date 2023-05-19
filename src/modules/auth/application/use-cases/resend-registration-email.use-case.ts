@@ -31,7 +31,7 @@ export class ResendRegistrationEmailUseCase
     const { email } = command.dto;
 
     const foundUser = await this.usersRepository.findUserByEmail(email);
-    if (!foundUser || foundUser.isConfirmed)
+    if (!foundUser || foundUser.hasActiveStatus())
       throw new NotificationException("Email isn't valid or already confirmed", 'email', NotificationCode.BAD_REQUEST);
 
     const emailConfirmation = EmailConfirmationEntity.initCreate();
