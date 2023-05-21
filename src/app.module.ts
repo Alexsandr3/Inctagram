@@ -16,6 +16,7 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { InboxEventsModule } from './providers/inboxEvents/inbox-events.module';
 import { SchedulerModule } from './providers/schedulerModule/scheduler.module';
+import { SuperAdminModule } from './modules/super-admin/super-admin.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SchedulerModule } from './providers/schedulerModule/scheduler.module';
     EventEmitterModule.forRoot(),
     SchedulerModule,
     InboxEventsModule,
+    SuperAdminModule,
   ],
   controllers: [AppController],
   providers: [],
