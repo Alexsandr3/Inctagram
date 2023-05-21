@@ -109,4 +109,13 @@ export class UserEntity extends BaseDateEntity implements User {
   hasProfileAvatar() {
     return !this.profile.avatars || this.profile.avatars.length === 0;
   }
+
+  setStatusDeleted() {
+    this.status = UserStatusType.DELETED;
+  }
+
+  setStatusBanned(banReason: string) {
+    this.status = UserStatusType.BANNED;
+    // this.profile.banReason = banReason;
+  }
 }
