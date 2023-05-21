@@ -174,4 +174,7 @@ export class ApiConfigService {
   get TEST_CLIENT_URL(): string {
     return this.configService.get('dev.TEST_CLIENT_URL', { infer: true });
   }
+  get GRAPHQL_PLAYGROUND(): boolean {
+    return this.configService.get('dev.graphql.GRAPHQL_PLAYGROUND', { infer: true });
+  }
 }
