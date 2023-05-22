@@ -8,8 +8,10 @@ import { PaginationUsersInputDto } from './input-dto/pagination-users.input.args
 import { Paginated } from '../../../main/shared/paginated';
 import { UserForSuperAdminViewModel } from './models/user-for-super-admin-view.model';
 import { UsersWithPaginationViewModel } from './models/users-with-pagination-view.model';
+import { UseGuards } from '@nestjs/common';
+import { BasicAuthForGraphqlGuard } from './guards/basic-auth-for-graphql.guard';
 
-// @UseGuards(SuperAdminAuthGuard)
+@UseGuards(BasicAuthForGraphqlGuard)
 @Resolver()
 export class SuperAdminResolver {
   constructor(private readonly userQueryRepository: IUsersQueryRepository, private readonly commandBus: CommandBus) {}

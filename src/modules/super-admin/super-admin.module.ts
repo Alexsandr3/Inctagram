@@ -15,6 +15,7 @@ const useCases = [DeleteUserUseCase, BanUserUseCase];
 @Module({
   imports: [
     CqrsModule,
+    ApiConfigModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       imports: [ApiConfigModule],
