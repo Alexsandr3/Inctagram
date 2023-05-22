@@ -8,6 +8,9 @@ import { RegisterUserFromExternalAccountInputDto } from '../../auth/api/input-dt
 import { UserStatusType } from '../types/user-status.type';
 import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
 
+/**
+ * User field parameters [min length -6, max length - 30]
+ */
 export const userFieldParameters = {
   userNameLength: {
     min: 6,
@@ -108,5 +111,14 @@ export class UserEntity extends BaseDateEntity implements User {
 
   hasProfileAvatar() {
     return !this.profile.avatars || this.profile.avatars.length === 0;
+  }
+
+  setStatusDeleted() {
+    this.status = UserStatusType.DELETED;
+  }
+
+  setStatusBanned(banReason: string) {
+    this.status = UserStatusType.BANNED;
+    // this.profile.banReason = banReason;
   }
 }

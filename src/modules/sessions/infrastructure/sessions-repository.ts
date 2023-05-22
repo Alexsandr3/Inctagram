@@ -2,6 +2,7 @@ import { SessionEntity } from '../domain/session.entity';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
+import { UserStatus } from '@prisma/client';
 
 export abstract class ISessionsRepository {
   abstract findSessionByDeviceId(deviceId: number): Promise<SessionEntity | null>;
@@ -17,7 +18,16 @@ export class PrismaSessionsRepository implements ISessionsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findSessionByDeviceId(deviceId: number): Promise<SessionEntity | null> {
-    const session = await this.prisma.session.findUnique({ where: { deviceId } });
+    const session = await this.prisma.session.findFirst({
+      where: {
+        deviceId,
+        user: {
+          status: {
+            notIn: [UserStatus.DELETED, UserStatus.BANNED],
+          },
+        },
+      },
+    });
     return plainToInstance(SessionEntity, session);
   }
 

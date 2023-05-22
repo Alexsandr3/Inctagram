@@ -7,7 +7,6 @@ import { NewPasswordUseCase } from './application/use-cases/new-password.use-cas
 import { PasswordRecoveryUseCase } from './application/use-cases/password-recovery.use-case';
 import { ResendRegistrationEmailUseCase } from './application/use-cases/resend-registration-email.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
-import { BasicStrategy } from './api/strategies/basic.strategy';
 import { LocalStrategy } from './api/strategies/local.strategy';
 import { JwtStrategy } from './api/strategies/jwt.strategy';
 import { ApiConfigModule } from '../api-config/api.config.module';
@@ -50,7 +49,6 @@ const useCases = [
 ];
 
 const strategies = [
-  BasicStrategy,
   LocalStrategy,
   JwtStrategy,
   GoogleAuthorizationStrategy,

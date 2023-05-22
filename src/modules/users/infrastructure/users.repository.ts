@@ -5,6 +5,7 @@ import { plainToInstance } from 'class-transformer';
 import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
 import { AvatarEntity } from '../domain/avatar.entity';
 import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
+import { UserStatus } from '@prisma/client';
 
 export abstract class IUsersRepository {
   abstract findById(userId: number): Promise<UserEntity | null>;
@@ -71,6 +72,9 @@ export class PrismaUsersRepository implements IUsersRepository {
       where: {
         email: {
           equals: email.toLowerCase(),
+        },
+        status: {
+          notIn: [UserStatus.DELETED, UserStatus.BANNED],
         },
       },
       include: { profile: { include: { avatars: true } }, externalAccounts: true },

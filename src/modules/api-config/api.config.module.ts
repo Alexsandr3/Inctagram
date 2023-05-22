@@ -69,6 +69,8 @@ import Joi from 'joi';
 
         IP_RESTRICTION: Joi.boolean(),
         TEST_CLIENT_URL: Joi.string(),
+
+        GRAPHQL_PLAYGROUND: Joi.boolean(),
       }),
       expandVariables: true,
     }),

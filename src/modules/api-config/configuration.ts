@@ -66,6 +66,9 @@ export const configuration = () => ({
     TOKEN_NGROK: process.env.TOKEN_NGROK,
     CURRENT_APP_BASE_URL: process.env.CURRENT_APP_BASE_URL,
     TEST_CLIENT_URL: process.env.TEST_CLIENT_URL,
+    graphql: {
+      GRAPHQL_PLAYGROUND: process.env.GRAPHQL_PLAYGROUND,
+    },
   },
 
   TOKEN_TELEGRAM: process.env.TOKEN_TELEGRAM,
