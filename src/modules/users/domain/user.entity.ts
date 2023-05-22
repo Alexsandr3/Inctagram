@@ -8,6 +8,9 @@ import { RegisterUserFromExternalAccountInputDto } from '../../auth/api/input-dt
 import { UserStatusType } from '../types/user-status.type';
 import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
 
+/**
+ * User field parameters [min length -6, max length - 30]
+ */
 export const userFieldParameters = {
   userNameLength: {
     min: 6,
