@@ -9,7 +9,7 @@ export class UserForSuperAdminViewModel {
   @Field({ nullable: true })
   profileLink: string;
   @Field(() => GraphQLISODateTime)
-  dataAdded: Date;
+  createdAt: Date;
   @Field()
   status: string;
 
@@ -26,7 +26,7 @@ export class UserForSuperAdminViewModel {
     user.userId = userId;
     user.userName = userName;
     user.profileLink = profileLink;
-    user.dataAdded = dataAdded;
+    user.createdAt = dataAdded;
     user.status = status;
     return user;
   }
