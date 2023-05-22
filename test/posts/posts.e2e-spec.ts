@@ -195,14 +195,14 @@ describe('Testing new flow upload files and create post -  e2e', () => {
     expect(responseBody.images[0].versions.huge).toHaveProperty('height');
     expect(responseBody.images[0].versions.huge).toEqual({
       url: expect.any(String),
-      width: ImageSizeConfig.HUGE_HD1_1.defaultWidth,
-      height: ImageSizeConfig.HUGE_HD1_1.defaultHeight,
+      width: ImageSizeConfig.HUGE_HD16_9.defaultWidth,
+      height: ImageSizeConfig.HUGE_HD16_9.defaultHeight,
       fileSize: expect.any(Number),
     });
     expect(responseBody.images[1].versions.huge).toEqual({
       url: expect.any(String),
-      width: ImageSizeConfig.HUGE_HD16_9.defaultWidth,
-      height: ImageSizeConfig.HUGE_HD16_9.defaultHeight,
+      width: ImageSizeConfig.HUGE_HD1_1.defaultWidth,
+      height: ImageSizeConfig.HUGE_HD1_1.defaultHeight,
       fileSize: expect.any(Number),
     });
     expect(responseBody.images[2].versions.huge).toEqual({
@@ -219,14 +219,14 @@ describe('Testing new flow upload files and create post -  e2e', () => {
     expect(responseBody.images[0].versions.large).toHaveProperty('url');
     expect(responseBody.images[0].versions.large).toEqual({
       url: expect.any(String),
-      width: ImageSizeConfig.LARGE1_1.defaultWidth,
-      height: ImageSizeConfig.LARGE1_1.defaultHeight,
+      width: ImageSizeConfig.LARGE16_9.defaultWidth,
+      height: ImageSizeConfig.LARGE16_9.defaultHeight,
       fileSize: expect.any(Number),
     });
     expect(responseBody.images[1].versions.large).toEqual({
       url: expect.any(String),
-      width: ImageSizeConfig.LARGE16_9.defaultWidth,
-      height: ImageSizeConfig.LARGE16_9.defaultHeight,
+      width: ImageSizeConfig.LARGE1_1.defaultWidth,
+      height: ImageSizeConfig.LARGE1_1.defaultHeight,
       fileSize: expect.any(Number),
     });
     expect(responseBody.images[2].versions.large).toEqual({
@@ -267,6 +267,41 @@ describe('Testing new flow upload files and create post -  e2e', () => {
     });
     expect(responseBody.messages[0].field).toBe('post');
     expect(responseBody.messages[0].message).toBe(`Post with id: ${post4.id} must have at least one image`);
+  });
+  //new post
+  it('27 - / (POST) - should return 201 if all data is correct for create post', async () => {
+    let nameFile = '/images/image2.jpeg';
+    let nameFile2 = '/images/image1.png';
+    let nameFile3 = '/images/667x1000_345kb.jpeg';
+    let nameFile4 = '/images/859x720_338kb.jpeg';
+    let nameFile5 = '/images/940x432_63kb.jpeg';
+    let nameFile6 = '/images/940x432_70kb.jpeg';
+    let nameFile7 = '/images/1000x667_304kb.jpeg';
+    let nameFile8 = '/images/1028x312_99kb.jpg';
+    let nameFile9 = '/images/1271х847_357kb.jpeg';
+    let nameFile10 = '/images/elephants.jpg';
+    let nameFile11 = '/images/River_5mb.jpeg';
+    const body = {
+      description: 'New super description',
+      nameFile: [
+        nameFile,
+        nameFile2,
+        nameFile3,
+        nameFile4,
+        nameFile5,
+        nameFile6,
+        nameFile7,
+        nameFile8,
+        nameFile9,
+        nameFile10,
+        nameFile11,
+      ],
+    };
+    const responseBody: ApiErrorResultDto = await postsHelper.createPost(body, {
+      token: accessToken3,
+      expectedCode: 400,
+    });
+    expect(responseBody.messages[0].field).toBe('file');
   });
 });
 

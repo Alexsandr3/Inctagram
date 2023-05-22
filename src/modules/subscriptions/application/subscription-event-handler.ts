@@ -7,7 +7,7 @@ import { PaymentStripeService } from '../../../providers/payment/application/pay
 import { IUsersRepository } from '../../users/infrastructure/users.repository';
 
 @Injectable()
-export class SubscriptionEventHandlerService {
+export class SubscriptionEventHandler {
   constructor(
     private readonly subscriptionsRepository: ISubscriptionsRepository,
     private eventEmitter: EventEmitter2,
@@ -33,7 +33,7 @@ export class SubscriptionEventHandlerService {
     let currentPeriodEnd;
     if (lastActiveSubscription) {
       currentPeriodEnd = lastActiveSubscription.endDate;
-      lastActiveSubscription.updateCurrentSubscriptionToInactive();
+      lastActiveSubscription.disableAutoRenewal();
       await this.subscriptionsRepository.saveSubscriptionWithPayment(lastActiveSubscription);
     }
     currentSubscription.changeStatusToActive(event, currentPeriodEnd);

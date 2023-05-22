@@ -1,6 +1,7 @@
 import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { ExternalAccount } from '@prisma/client';
 import { RegisterUserFromExternalAccountInputDto } from '../../auth/api/input-dto/register-user-from-external-account-input.dto';
+import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
 
 export enum Provider {
   GOOGLE = 'GOOGLE',
@@ -34,5 +35,16 @@ export class ExternalAccountEntity extends BaseDateEntity implements ExternalAcc
 
   confirmAccount() {
     this.isConfirmed = true;
+  }
+
+  validateConfirmationCodeAndStatus(
+    foundConfirmationOfExternalAccount: ConfirmationOfExternalAccountEntity,
+    confirmationCode: string,
+  ): boolean {
+    return (
+      this.isConfirmed ||
+      foundConfirmationOfExternalAccount.codeExpirationDate < new Date() ||
+      foundConfirmationOfExternalAccount.confirmationCode !== confirmationCode
+    );
   }
 }

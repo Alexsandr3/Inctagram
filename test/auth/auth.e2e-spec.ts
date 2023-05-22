@@ -7,12 +7,13 @@ import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
 import { HTTP_Status } from '../../src/main/enums/http-status.enum';
 import { GoogleRegistrationGuard } from '../../src/modules/auth/api/guards/google-registration.guard';
 import { RegisterUserFromExternalAccountInputDto } from '../../src/modules/auth/api/input-dto/register-user-from-external-account-input.dto';
-import { Provider } from '../../src/modules/users/domain/ExternalAccountEntity';
+import { Provider } from '../../src/modules/users/domain/external-account.entity';
 import { GoogleAuthorizationGuard } from '../../src/modules/auth/api/guards/google-authorization.guard';
 import { IUsersRepository } from '../../src/modules/users/infrastructure/users.repository';
 import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';
 import { GitHubAuthorizationGuard } from '../../src/modules/auth/api/guards/github-authorization.guard';
 import { ApiConfigService } from '../../src/modules/api-config/api.config.service';
+import { UserStatusType } from '../../src/modules/users/types/user-status.type';
 
 jest.setTimeout(120000);
 describe('Authorisation -  e2e', () => {
@@ -473,7 +474,7 @@ describe('OAuth2 -  e2e', () => {
 
     expect(user.userName).toBe(googleDto.displayName);
     expect(user.email).toBe(googleDto.email);
-    expect(user.isConfirmed).toBe(true);
+    expect(user.status).toBe(UserStatusType.ACTIVE);
     expect(user.externalAccounts.length).toBe(1);
     expect(user.externalAccounts[0].provider).toBe(googleDto.provider);
     expect(user.externalAccounts[0].providerId).toBe(googleDto.providerId);
@@ -507,7 +508,7 @@ describe('OAuth2 -  e2e', () => {
     const user2 = await prismaUsersRepository.findUserByEmail(dto2.email);
     expect(user2.userName).toBe(dto2.displayName + '_00');
     expect(user2.email).toBe(dto2.email);
-    expect(user2.isConfirmed).toBe(true);
+    expect(user2.status).toBe(UserStatusType.ACTIVE);
     expect(user2.externalAccounts.length).toBe(1);
     expect(user2.externalAccounts[0].provider).toBe(dto2.provider);
     expect(user2.externalAccounts[0].providerId).toBe(dto2.providerId);
@@ -622,7 +623,7 @@ describe('OAuth2 -  e2e', () => {
 
     expect(user.userName).toBe(gitHubDto.displayName);
     expect(user.email).toBe(gitHubDto.email);
-    expect(user.isConfirmed).toBe(true);
+    expect(user.status).toBe(UserStatusType.ACTIVE);
     expect(user.externalAccounts.length).toBe(1);
     expect(user.externalAccounts[0].provider).toBe(gitHubDto.provider);
     expect(user.externalAccounts[0].providerId).toBe(gitHubDto.providerId);

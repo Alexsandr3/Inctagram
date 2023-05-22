@@ -17,4 +17,8 @@ export class PasswordRecoveryEntity implements PasswordRecovery {
     passRecoveryEntity.expirationDate = add(new Date(), { hours: 24 });
     return passRecoveryEntity;
   }
+
+  isExpired(): boolean {
+    return new Date() > this.expirationDate;
+  }
 }

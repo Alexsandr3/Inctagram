@@ -5,7 +5,7 @@ import {
   RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase,
 } from './register-user-from-external-account-and-authorize-if-new-use.case';
 import { AuthService } from '../auth.service';
-import { Provider } from '../../../users/domain/ExternalAccountEntity';
+import { Provider } from '../../../users/domain/external-account.entity';
 import { PrismaService } from '../../../../providers/prisma/prisma.service';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 

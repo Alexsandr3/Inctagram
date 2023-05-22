@@ -32,7 +32,11 @@ export class AuthService {
   async checkCredentialsOfUser(dto: LoginInputDto): Promise<number | null> {
     const foundUser = await this.usersRepository.findUserByEmail(dto.email);
 
-    if (!foundUser || !foundUser.isConfirmed || !(await this.passwordIsCorrect(dto.password, foundUser.passwordHash)))
+    if (
+      !foundUser ||
+      !foundUser.hasActiveStatus() ||
+      !(await this.passwordIsCorrect(dto.password, foundUser.passwordHash))
+    )
       return null;
     return foundUser.id;
   }
@@ -109,14 +113,8 @@ export class AuthService {
     const externalAccount = foundUser.externalAccounts.find(
       a => a.providerId === foundConfirmationOfExternalAccount.providerId,
     );
-
-    if (
-      externalAccount.isConfirmed ||
-      foundConfirmationOfExternalAccount.codeExpirationDate < new Date() ||
-      foundConfirmationOfExternalAccount.confirmationCode !== confirmationCode
-    ) {
+    if (externalAccount.validateConfirmationCodeAndStatus(foundConfirmationOfExternalAccount, confirmationCode))
       throw new NotificationException('Confirmation code is invalid', 'code', NotificationCode.BAD_REQUEST);
-    }
     return { foundUser: foundUser, providerId: foundConfirmationOfExternalAccount.providerId };
   }
 

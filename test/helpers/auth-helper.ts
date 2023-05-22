@@ -16,6 +16,7 @@ import { googleEndpoints } from '../../src/modules/auth/api/routing/google.routi
 import { githubEndpoints } from '../../src/modules/auth/api/routing/github.routing';
 import { UserEntity } from '../../src/modules/users/domain/user.entity';
 import { RegisterUserFromExternalAccountInputDto } from '../../src/modules/auth/api/input-dto/register-user-from-external-account-input.dto';
+import { UserStatusType } from '../../src/modules/users/types/user-status.type';
 
 export class AuthHelper {
   constructor(private readonly app: INestApplication) {}
@@ -334,7 +335,7 @@ export class AuthHelper {
   checkAddedExternalAccount(dto: RegisterUserFromExternalAccountInputDto, user: UserEntity) {
     expect(user.userName).not.toBe(dto.displayName);
     expect(user.email).toBe(dto.email.toLowerCase());
-    expect(user.isConfirmed).toBe(true);
+    expect(user.status).toBe(UserStatusType.ACTIVE);
     expect(user.externalAccounts.length).toBe(2);
     const addedExternalAccount = user.externalAccounts.find(a => a.providerId === dto.providerId);
     expect(addedExternalAccount.displayName).toBe(dto.displayName);

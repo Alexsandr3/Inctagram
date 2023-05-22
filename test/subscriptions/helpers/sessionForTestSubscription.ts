@@ -1,4 +1,4 @@
-export const sessionTestType = {
+export const sessionForTestSubscription = {
   id: 'cs_test_a1oPmhIhfTC4MMonYARDeQfm9PzguRN0Ammc8YK9q0TAcHODJZp0tQGh41',
   object: 'checkout.session',
   after_expiration: null,
@@ -55,7 +55,7 @@ export const sessionTestType = {
   url: 'https://checkout.stripe.com/c/pay/cs_test_a1oPmhIhfTC4MMonYARDeQfm9PzguRN0Ammc8YK9q0TAcHODJZp0tQGh41#fidkdWxOYHwnPyd1blpxYHZxWjA0SGFHQl9MUjw0Ym1na0NvUm9%2FdG9CM0g3T0RhMTU8MElwajEzaDZMU2R1UkZqc1ZXdHFPblViNjBva25VbVR8SjdjaTJ3ckl0cXN3VVd3cVJLdGZBQUdJNTVRSUAzVUk1YycpJ2N3amhWYHdzYHcnP3F3cGApJ2lkfGpwcVF8dWAnPyd2bGtiaWBabHFgaCcpJ2BrZGdpYFVpZGZgbWppYWB3dic%2FcXdwYHgl',
 };
 
-export const sessionTestType2 = {
+export const sessionForTestSubscription2 = {
   id: 'cs_test_e1oPmhIhfTC4MMonYARDeQfm9PzguRN0Ammc8YK9q0TAcHODJZp0tQGh41',
   object: 'checkout.session',
   after_expiration: null,

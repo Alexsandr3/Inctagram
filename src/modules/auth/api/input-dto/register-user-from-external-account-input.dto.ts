@@ -1,5 +1,5 @@
 import { Profile } from 'passport-google-oauth20';
-import { Provider } from '../../../users/domain/ExternalAccountEntity';
+import { Provider } from '../../../users/domain/external-account.entity';
 import { IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
 
 export class RegisterUserFromExternalAccountInputDto {

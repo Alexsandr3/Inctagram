@@ -1,4 +1,4 @@
-export const checkoutSessionCompleted = {
+export const checkoutSessionCompletedForTestSubscription = {
   id: 'evt_1N7cx3IW91ghbnFj83zN1DMJ',
   data: {
     object: {
@@ -89,7 +89,7 @@ export const checkoutSessionCompleted = {
   pending_webhooks: 2,
 };
 
-export const checkoutSessionCompleted2 = {
+export const checkoutSessionCompletedForTestSubscription2 = {
   id: 'evt_1N7cx3IW91ghbnFj83zN1DEJ',
   data: {
     object: {

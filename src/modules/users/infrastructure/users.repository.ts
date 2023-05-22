@@ -171,7 +171,7 @@ export class PrismaUsersRepository implements IUsersRepository {
         userName: user.userName,
         email: user.email,
         passwordHash: user.passwordHash,
-        isConfirmed: user.isConfirmed,
+        status: user.status,
         emailConfirmation: updEmailConfirmation,
         profile: updProfile,
         externalAccounts: { create: user.externalAccounts },

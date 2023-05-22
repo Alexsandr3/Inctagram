@@ -3,8 +3,10 @@ import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
 import { User } from '@prisma/client';
-import { ExternalAccountEntity } from './ExternalAccountEntity';
+import { ExternalAccountEntity } from './external-account.entity';
 import { RegisterUserFromExternalAccountInputDto } from '../../auth/api/input-dto/register-user-from-external-account-input.dto';
+import { UserStatusType } from '../types/user-status.type';
+import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
 
 export const userFieldParameters = {
   userNameLength: {
@@ -18,8 +20,8 @@ export class UserEntity extends BaseDateEntity implements User {
   userName: string;
   email: string;
   passwordHash: string;
-  isConfirmed: boolean;
   hasBusinessAccount: boolean;
+  status: UserStatusType;
   @Type(() => ExternalAccountEntity)
   externalAccounts: ExternalAccountEntity[];
   @Type(() => ProfileEntity)
@@ -34,7 +36,7 @@ export class UserEntity extends BaseDateEntity implements User {
     instanceUser.userName = userName;
     instanceUser.email = email.toLowerCase();
     instanceUser.passwordHash = passwordHash;
-    instanceUser.isConfirmed = false;
+    instanceUser.status = UserStatusType.PENDING;
     instanceUser.profile = null;
     instanceUser.externalAccounts = null;
     instanceUser.hasBusinessAccount = false;
@@ -47,7 +49,7 @@ export class UserEntity extends BaseDateEntity implements User {
     dto: RegisterUserFromExternalAccountInputDto,
   ) {
     const instanceUser = this.initCreateUser(userName, dto.email, passwordHash);
-    instanceUser.isConfirmed = true;
+    instanceUser.status = UserStatusType.ACTIVE;
     instanceUser.externalAccounts = [ExternalAccountEntity.createConfirmedExternalAccount(dto)];
     return instanceUser;
   }
@@ -57,7 +59,8 @@ export class UserEntity extends BaseDateEntity implements User {
   }
 
   public confirmUser() {
-    this.isConfirmed = true;
+    // this.isConfirmed = true;
+    this.status = UserStatusType.ACTIVE;
   }
 
   public updatePassword(passwordHash: string) {
@@ -85,5 +88,25 @@ export class UserEntity extends BaseDateEntity implements User {
 
   deactivateBusinessAccount() {
     this.hasBusinessAccount = false;
+  }
+
+  validateConfirmationCodeAndStatus(
+    foundEmailConfirmation: EmailConfirmationEntity,
+    confirmationCode: string,
+  ): boolean {
+    // if user is already confirmed or code is expired or code is invalid
+    return (
+      this.hasActiveStatus() ||
+      foundEmailConfirmation.codeExpirationDate < new Date() ||
+      foundEmailConfirmation.confirmationCode !== confirmationCode
+    );
+  }
+
+  hasActiveStatus(): boolean {
+    return this.status === UserStatusType.ACTIVE;
+  }
+
+  hasProfileAvatar() {
+    return !this.profile.avatars || this.profile.avatars.length === 0;
   }
 }
