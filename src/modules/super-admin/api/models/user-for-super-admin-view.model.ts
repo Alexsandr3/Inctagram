@@ -1,7 +1,7 @@
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql';
 
 @ObjectType()
-export class UserModel {
+export class UserForSuperAdminViewModel {
   @Field(() => Int)
   userId: number;
   @Field()
@@ -15,8 +15,14 @@ export class UserModel {
 
   constructor() {}
 
-  static create(userId: number, userName: string, profileLink: string, dataAdded: Date, status: string): UserModel {
-    const user = new UserModel();
+  static create(
+    userId: number,
+    userName: string,
+    profileLink: string,
+    dataAdded: Date,
+    status: string,
+  ): UserForSuperAdminViewModel {
+    const user = new UserForSuperAdminViewModel();
     user.userId = userId;
     user.userName = userName;
     user.profileLink = profileLink;

@@ -3,6 +3,10 @@ import { SortDirectionType } from '../enums/sort-direction.enum';
 
 const DEFAULT_PAGE_SIZE = 12;
 
+/**
+ * Base Pagination Input Dto is a base class for pagination input models
+ * @description ['pageSize', 'pageNumber', 'sortBy', 'sortDirection']
+ */
 export class BasePaginationInputDto {
   /**
    * pageSize is number of items that should be returned
@@ -33,7 +37,7 @@ export class BasePaginationInputDto {
     return this.sortDirection === SortDirectionType.Asc ? 'asc' : 'desc';
   }
 
-  private normalizePageValue(value: number, defaultValue: number): number {
+  protected normalizePageValue(value: number, defaultValue: number): number {
     if (isNaN(value) || value < 1) {
       return defaultValue;
     }
