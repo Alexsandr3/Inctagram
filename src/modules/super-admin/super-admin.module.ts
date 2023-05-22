@@ -4,7 +4,6 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { ApiConfigModule } from '../api-config/api.config.module';
 import { ApiConfigService } from '../api-config/api.config.service';
-import { join } from 'node:path';
 import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UsersModule } from '../users/users.module';
@@ -23,7 +22,7 @@ const useCases = [DeleteUserUseCase, BanUserUseCase];
       useFactory: (configService: ApiConfigService) => {
         return {
           playground: Boolean(configService.GRAPHQL_PLAYGROUND),
-          autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+          autoSchemaFile: true, //join(process.cwd(), 'src/schema.gql'),
           installSubscriptionHandlers: true,
           buildSchemaOptions: {
             dateScalarMode: 'timestamp',
