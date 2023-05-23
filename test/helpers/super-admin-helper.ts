@@ -14,7 +14,7 @@ export class SuperAdminHelper {
     return response.body.data;
   }
 
-  async deleteUser(command: string): Promise<any> {
+  async mutationCommand(command: string): Promise<any> {
     const response = await request(this.app.getHttpServer())
       .post('/graphql')
       .auth(`admin@admin.me`, `admin`, { type: 'basic' })
