@@ -119,6 +119,11 @@ export class UserEntity extends BaseDateEntity implements User {
 
   setStatusBanned(banReason: string) {
     this.status = UserStatusType.BANNED;
-    // this.profile.banReason = banReason;
+    this.profile.setBanReason(banReason);
+  }
+
+  setStatusActive() {
+    this.status = UserStatusType.ACTIVE;
+    this.profile.setBanReason(null);
   }
 }

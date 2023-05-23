@@ -11,6 +11,7 @@ export class ProfileEntity extends BaseDateEntity implements Profile {
   city: string;
   dateOfBirth: Date;
   aboutMe: string;
+  banReason: string;
   @Type(() => AvatarEntity)
   avatars: AvatarEntity[];
 
@@ -28,5 +29,9 @@ export class ProfileEntity extends BaseDateEntity implements Profile {
 
   public update(dto: UpdateProfileInputDto) {
     this.setValues(dto);
+  }
+
+  setBanReason(banReason: string) {
+    this.banReason = banReason;
   }
 }

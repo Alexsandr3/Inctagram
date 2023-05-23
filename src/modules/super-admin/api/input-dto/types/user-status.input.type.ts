@@ -3,7 +3,7 @@
  * [all, active, banned]
  */
 export enum UserStatusInputType {
-  All = 'all',
-  Active = 'active',
-  Banned = 'banned',
+  all = 'all',
+  active = 'active',
+  banned = 'banned',
 }

@@ -207,21 +207,21 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     const id = profiles[1].id;
     let query = `
       mutation {
-        banUser(userId: ${id}, banReason: "bad words")
+        updateUserStatus(userId: ${id}, banReason: "bad words", isBanned: true)
       }
     `;
     const body = await superAdminHelper.mutationCommand(query);
-    expect(body.banUser).toBe(true);
+    expect(body.updateUserStatus).toBe(true);
   });
   it('12 - / (POST) - should return 200 if user banned', async () => {
     const id = profiles[2].id;
     let query = `
       mutation {
-        banUser(userId: ${id}, banReason: "too many spam")
+        updateUserStatus(userId: ${id}, banReason: "too many spam",  isBanned: true)
       }
     `;
     const body = await superAdminHelper.mutationCommand(query);
-    expect(body.banUser).toBe(true);
+    expect(body.updateUserStatus).toBe(true);
   });
   //Get banned users
   it('13 - / (GET) - should return 200 and profile of user', async () => {
@@ -252,5 +252,40 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     const body2 = await usersHelper.getMyProfile<ApiErrorResultDto>(arrAccessToken[2], { expectedCode: 401 });
     expect(body.messages[0].field).toBe('authorization');
     expect(body2.messages[0].field).toBe('authorization');
+  });
+  //unban one users
+  it('15 - / (POST) - should return 200 if user unbanned', async () => {
+    const id = profiles[1].id;
+    let query = `
+      mutation {
+        updateUserStatus(userId: ${id}, banReason: null, isBanned: false)
+      }
+    `;
+    const body = await superAdminHelper.mutationCommand(query);
+    expect(body.updateUserStatus).toBe(true);
+  });
+  //Get banned users
+  it('16 - / (GET) - should return 200 and profile of user', async () => {
+    const query = gql`
+      query {
+        users(pageSize: 50, pageNumber: 1, status: "banned") {
+          pageSize
+          page
+          totalCount
+          items {
+            userId
+            userName
+            profileLink
+            status
+            createdAt
+          }
+        }
+      }
+    `;
+    const body = await superAdminHelper.getUsers<PaginationUsersInputDto>(query);
+    expect(body).toBeDefined();
+    expect(body['users'].items.length).toBe(1);
+    expect(body['users'].totalCount).toBe(1);
+    expect(body['users'].pageSize).toBe(50);
   });
 });

@@ -7,9 +7,9 @@ import { ApiConfigService } from '../api-config/api.config.service';
 import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UsersModule } from '../users/users.module';
-import { BanUserUseCase } from './application/use-cases/ban-user.use-case';
+import { UpdateUserStatusUseCase } from './application/use-cases/update-user-status-use.case';
 
-const useCases = [DeleteUserUseCase, BanUserUseCase];
+const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
 
 @Module({
   imports: [
