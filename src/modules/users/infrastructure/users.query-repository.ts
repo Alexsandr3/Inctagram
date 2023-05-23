@@ -54,13 +54,13 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
       take: usersArgs.getPageSize(), //limit - default 10
       include: { profile: { include: { avatars: true } } },
     };
-    if (usersArgs.status === UserStatusInputType.All) {
+    if (usersArgs.status === UserStatusInputType.all) {
       defaultArgs['where'] = { status: { notIn: [UserStatus.DELETED] } };
     }
-    if (usersArgs.status === UserStatusInputType.Banned) {
+    if (usersArgs.status === UserStatusInputType.banned) {
       defaultArgs['where'] = { status: { notIn: [UserStatus.DELETED], in: [UserStatus.BANNED] } };
     }
-    if (usersArgs.status === UserStatusInputType.Active) {
+    if (usersArgs.status === UserStatusInputType.active) {
       defaultArgs['where'] = { status: { notIn: [UserStatus.DELETED], in: [UserStatus.ACTIVE] } };
     }
     if (usersArgs.search) {

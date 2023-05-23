@@ -103,6 +103,7 @@ model Profile {
   city        String?
   dateOfBirth DateTime?
   aboutMe     String?
+  banReason   String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   avatars     AvatarImage[]

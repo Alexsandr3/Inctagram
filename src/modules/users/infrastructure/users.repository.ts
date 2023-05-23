@@ -152,6 +152,7 @@ export class PrismaUsersRepository implements IUsersRepository {
             city: user.profile.city,
             dateOfBirth: user.profile.dateOfBirth,
             aboutMe: user.profile.aboutMe,
+            banReason: user.profile.banReason,
             //images: { disconnect: true },
           },
         },

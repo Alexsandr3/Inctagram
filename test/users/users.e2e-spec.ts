@@ -45,7 +45,7 @@ describe('Update-profile -  e2e', () => {
     userId = myInfo.userId;
   });
   it('01.2 - / (GET) - should return 200 and profile of user', async () => {
-    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken);
+    const profile: ProfileViewModel = await usersHelper.getMyProfile<ProfileViewModel>(accessToken);
     expect(profile).toEqual({
       id: userId,
       userName: correctUserName_first_user,
@@ -125,7 +125,7 @@ describe('Update-profile -  e2e', () => {
       expectedBody: accessToken,
       expectedCode: HTTP_Status.NO_CONTENT_204,
     });
-    firstUserProfile = await usersHelper.getMyProfile(accessToken);
+    firstUserProfile = await usersHelper.getMyProfile<ProfileViewModel>(accessToken);
 
     expect(firstUserProfile).toEqual({
       ...command,
@@ -142,7 +142,7 @@ describe('Update-profile -  e2e', () => {
       expectedBody: accessToken,
       expectedCode: HTTP_Status.NO_CONTENT_204,
     });
-    const changedProfile = await usersHelper.getMyProfile(accessToken);
+    const changedProfile = await usersHelper.getMyProfile<ProfileViewModel>(accessToken);
 
     expect(changedProfile).toEqual({
       ...firstUserProfile,
@@ -157,7 +157,7 @@ describe('Update-profile -  e2e', () => {
       expectedBody: accessToken,
       expectedCode: HTTP_Status.NO_CONTENT_204,
     });
-    const changedProfile2 = await usersHelper.getMyProfile(accessToken);
+    const changedProfile2 = await usersHelper.getMyProfile<ProfileViewModel>(accessToken);
 
     expect(changedProfile2).toEqual({
       ...firstUserProfile,
@@ -173,7 +173,7 @@ describe('Update-profile -  e2e', () => {
       expectedBody: accessToken,
       expectedCode: HTTP_Status.NO_CONTENT_204,
     });
-    const changedProfile = await usersHelper.getMyProfile(accessToken);
+    const changedProfile = await usersHelper.getMyProfile<ProfileViewModel>(accessToken);
 
     expect(changedProfile).toEqual({
       ...firstUserProfile,
@@ -209,7 +209,7 @@ describe('Update-profile -  e2e', () => {
 
     const myInfo = await authHelper.me(accessToken2);
     userId = myInfo.userId;
-    const profile = await usersHelper.getMyProfile(accessToken2);
+    const profile = await usersHelper.getMyProfile<ProfileViewModel>(accessToken2);
 
     expect(profile).toEqual({
       ...command,
@@ -228,7 +228,7 @@ describe('Update-profile -  e2e', () => {
     expect(responseBody).toEqual({});
   });
   it('25 - / (GET) - should return 200 if all data is correct', async () => {
-    const responseBody: ProfileViewModel = await usersHelper.getMyProfile(accessToken2);
+    const responseBody = await usersHelper.getMyProfile<ProfileViewModel>(accessToken2);
     expect(responseBody).toEqual({
       ...command,
       lastName: null,
@@ -279,7 +279,7 @@ describe('Update-profile -  e2e', () => {
     );
   });
   it('34 - / (GET) - should return 200 and profile with avatar of FIRST user', async () => {
-    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken);
+    const profile = await usersHelper.getMyProfile<ProfileViewModel>(accessToken);
     expect(profile).toEqual({ ...firstUserProfile, avatars: expect.any(Array) });
     expect(profile.avatars.length).toBe(2);
     expect(profile.avatars).toEqual(
@@ -318,7 +318,7 @@ describe('Update-profile -  e2e', () => {
     });
   });
   it('36 - / (GET) - should return 200 and profile of user', async () => {
-    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken);
+    const profile = await usersHelper.getMyProfile<ProfileViewModel>(accessToken);
     expect(profile).toEqual({ ...firstUserProfile, avatars: expect.any(Array) });
     expect(profile.avatars.length).toBe(2);
     expect(profile.avatars).toEqual(
@@ -362,7 +362,7 @@ describe('Update-profile -  e2e', () => {
     expect(responseBody).toEqual({});
   });
   it('39 - / (GET) - should return 200 and profile FIRST user', async () => {
-    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken);
+    const profile = await usersHelper.getMyProfile<ProfileViewModel>(accessToken);
     expect(profile.avatars).toHaveLength(0);
   });
   it('40 - / (DELETE) - should return 204 if all data is correct for delete avatar by SECOND user', async () => {
@@ -370,7 +370,7 @@ describe('Update-profile -  e2e', () => {
     expect(responseBody).toEqual({});
   });
   it('41 - / (GET) - should return 200 and profile SECOND user', async () => {
-    const profile: ProfileViewModel = await usersHelper.getMyProfile(accessToken2);
+    const profile = await usersHelper.getMyProfile<ProfileViewModel>(accessToken2);
     expect(profile.avatars).toHaveLength(0);
   });
 });

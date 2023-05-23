@@ -4,25 +4,27 @@ import { IUsersRepository } from '../../../users/infrastructure/users.repository
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
 
-export class BanUserCommand {
-  constructor(public readonly userId: number, public readonly banReason: string) {}
+export class UpdateUserStatusCommand {
+  constructor(public readonly userId: number, public readonly banReason: string, public readonly isBanned: boolean) {}
 }
 
-@CommandHandler(BanUserCommand)
-export class BanUserUseCase
-  extends BaseNotificationUseCase<BanUserCommand, boolean>
-  implements ICommandHandler<BanUserCommand>
+@CommandHandler(UpdateUserStatusCommand)
+export class UpdateUserStatusUseCase
+  extends BaseNotificationUseCase<UpdateUserStatusCommand, boolean>
+  implements ICommandHandler<UpdateUserStatusCommand>
 {
   constructor(private readonly usersRepository: IUsersRepository) {
     super();
   }
 
-  async executeUseCase(command: BanUserCommand): Promise<boolean> {
-    const { userId, banReason } = command;
+  async executeUseCase(command: UpdateUserStatusCommand): Promise<boolean> {
+    const { userId, banReason, isBanned } = command;
     //find profile
     const user = await this.usersRepository.findById(userId);
     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-    user.setStatusBanned(banReason);
+    //if user isBanned = true, ban user, else unban user
+    isBanned ? user.setStatusBanned(banReason) : user.setStatusActive();
+    //update user with new status
     await this.usersRepository.updateUser(user);
     return true;
   }

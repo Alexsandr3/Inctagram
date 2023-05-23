@@ -2,7 +2,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { CommandBus } from '@nestjs/cqrs';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case';
-import { BanUserCommand } from '../application/use-cases/ban-user.use-case';
+import { UpdateUserStatusCommand } from '../application/use-cases/update-user-status-use.case';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';
 import { PaginationUsersInputDto } from './input-dto/pagination-users.input.args';
 import { Paginated } from '../../../main/shared/paginated';
@@ -10,6 +10,7 @@ import { UserForSuperAdminViewModel } from './models/user-for-super-admin-view.m
 import { UsersWithPaginationViewModel } from './models/users-with-pagination-view.model';
 import { UseGuards } from '@nestjs/common';
 import { BasicAuthForGraphqlGuard } from './guards/basic-auth-for-graphql.guard';
+import { UpdateUserStatusInputArgs } from './input-dto/update-user-status-input.args';
 
 @UseGuards(BasicAuthForGraphqlGuard)
 @Resolver()
@@ -29,9 +30,9 @@ export class SuperAdminResolver {
   }
 
   @Mutation(() => Boolean)
-  async banUser(@Args('userId') userId: number, @Args('banReason') banReason: string): Promise<boolean> {
-    const notification = await this.commandBus.execute<BanUserCommand, ResultNotification<boolean>>(
-      new BanUserCommand(userId, banReason),
+  async updateUserStatus(@Args() inputArgs: UpdateUserStatusInputArgs): Promise<boolean> {
+    const notification = await this.commandBus.execute<UpdateUserStatusCommand, ResultNotification<boolean>>(
+      new UpdateUserStatusCommand(inputArgs.userId, inputArgs.banReason, inputArgs.isBanned),
     );
     return notification.getData();
   }

@@ -15,21 +15,17 @@ export class PaginationUsersInputDto extends BasePaginationInputDto {
     super();
   }
   @Field(() => Int, { nullable: true })
-  @IsOptional()
   pageNumber: number;
   @Field(() => Int, { nullable: true })
-  @IsOptional()
   pageSize: number;
   @Field(() => String, { nullable: true })
-  @IsOptional()
   sortBy: string;
   @Field(() => String, { nullable: true })
-  @IsOptional()
   sortDirection: SortDirectionType = SortDirectionType.Desc;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
-  status: UserStatusInputType = UserStatusInputType.All;
+  status: UserStatusInputType = UserStatusInputType.all;
 
   @Field(() => String, { nullable: true })
   @IsOptional()
@@ -38,11 +34,6 @@ export class PaginationUsersInputDto extends BasePaginationInputDto {
   isSortByDefault(): string {
     const defaultValue = ['id', 'userName', 'createdAt'];
     return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'id');
-  }
-
-  getStatus(): string {
-    const defaultValue = ['all', 'active', 'banned'];
-    return (this.status = defaultValue.includes(this.status) ? this.status : UserStatusInputType.All);
   }
 
   getPageSize(): number {

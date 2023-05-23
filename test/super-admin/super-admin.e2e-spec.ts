@@ -7,6 +7,8 @@ import { SuperAdminHelper } from '../helpers/super-admin-helper';
 import { PaginationUsersInputDto } from '../../src/modules/super-admin/api/input-dto/pagination-users.input.args';
 import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
 import gql from 'graphql-tag';
+import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
+import { ImageSizeConfig } from '../../src/modules/images/image-size-config.type';
 
 jest.setTimeout(120000);
 describe('Super-admin with GraphQL AppResolve -  e2e', () => {
@@ -67,13 +69,19 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
       token: arrAccessToken[3],
       expectedCode: 201,
     });
+    expect(responseBody.avatars).toHaveLength(2);
+    expect(responseBody.avatars[0].width).toBe(ImageSizeConfig.MEDIUM.defaultWidth);
+    expect(responseBody.avatars[1].width).toBe(ImageSizeConfig.THUMBNAIL.defaultWidth);
   });
   it('03 - / (POST) - should return 201 if all data is correct for upload image profile', async () => {
-    let nameFile = '/images/1000x667_304kb.jpeg';
+    let nameFile = '/images/image1.png';
     const responseBody: AvatarsViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       token: arrAccessToken[5],
       expectedCode: 201,
     });
+    expect(responseBody.avatars).toHaveLength(2);
+    expect(responseBody.avatars[0].width).toBe(ImageSizeConfig.MEDIUM.defaultWidth);
+    expect(responseBody.avatars[1].width).toBe(ImageSizeConfig.THUMBNAIL.defaultWidth);
   });
   it('04 - / (GET) - should return all users', async () => {
     const query = gql`
@@ -147,7 +155,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
   let profiles: ProfileViewModel[] = [];
   it('07 - / (GET) - should return 200 and profile of user', async () => {
     for (const token of arrAccessToken) {
-      let profile: ProfileViewModel = await usersHelper.getMyProfile(token);
+      let profile: ProfileViewModel = await usersHelper.getMyProfile<ProfileViewModel>(token);
       profiles.push(profile);
     }
   });
@@ -158,7 +166,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
         deleteUser(userId: ${id})
       }
     `;
-    const body = await superAdminHelper.deleteUser(query);
+    const body = await superAdminHelper.mutationCommand(query);
     expect(body.deleteUser).toBe(true);
   });
   it('09 - / (DELETE) - should return 200 if user deleted', async () => {
@@ -168,7 +176,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
         deleteUser(userId: ${id2})
       }
     `;
-    const body = await superAdminHelper.deleteUser(query);
+    const body = await superAdminHelper.mutationCommand(query);
     expect(body.deleteUser).toBe(true);
   });
   it('10 - / (GET) - should return 200 and profile of user', async () => {
@@ -192,6 +200,92 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     expect(body).toBeDefined();
     expect(body['users'].items.length).toBe(19);
     expect(body['users'].totalCount).toBe(19);
+    expect(body['users'].pageSize).toBe(50);
+  });
+  //ban two users
+  it('11 - / (POST) - should return 200 if user banned', async () => {
+    const id = profiles[1].id;
+    let query = `
+      mutation {
+        updateUserStatus(userId: ${id}, banReason: "bad words", isBanned: true)
+      }
+    `;
+    const body = await superAdminHelper.mutationCommand(query);
+    expect(body.updateUserStatus).toBe(true);
+  });
+  it('12 - / (POST) - should return 200 if user banned', async () => {
+    const id = profiles[2].id;
+    let query = `
+      mutation {
+        updateUserStatus(userId: ${id}, banReason: "too many spam",  isBanned: true)
+      }
+    `;
+    const body = await superAdminHelper.mutationCommand(query);
+    expect(body.updateUserStatus).toBe(true);
+  });
+  //Get banned users
+  it('13 - / (GET) - should return 200 and profile of user', async () => {
+    const query = gql`
+      query {
+        users(pageSize: 50, pageNumber: 1, status: "banned") {
+          pageSize
+          page
+          totalCount
+          items {
+            userId
+            userName
+            profileLink
+            status
+            createdAt
+          }
+        }
+      }
+    `;
+    const body = await superAdminHelper.getUsers<PaginationUsersInputDto>(query);
+    expect(body).toBeDefined();
+    expect(body['users'].items.length).toBe(2);
+    expect(body['users'].totalCount).toBe(2);
+    expect(body['users'].pageSize).toBe(50);
+  });
+  it('14 - / (GET) - should return 200 and profile with avatar of FIRST user', async () => {
+    const body = await usersHelper.getMyProfile<ApiErrorResultDto>(arrAccessToken[1], { expectedCode: 401 });
+    const body2 = await usersHelper.getMyProfile<ApiErrorResultDto>(arrAccessToken[2], { expectedCode: 401 });
+    expect(body.messages[0].field).toBe('authorization');
+    expect(body2.messages[0].field).toBe('authorization');
+  });
+  //unban one users
+  it('15 - / (POST) - should return 200 if user unbanned', async () => {
+    const id = profiles[1].id;
+    let query = `
+      mutation {
+        updateUserStatus(userId: ${id}, banReason: null, isBanned: false)
+      }
+    `;
+    const body = await superAdminHelper.mutationCommand(query);
+    expect(body.updateUserStatus).toBe(true);
+  });
+  //Get banned users
+  it('16 - / (GET) - should return 200 and profile of user', async () => {
+    const query = gql`
+      query {
+        users(pageSize: 50, pageNumber: 1, status: "banned") {
+          pageSize
+          page
+          totalCount
+          items {
+            userId
+            userName
+            profileLink
+            status
+            createdAt
+          }
+        }
+      }
+    `;
+    const body = await superAdminHelper.getUsers<PaginationUsersInputDto>(query);
+    expect(body).toBeDefined();
+    expect(body['users'].items.length).toBe(1);
+    expect(body['users'].totalCount).toBe(1);
     expect(body['users'].pageSize).toBe(50);
   });
 });
