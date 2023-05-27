@@ -24,19 +24,30 @@ export class SubscriptionsQueryRepository implements ISubscriptionsQueryReposito
         businessAccountId: userId,
         status: StatusSubscriptionType.ACTIVE,
       },
-      orderBy: { dateOfPayment: 'asc' },
+      orderBy: { dateOfPayment: 'desc' },
     });
     return new CurrentActiveSubscriptionsViewModel(
-      subscriptions.map(
-        sub =>
-          new ActiveSubscriptionViewModel(
-            sub.businessAccountId,
-            sub.externalSubId,
-            sub.dateOfPayment,
-            sub.endDate,
-            sub.autoRenew,
-          ),
-      ),
+      subscriptions.length > 0
+        ? [
+            new ActiveSubscriptionViewModel(
+              subscriptions[0].businessAccountId,
+              subscriptions[0].externalSubId,
+              subscriptions[0].dateOfPayment,
+              subscriptions[0].endDate,
+              subscriptions[0].autoRenew,
+            ),
+          ]
+        : [],
+      // subscriptions.map(
+      //   sub =>
+      //     new ActiveSubscriptionViewModel(
+      //       sub.businessAccountId,
+      //       sub.externalSubId,
+      //       sub.dateOfPayment,
+      //       sub.endDate,
+      //       sub.autoRenew,
+      //     ),
+      // ),
     );
   }
 

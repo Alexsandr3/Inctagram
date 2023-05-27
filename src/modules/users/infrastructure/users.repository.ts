@@ -74,7 +74,7 @@ export class PrismaUsersRepository implements IUsersRepository {
           equals: email.toLowerCase(),
         },
         status: {
-          notIn: [UserStatus.DELETED, UserStatus.BANNED],
+          notIn: [UserStatus.DELETED],
         },
       },
       include: { profile: { include: { avatars: true } }, externalAccounts: true },
