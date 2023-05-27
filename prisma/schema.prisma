@@ -134,7 +134,7 @@ model AvatarImage {
   profileId Int
   imageType ImageType
   sizeType  ImageSizeType
-  url       String        @unique
+  url       String
   width     Int
   height    Int
   fileSize  Int
