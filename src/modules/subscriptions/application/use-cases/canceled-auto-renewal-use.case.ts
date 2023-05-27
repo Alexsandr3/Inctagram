@@ -1,10 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { PaymentStripeService } from '../../../../providers/payment/application/payment-stripe.service';
 import { ISubscriptionsRepository } from '../../infrastructure/subscriptions.repository';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 export class CanceledAutoRenewalCommand {
   constructor(public readonly userId: number) {}

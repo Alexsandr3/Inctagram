@@ -1,9 +1,9 @@
 import { PostEntity } from '../domain/post.entity';
 import { NotificationException } from '../../../main/validators/result-notification';
-import { NotificationCode } from '../../../configuration/exception.filter';
 import { IUsersRepository } from '../../users/infrastructure/users.repository';
 import { IPostsRepository } from '../infrastructure/posts.repository';
 import { Injectable } from '@nestjs/common';
+import { NotificationCode } from '../../../configuration/notificationCode';
 
 @Injectable()
 export class PostsService {

@@ -1,5 +1,5 @@
-import { NotificationCode } from '../../configuration/exception.filter';
 import { HTTP_Status } from '../enums/http-status.enum';
+import { NotificationCode } from '../../configuration/notificationCode';
 
 export enum NotificationStatus {
   SUCCESS = 0,

@@ -32,7 +32,6 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { PostViewModel } from './view-models/post-view.dto';
 import { ProfileViewModel } from '../../users/api/view-models/profile-view.dto';
-import { NotificationCode } from '../../../configuration/exception.filter';
 import { DeletePostCommand } from '../application/use-cases/delete-post-use.case';
 import { PostStatus } from '../domain/post.entity';
 import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
@@ -41,6 +40,7 @@ import { CreatePostWithUploadImagesCommand } from '../application/use-cases/crea
 import { DeleteImageExistingPostCommand } from '../application/use-cases/delete-image-post-use.case';
 import { CreatePostInputDto } from './input-dto/create-post.input.dto';
 import { NotificationErrors } from '../../../main/validators/checker-notification.errors';
+import { NotificationCode } from '../../../configuration/notificationCode';
 
 @ApiBearerAuth()
 @ApiTags('Posts')

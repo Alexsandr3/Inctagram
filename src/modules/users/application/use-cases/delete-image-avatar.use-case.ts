@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { ImagesEditorService } from '../../../images/application/images-editor.service';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * Delete photo avatar for user command
