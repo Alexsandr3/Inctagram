@@ -13,7 +13,7 @@ import { BasicAuthForGraphqlGuard } from './guards/basic-auth-for-graphql.guard'
 import { UpdateUserStatusInputArgs } from './input-dto/update-user-status-input.args';
 
 @UseGuards(BasicAuthForGraphqlGuard)
-@Resolver()
+@Resolver(() => UserForSuperAdminViewModel)
 export class SuperAdminResolver {
   constructor(private readonly userQueryRepository: IUsersQueryRepository, private readonly commandBus: CommandBus) {}
   @Query(() => UsersWithPaginationViewModel)

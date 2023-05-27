@@ -8,6 +8,7 @@ import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case'
 import { CqrsModule } from '@nestjs/cqrs';
 import { UsersModule } from '../users/users.module';
 import { UpdateUserStatusUseCase } from './application/use-cases/update-user-status-use.case';
+import { GraphQLError, GraphQLFormattedError } from 'graphql/error';
 
 const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
 
@@ -26,6 +27,16 @@ const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
           installSubscriptionHandlers: true,
           buildSchemaOptions: {
             dateScalarMode: 'timestamp',
+          },
+          formatError: (error: GraphQLError) => {
+            console.log('error', error);
+            const graphQLFormattedError: GraphQLFormattedError = {
+              message: error?.message,
+              extensions: {
+                statusCode: error?.extensions?.statusCode,
+              },
+            };
+            return graphQLFormattedError;
           },
         };
       },
