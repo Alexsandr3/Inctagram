@@ -96,18 +96,24 @@ model PasswordRecovery {
   @@map("PasswordRecoverys")
 }
 
+enum BanReasonInputType {
+  Bad_behavior
+  Advertising_placement
+  Another_reason
+}
+
 model Profile {
-  userId      Int           @unique
+  userId      Int                 @unique
   firstName   String?
   lastName    String?
   city        String?
   dateOfBirth DateTime?
   aboutMe     String?
-  banReason   String?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  banReason   BanReasonInputType?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
   avatars     AvatarImage[]
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("Profiles")
 }
