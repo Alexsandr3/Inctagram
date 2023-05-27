@@ -1,4 +1,4 @@
-import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
+import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { CommandBus } from '@nestjs/cqrs';
 import { ResultNotification } from '../../../main/validators/result-notification';
 import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case';
@@ -11,11 +11,17 @@ import { UsersWithPaginationViewModel } from './models/users-with-pagination-vie
 import { UseGuards } from '@nestjs/common';
 import { BasicAuthForGraphqlGuard } from './guards/basic-auth-for-graphql.guard';
 import { UpdateUserStatusInputArgs } from './input-dto/update-user-status-input.args';
+import { PostForSuperAdminViewModel } from './models/post-for-super-admin-view.model';
+import { IPostsRepository } from '../../posts/infrastructure/posts.repository';
 
 @UseGuards(BasicAuthForGraphqlGuard)
 @Resolver(() => UserForSuperAdminViewModel)
 export class SuperAdminResolver {
-  constructor(private readonly userQueryRepository: IUsersQueryRepository, private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly userQueryRepository: IUsersQueryRepository,
+    private readonly commandBus: CommandBus,
+    private readonly postsRepository: IPostsRepository,
+  ) {}
   @Query(() => UsersWithPaginationViewModel)
   async users(@Args() usersArgs: PaginationUsersInputDto): Promise<Paginated<UserForSuperAdminViewModel[]>> {
     return this.userQueryRepository.getUsersForSuperAdmin(usersArgs);
@@ -35,5 +41,10 @@ export class SuperAdminResolver {
       new UpdateUserStatusCommand(inputArgs.userId, inputArgs.banReason, inputArgs.isBanned),
     );
     return notification.getData();
+  }
+
+  @ResolveField(() => PostForSuperAdminViewModel)
+  async posts(@Parent() user: UserForSuperAdminViewModel): Promise<PostForSuperAdminViewModel> {
+    return this.postsRepository.getPostById(user.userId);
   }
 }

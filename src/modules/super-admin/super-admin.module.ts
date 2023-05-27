@@ -9,6 +9,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { UsersModule } from '../users/users.module';
 import { UpdateUserStatusUseCase } from './application/use-cases/update-user-status-use.case';
 import { GraphQLError, GraphQLFormattedError } from 'graphql/error';
+import { PostsModule } from '../posts/posts.module';
 
 const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
 
@@ -29,12 +30,12 @@ const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
             dateScalarMode: 'timestamp',
           },
           formatError: (error: GraphQLError) => {
-            console.log('error', error);
             const graphQLFormattedError: GraphQLFormattedError = {
               message: error?.message,
               extensions: {
                 statusCode: error?.extensions?.statusCode,
               },
+              path: error?.path,
             };
             return graphQLFormattedError;
           },
@@ -42,6 +43,7 @@ const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
       },
     }),
     UsersModule,
+    PostsModule,
   ],
   providers: [...useCases, SuperAdminResolver],
 })

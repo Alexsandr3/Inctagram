@@ -8,18 +8,22 @@ import { PaginationUsersInputDto } from '../../src/modules/super-admin/api/input
 import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
 import gql from 'graphql-tag';
 import { ImageSizeConfig } from '../../src/modules/images/image-size-config.type';
+import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
+import { PostsHelper } from '../helpers/posts-helper';
 
 jest.setTimeout(120000);
 describe('Super-admin with GraphQL AppResolve -  e2e', () => {
   let app: INestApplication;
   let authHelper: AuthHelper;
   let usersHelper: UsersHelper;
+  let postsHelper: PostsHelper;
   let superAdminHelper: SuperAdminHelper;
 
   beforeAll(async () => {
     app = await getAppForE2ETesting();
     authHelper = new AuthHelper(app);
     usersHelper = new UsersHelper(app);
+    postsHelper = new PostsHelper(app);
     superAdminHelper = new SuperAdminHelper(app);
   });
 
@@ -286,5 +290,10 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     expect(body['users'].items.length).toBe(1);
     expect(body['users'].totalCount).toBe(1);
     expect(body['users'].pageSize).toBe(50);
+  });
+  it('15 - / (POST) - should return 201 if all data is correct for create post', async () => {
+    let nameFile = '/images/1271х847_357kb.jpeg';
+    const body = { description: 'This is my first post', nameFile: [nameFile] };
+    await postsHelper.createPost<PostViewModel>(body, { token: arrAccessToken[5], expectedCode: 201 });
   });
 });

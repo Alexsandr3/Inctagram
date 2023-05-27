@@ -39,5 +39,6 @@ const useCases = [
       useClass: PostsQueryRepository,
     },
   ],
+  exports: [IPostsRepository],
 })
 export class PostsModule {}

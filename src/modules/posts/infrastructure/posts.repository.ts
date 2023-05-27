@@ -4,11 +4,15 @@ import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../../users/domain/user.entity';
 import { ImagePostEntity } from '../domain/image-post.entity';
+import { PostForSuperAdminViewModel } from '../../super-admin/api/models/post-for-super-admin-view.model';
+import { UserStatus } from '@prisma/client';
 
 export abstract class IPostsRepository {
   abstract savePost(post: PostEntity): Promise<void>;
   abstract findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }>;
   abstract createPostWithImages(instancePost: PostEntity): Promise<number>;
+
+  abstract getPostById(userId: number): Promise<PostForSuperAdminViewModel>;
   //unused
   /* abstract createPost(instancePost: PostEntity): Promise<number>;
   abstract saveImages(image: ImagePostEntity[]): Promise<void>;
@@ -104,6 +108,23 @@ export class PostsRepository implements IPostsRepository {
       });
       return post.id;
     });
+  }
+
+  async getPostById(userId: number): Promise<PostForSuperAdminViewModel> {
+    const post = await this.prisma.post.findFirst({
+      where: {
+        ownerId: userId,
+        user: {
+          status: {
+            notIn: [UserStatus.DELETED],
+          },
+        },
+      },
+      include: { images: true },
+    });
+    if (!post) return PostForSuperAdminViewModel.createEmpty();
+    const postWithImages = plainToInstance(PostEntity, post);
+    return PostForSuperAdminViewModel.createIns(postWithImages);
   }
 }
 

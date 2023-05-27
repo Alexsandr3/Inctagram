@@ -34,7 +34,7 @@ export class PaginationUsersInputDto extends BasePaginationInputDto {
   @Field(() => Int, { nullable: true })
   pageNumber: number;
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Int, { nullable: true, defaultValue: DEFAULT_PAGE_SIZE })
   pageSize: number = DEFAULT_PAGE_SIZE;
 
   @Field(() => SortByForUsersInputType, { nullable: true })

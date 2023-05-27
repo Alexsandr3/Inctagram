@@ -1,5 +1,5 @@
 import { PrismaService } from '../../../providers/prisma/prisma.service';
-import { PostEntity, PostStatus } from '../domain/post.entity';
+import { PostEntity } from '../domain/post.entity';
 import { plainToInstance } from 'class-transformer';
 import { PostViewModel } from '../api/view-models/post-view.dto';
 import { Injectable } from '@nestjs/common';
@@ -7,6 +7,7 @@ import { PaginationPostsInputDto } from '../api/input-dto/pagination-posts.input
 import { PostsWithPaginationViewDto } from '../api/view-models/posts-with-pagination-view.dto';
 import { Paginated } from '../../../main/shared/paginated';
 import { UserStatus } from '@prisma/client';
+import { PostStatus } from '../types/postStatus';
 
 export abstract class IPostsQueryRepository {
   abstract getPost(postId: number, status: PostStatus): Promise<PostViewModel>;
