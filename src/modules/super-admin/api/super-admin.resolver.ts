@@ -43,8 +43,8 @@ export class SuperAdminResolver {
     return notification.getData();
   }
 
-  @ResolveField(() => PostForSuperAdminViewModel)
-  async posts(@Parent() user: UserForSuperAdminViewModel): Promise<PostForSuperAdminViewModel> {
-    return this.postsRepository.getPostById(user.userId);
+  @ResolveField(() => [PostForSuperAdminViewModel])
+  async posts(@Parent() user: UserForSuperAdminViewModel): Promise<PostForSuperAdminViewModel[]> {
+    return this.postsRepository.getPostsById(user.userId);
   }
 }

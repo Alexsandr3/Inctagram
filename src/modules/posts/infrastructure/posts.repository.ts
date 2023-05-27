@@ -12,7 +12,7 @@ export abstract class IPostsRepository {
   abstract findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }>;
   abstract createPostWithImages(instancePost: PostEntity): Promise<number>;
 
-  abstract getPostById(userId: number): Promise<PostForSuperAdminViewModel>;
+  abstract getPostsById(userId: number): Promise<PostForSuperAdminViewModel[]>;
   //unused
   /* abstract createPost(instancePost: PostEntity): Promise<number>;
   abstract saveImages(image: ImagePostEntity[]): Promise<void>;
@@ -110,8 +110,8 @@ export class PostsRepository implements IPostsRepository {
     });
   }
 
-  async getPostById(userId: number): Promise<PostForSuperAdminViewModel> {
-    const post = await this.prisma.post.findFirst({
+  async getPostsById(userId: number): Promise<PostForSuperAdminViewModel[]> {
+    const posts = await this.prisma.post.findMany({
       where: {
         ownerId: userId,
         user: {
@@ -122,9 +122,9 @@ export class PostsRepository implements IPostsRepository {
       },
       include: { images: true },
     });
-    if (!post) return PostForSuperAdminViewModel.createEmpty();
-    const postWithImages = plainToInstance(PostEntity, post);
-    return PostForSuperAdminViewModel.createIns(postWithImages);
+    if (!posts) return [PostForSuperAdminViewModel.createEmpty()];
+    const postsWithImages = plainToInstance(PostEntity, posts);
+    return postsWithImages.map(p => PostForSuperAdminViewModel.createIns(p));
   }
 }
 
