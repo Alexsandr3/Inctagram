@@ -7,7 +7,6 @@ import { SuperAdminHelper } from '../helpers/super-admin-helper';
 import { PaginationUsersInputDto } from '../../src/modules/super-admin/api/input-dto/pagination-users.input.args';
 import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
 import gql from 'graphql-tag';
-import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
 import { ImageSizeConfig } from '../../src/modules/images/image-size-config.type';
 
 jest.setTimeout(120000);
@@ -134,7 +133,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
   it('06 - / (GET) - should return all users with page 3', async () => {
     const query = gql`
       query {
-        users(pageSize: 10, pageNumber: 3, sortBy: "userName", sortDirection: "asc") {
+        users(pageNumber: 3, sortBy: userName, sortDirection: Asc) {
           pageSize
           page
           totalCount
@@ -182,7 +181,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
   it('10 - / (GET) - should return 200 and profile of user', async () => {
     const query = gql`
       query {
-        users(pageSize: 50, pageNumber: 1, status: "active") {
+        users(pageSize: 50, pageNumber: 1, status: active) {
           pageSize
           page
           totalCount
@@ -207,7 +206,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     const id = profiles[1].id;
     let query = `
       mutation {
-        updateUserStatus(userId: ${id}, banReason: "bad words", isBanned: true)
+        updateUserStatus(userId: ${id}, banReason: Bad_behavior, isBanned: true)
       }
     `;
     const body = await superAdminHelper.mutationCommand(query);
@@ -217,7 +216,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     const id = profiles[2].id;
     let query = `
       mutation {
-        updateUserStatus(userId: ${id}, banReason: "too many spam",  isBanned: true)
+        updateUserStatus(userId: ${id}, banReason: Advertising_placement,  isBanned: true)
       }
     `;
     const body = await superAdminHelper.mutationCommand(query);
@@ -227,7 +226,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
   it('13 - / (GET) - should return 200 and profile of user', async () => {
     const query = gql`
       query {
-        users(pageSize: 50, pageNumber: 1, status: "banned") {
+        users(pageSize: 50, pageNumber: 1, status: banned) {
           pageSize
           page
           totalCount
@@ -248,17 +247,17 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     expect(body['users'].pageSize).toBe(50);
   });
   it('14 - / (GET) - should return 200 and profile with avatar of FIRST user', async () => {
-    const body = await usersHelper.getMyProfile<ApiErrorResultDto>(arrAccessToken[1], { expectedCode: 401 });
-    const body2 = await usersHelper.getMyProfile<ApiErrorResultDto>(arrAccessToken[2], { expectedCode: 401 });
-    expect(body.messages[0].field).toBe('authorization');
-    expect(body2.messages[0].field).toBe('authorization');
+    const body = await usersHelper.getMyProfile<ProfileViewModel>(arrAccessToken[1], { expectedCode: 200 });
+    const body2 = await usersHelper.getMyProfile<ProfileViewModel>(arrAccessToken[2], { expectedCode: 200 });
+    expect(body).toBeDefined();
+    expect(body2).toBeDefined();
   });
   //unban one users
   it('15 - / (POST) - should return 200 if user unbanned', async () => {
     const id = profiles[1].id;
     let query = `
       mutation {
-        updateUserStatus(userId: ${id}, banReason: null, isBanned: false)
+        updateUserStatus(userId: ${id}, isBanned: false)
       }
     `;
     const body = await superAdminHelper.mutationCommand(query);
@@ -268,7 +267,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
   it('16 - / (GET) - should return 200 and profile of user', async () => {
     const query = gql`
       query {
-        users(pageSize: 50, pageNumber: 1, status: "banned") {
+        users(pageSize: 50, pageNumber: 1, status: banned) {
           pageSize
           page
           totalCount

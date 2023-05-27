@@ -49,7 +49,7 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
   //need for super-admin
   async getUsersForSuperAdmin(usersArgs: PaginationUsersInputDto): Promise<Paginated<UserForSuperAdminViewModel[]>> {
     let defaultArgs = {
-      orderBy: { [usersArgs.isSortByDefault()]: usersArgs.isSortDirection() },
+      orderBy: { [usersArgs.sortBy]: usersArgs.isSortDirection() },
       skip: usersArgs.skip,
       take: usersArgs.getPageSize(), //limit - default 10
       include: { profile: { include: { avatars: true } } },

@@ -26,7 +26,6 @@ describe('Testing create subscriptions -  e2e', () => {
   let authHelper: AuthHelper;
   let subscriptionsHelper: SubscriptionsHelper;
   let eventEmitter: EventEmitter2;
-  let paymentStripeService: PaymentStripeService;
 
   beforeAll(async () => {
     app = await getAppForE2ETesting();
@@ -114,7 +113,6 @@ describe('Testing create subscriptions -  e2e', () => {
   it('07 - / (DELETE) - should delete autoRenewal for current user', async () => {
     await subscriptionsHelper.canceledAutoRenewal({ token: accessToken, expectedCode: 204 });
   });
-  let endDateOfSubscription: string;
   it('08 - / (GET) - should get all subscriptions for current user', async () => {
     const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
       token: accessToken,
@@ -149,9 +147,8 @@ describe('Testing create subscriptions -  e2e', () => {
     });
     expect(body).toEqual(expect.any(Object));
     expect(body.hasAutoRenewal).toBe(true);
-    expect(body.data).toHaveLength(2);
-    expect(body.data[0].autoRenewal).toBe(false);
-    expect(body.data[1].autoRenewal).toBe(true);
+    expect(body.data).toHaveLength(1);
+    expect(body.data[0].autoRenewal).toBe(true);
   });
 
   //Check the status of the subscription after 1 month

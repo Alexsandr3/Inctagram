@@ -86,7 +86,7 @@ export class ImagesEditorService {
   private async generatorKeysImagesForAvatar(userId: number, size: string[], resourceId: string): Promise<string[]> {
     const keys = [];
     for (let i = 0; i < size.length; i++) {
-      const key = `users/${userId}/avatar/images-${ImageSizeConfig[size[i]].defaultWidth}x${
+      const key = `users/${userId}/avatar/${resourceId}-images-${ImageSizeConfig[size[i]].defaultWidth}x${
         ImageSizeConfig[size[i]].defaultHeight
       }`;
       keys.push(key);

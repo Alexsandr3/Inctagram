@@ -23,7 +23,7 @@ export class PrismaSessionsRepository implements ISessionsRepository {
         deviceId,
         user: {
           status: {
-            notIn: [UserStatus.DELETED, UserStatus.BANNED],
+            notIn: [UserStatus.DELETED],
           },
         },
       },

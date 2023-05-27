@@ -1,8 +1,24 @@
 import { BasePaginationInputDto } from '../../../../main/shared/base-pagination.input.dto';
-import { ArgsType, Field, Int } from '@nestjs/graphql';
+import { ArgsType, Field, Int, registerEnumType } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
 import { SortDirectionType } from '../../../../main/enums/sort-direction.enum';
 import { UserStatusInputType } from './types/user-status.input.type';
+import { SortByForUsersInputType } from './types/sort-by-for-users.input.type';
+
+registerEnumType(SortDirectionType, {
+  name: 'SortDirectionType',
+  description: 'Sort Direction [asc, desc]',
+});
+
+registerEnumType(UserStatusInputType, {
+  name: 'UserStatusInputType',
+  description: 'User Status [all, active, banned]',
+});
+
+registerEnumType(SortByForUsersInputType, {
+  name: 'SortByForUsers',
+  description: 'Sort By [id, userName, createdAt]',
+});
 
 const DEFAULT_PAGE_SIZE = 10;
 /**
@@ -14,16 +30,20 @@ export class PaginationUsersInputDto extends BasePaginationInputDto {
   constructor() {
     super();
   }
+
   @Field(() => Int, { nullable: true })
   pageNumber: number;
+
   @Field(() => Int, { nullable: true })
-  pageSize: number;
-  @Field(() => String, { nullable: true })
-  sortBy: string;
-  @Field(() => String, { nullable: true })
+  pageSize: number = DEFAULT_PAGE_SIZE;
+
+  @Field(() => SortByForUsersInputType, { nullable: true })
+  sortBy: SortByForUsersInputType = SortByForUsersInputType.id;
+
+  @Field(() => SortDirectionType, { nullable: true })
   sortDirection: SortDirectionType = SortDirectionType.Desc;
 
-  @Field(() => String, { nullable: true })
+  @Field(() => UserStatusInputType, { nullable: true })
   @IsOptional()
   status: UserStatusInputType = UserStatusInputType.all;
 
@@ -31,11 +51,9 @@ export class PaginationUsersInputDto extends BasePaginationInputDto {
   @IsOptional()
   search: string;
 
-  isSortByDefault(): string {
-    const defaultValue = ['id', 'userName', 'createdAt'];
-    return (this.sortBy = defaultValue.includes(this.sortBy) ? this.sortBy : 'id');
-  }
-
+  /**
+   * @description Get page number
+   */
   getPageSize(): number {
     return this.normalizePageValue(this.pageSize, DEFAULT_PAGE_SIZE);
   }
