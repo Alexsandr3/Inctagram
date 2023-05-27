@@ -1,14 +1,23 @@
-import { ArgsType, Field, Int } from '@nestjs/graphql';
-import { IsBoolean, IsNumber, IsOptional } from 'class-validator';
+import { ArgsType, Field, Int, registerEnumType } from '@nestjs/graphql';
+import { IsBoolean, IsEnum, IsNumber, IsOptional } from 'class-validator';
+import { BanReasonInputType } from './types/ban-reason.input.type';
+
+registerEnumType(BanReasonInputType, {
+  name: 'BanReasonInputType',
+  description: 'Reasons for banning a user',
+});
 
 @ArgsType()
 export class UpdateUserStatusInputArgs {
   @Field(() => Int)
   @IsNumber()
   userId: number;
-  @Field(() => String, { nullable: true })
+
+  @Field(() => BanReasonInputType, { nullable: true })
+  @IsEnum(BanReasonInputType)
   @IsOptional()
-  banReason: string | null;
+  banReason: BanReasonInputType;
+
   @Field(() => Boolean)
   @IsBoolean()
   isBanned: boolean;

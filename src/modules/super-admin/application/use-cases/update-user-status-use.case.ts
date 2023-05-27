@@ -3,9 +3,14 @@ import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notific
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { NotificationCode } from '../../../../configuration/exception.filter';
+import { BanReasonInputType } from '../../api/input-dto/types/ban-reason.input.type';
 
 export class UpdateUserStatusCommand {
-  constructor(public readonly userId: number, public readonly banReason: string, public readonly isBanned: boolean) {}
+  constructor(
+    public readonly userId: number,
+    public readonly banReason: BanReasonInputType,
+    public readonly isBanned: boolean,
+  ) {}
 }
 
 @CommandHandler(UpdateUserStatusCommand)

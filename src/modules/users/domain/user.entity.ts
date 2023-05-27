@@ -7,6 +7,7 @@ import { ExternalAccountEntity } from './external-account.entity';
 import { RegisterUserFromExternalAccountInputDto } from '../../auth/api/input-dto/register-user-from-external-account-input.dto';
 import { UserStatusType } from '../types/user-status.type';
 import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
+import { BanReasonInputType } from '../../super-admin/api/input-dto/types/ban-reason.input.type';
 
 /**
  * User field parameters [min length -6, max length - 30]
@@ -117,7 +118,7 @@ export class UserEntity extends BaseDateEntity implements User {
     this.status = UserStatusType.DELETED;
   }
 
-  setStatusBanned(banReason: string) {
+  setStatusBanned(banReason: BanReasonInputType) {
     this.status = UserStatusType.BANNED;
     this.profile.setBanReason(banReason);
   }
