@@ -19,4 +19,8 @@ export class AvatarEntity extends BaseImageEntity implements AvatarImage {
     avatar.fieldId = baseImage.fieldId;
     return avatar;
   }
+
+  setId(id: number) {
+    this.id = id;
+  }
 }

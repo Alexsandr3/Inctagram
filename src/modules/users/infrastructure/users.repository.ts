@@ -229,7 +229,7 @@ export class PrismaUsersRepository implements IUsersRepository {
     const updateAvatarsConfig = avatars.map(i => {
       return {
         where: {
-          url: i.url,
+          id: i.id,
         },
         data: {
           imageType: i.imageType,
@@ -238,6 +238,7 @@ export class PrismaUsersRepository implements IUsersRepository {
           height: i.height,
           fileSize: i.fileSize,
           fieldId: i.fieldId,
+          url: i.url,
           resourceId: i.resourceId,
         },
       };

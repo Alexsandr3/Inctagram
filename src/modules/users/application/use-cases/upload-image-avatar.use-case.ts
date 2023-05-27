@@ -46,6 +46,14 @@ export class UploadImageAvatarUseCase
     if (user.hasProfileAvatar()) {
       await this.usersRepository.addAvatars(userId, avatars);
     } else {
+      //urls for delete
+      const urlsForDelete = user.getAvatarURLsForDeletion();
+      //delete image from cloud
+      await this.imagesEditor.deleteImageByUrl(urlsForDelete);
+      //add id for each avatar
+      const existingIds = user.getAvatarIds();
+      avatars.forEach(avatar => avatar.setId(existingIds.reverse().pop()));
+      //update image from db
       await this.usersRepository.updateAvatars(userId, avatars);
     }
   }

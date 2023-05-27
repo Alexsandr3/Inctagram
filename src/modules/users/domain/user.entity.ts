@@ -110,7 +110,7 @@ export class UserEntity extends BaseDateEntity implements User {
   }
 
   hasProfileAvatar() {
-    return !this.profile.avatars || this.profile.avatars.length === 0;
+    return this.profile.avatars.length === 0;
   }
 
   setStatusDeleted() {
@@ -125,5 +125,13 @@ export class UserEntity extends BaseDateEntity implements User {
   setStatusActive() {
     this.status = UserStatusType.ACTIVE;
     this.profile.setBanReason(null);
+  }
+
+  getAvatarURLsForDeletion() {
+    return this.profile.avatars.map(image => image.url);
+  }
+
+  getAvatarIds() {
+    return this.profile.avatars.map(image => image.id);
   }
 }

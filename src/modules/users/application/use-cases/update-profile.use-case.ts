@@ -34,7 +34,7 @@ export class UpdateProfileUseCase
     if (!foundUser)
       throw new NotificationException(`User with id ${userId} not found`, 'id', NotificationCode.NOT_FOUND);
 
-    //check userName is free
+    //if userName is received
     if (userName) {
       const userWithReceivedUserName = await this.userRepository.findUserByUserName(userName);
       if (userWithReceivedUserName && userWithReceivedUserName.id !== foundUser.id) {
