@@ -3,6 +3,9 @@ import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notific
 import { ISessionsRepository } from '../../infrastructure/sessions-repository';
 import { SessionsService } from '../sessions.service';
 
+/**
+ * @description Terminate all sessions except current command
+ */
 export class TerminateAllSessionsExceptCurrentCommand {
   constructor(public readonly userId: number, public readonly deviceId: number) {}
 }

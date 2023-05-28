@@ -20,6 +20,9 @@ registerEnumType(SortByForUsersInputType, {
   description: 'Sort By [id, userName, createdAt]',
 });
 
+/**
+ * Default page size for pagination [10]
+ */
 const DEFAULT_PAGE_SIZE = 10;
 /**
  * @description Pagination for Users

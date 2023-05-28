@@ -6,7 +6,7 @@ import { ApiProperty } from '@nestjs/swagger';
  */
 export class CreatePostInputDto {
   /**
-   * @description Post description (optional)
+   * @description Post description (optional) -- max length 500
    */
   @ApiProperty({ nullable: true, required: false })
   @MaxLength(500)

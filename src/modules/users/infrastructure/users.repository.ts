@@ -7,6 +7,9 @@ import { AvatarEntity } from '../domain/avatar.entity';
 import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
 import { UserStatus } from '@prisma/client';
 
+/**
+ * Abstract class for users repository
+ * */
 export abstract class IUsersRepository {
   abstract findById(userId: number): Promise<UserEntity | null>;
   abstract findUserByUserName(userName: string): Promise<UserEntity | null>;

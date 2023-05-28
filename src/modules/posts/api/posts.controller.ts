@@ -40,7 +40,7 @@ import { DeleteImageExistingPostCommand } from '../application/use-cases/delete-
 import { CreatePostInputDto } from './input-dto/create-post.input.dto';
 import { NotificationErrors } from '../../../main/validators/checker-notification.errors';
 import { NotificationCode } from '../../../configuration/notificationCode';
-import { PostStatus } from '../types/postStatus';
+import { PostStatus } from '../types/post-status.type';
 
 @ApiBearerAuth()
 @ApiTags('Posts')

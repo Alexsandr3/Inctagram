@@ -7,8 +7,12 @@ import { PaginationPostsInputDto } from '../api/input-dto/pagination-posts.input
 import { PostsWithPaginationViewDto } from '../api/view-models/posts-with-pagination-view.dto';
 import { Paginated } from '../../../main/shared/paginated';
 import { UserStatus } from '@prisma/client';
-import { PostStatus } from '../types/postStatus';
+import { PostStatus } from '../types/post-status.type';
 
+/**
+ * Abstract class for posts query repository
+ * ['getPost', 'getPosts']
+ */
 export abstract class IPostsQueryRepository {
   abstract getPost(postId: number, status: PostStatus): Promise<PostViewModel>;
   abstract getPosts(userId: number, paginationInputModel: PaginationPostsInputDto): Promise<Paginated<PostViewModel[]>>;

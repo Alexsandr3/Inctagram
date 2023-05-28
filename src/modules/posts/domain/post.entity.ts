@@ -3,7 +3,7 @@ import { ImagePostEntity } from './image-post.entity';
 import { Type } from 'class-transformer';
 import { Post } from '@prisma/client';
 import { BaseImageEntity } from '../../images/domain/base-image.entity';
-import { PostStatus } from '../types/postStatus';
+import { PostStatus } from '../types/post-status.type';
 
 export class PostEntity extends BaseDateEntity implements Post {
   id: number;

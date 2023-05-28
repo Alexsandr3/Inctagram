@@ -5,7 +5,7 @@ import { IsString, Length } from 'class-validator';
  */
 export class ConfirmationCodeInputDto {
   /**
-   * Code that be sent via Email inside link
+   * Code that be sent via Email inside link -- [1, 100]-length
    */
   @IsString()
   @Length(1, 100)

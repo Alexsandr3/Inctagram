@@ -3,6 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 
+/**
+ * @name IPasswordRecoveryRepository
+ * @description Abstraction of the repository to manage the password recovery
+ * ['findPassRecovery', 'savePassRecovery', 'deletePassRecovery']
+ */
 export abstract class IPasswordRecoveryRepository {
   abstract findPassRecovery(recoveryCode: string): Promise<PasswordRecoveryEntity | null>;
   abstract savePassRecovery(passRecovery: PasswordRecoveryEntity): Promise<void>;

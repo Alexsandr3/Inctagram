@@ -103,6 +103,10 @@ export class AuthService {
       );
   }
 
+  /**
+   * Checks confirmation code for adding external account
+   * @param confirmationCode
+   */
   async checkConfirmationCodeForAddingExternalAccount(
     confirmationCode: string,
   ): Promise<{ foundUser: UserEntity; providerId: string }> {
@@ -118,6 +122,10 @@ export class AuthService {
     return { foundUser: foundUser, providerId: foundConfirmationOfExternalAccount.providerId };
   }
 
+  /**
+   * Login user and return tokens
+   * @param command
+   */
   async loginUser(command: LoginCommand): Promise<TokensType> {
     const { userId, deviceName, ip } = command;
 

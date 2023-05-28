@@ -7,6 +7,10 @@ import { ImagePostEntity } from '../domain/image-post.entity';
 import { PostForSuperAdminViewModel } from '../../super-admin/api/models/post-for-super-admin-view.model';
 import { UserStatus } from '@prisma/client';
 
+/**
+ * Abstract class for posts repository
+ * ['savePost', 'findPostWithOwnerById', 'createPostWithImages', 'getPostsById']
+ */
 export abstract class IPostsRepository {
   abstract savePost(post: PostEntity): Promise<void>;
   abstract findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }>;

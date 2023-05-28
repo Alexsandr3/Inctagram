@@ -3,6 +3,9 @@ import { ExternalAccount } from '@prisma/client';
 import { RegisterUserFromExternalAccountInputDto } from '../../auth/api/input-dto/register-user-from-external-account-input.dto';
 import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
 
+/**
+ * Provider ['GOOGLE', 'GITHUB']
+ */
 export enum Provider {
   GOOGLE = 'GOOGLE',
   GITHUB = 'GITHUB',

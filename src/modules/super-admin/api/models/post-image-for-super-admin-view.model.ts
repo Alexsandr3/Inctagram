@@ -1,6 +1,6 @@
 import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql';
 import { ImagePostEntity } from '../../../posts/domain/image-post.entity';
-import { PostStatus } from '../../../posts/types/postStatus';
+import { PostStatus } from '../../../posts/types/post-status.type';
 
 @ObjectType()
 export class PostImageForSuperAdminViewModel extends ImagePostEntity {

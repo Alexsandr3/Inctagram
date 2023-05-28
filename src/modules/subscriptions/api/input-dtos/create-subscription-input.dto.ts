@@ -2,12 +2,15 @@ import { IsEnum, IsNumber } from 'class-validator';
 import { SubscriptionType } from '../../types/subscription.type';
 import { PaymentMethod } from '../../types/payment.method';
 
+/**
+ * @description Create subscription input type
+ */
 export class CreateSubscriptionInputDto {
   @IsEnum(SubscriptionType)
-  typeSubscription: SubscriptionType; //monthly, yearly
+  typeSubscription: SubscriptionType;
 
   @IsEnum(PaymentMethod)
-  paymentType: PaymentMethod; //stripe, paypal
+  paymentType: PaymentMethod;
 
   @IsNumber()
   amount: number;

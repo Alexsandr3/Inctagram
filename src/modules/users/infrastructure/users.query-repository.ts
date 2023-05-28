@@ -11,6 +11,10 @@ import { PaginationUsersInputDto } from '../../super-admin/api/input-dto/paginat
 import { Paginated } from '../../../main/shared/paginated';
 import { UsersWithPaginationViewModel } from '../../super-admin/api/models/users-with-pagination-view.model';
 
+/**
+ * Abstract class for users query repository
+ * ['findUserById', 'findUserProfile', 'findUserAvatars', 'getUsersForSuperAdmin']
+ */
 export abstract class IUsersQueryRepository {
   abstract findUserById(id: number): Promise<User>;
 

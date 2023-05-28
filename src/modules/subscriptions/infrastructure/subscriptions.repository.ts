@@ -6,6 +6,12 @@ import { SubscriptionEntity } from '../domain/subscription.entity';
 import { StatusSubscriptionType } from '../types/status-subscription.type';
 import { PaymentStatus } from '../types/paymentStatus';
 
+/**
+ * Abstract class that represents the repository of the subscriptions.
+ * ['findBusinessAccountByUserId', 'getSubscriptionWithStatusPendingByPaymentSessionId',
+ * 'saveSubscriptionWithPayment', 'updateBusinessAccountWithSubscriptionAndPayment',
+ * 'getLastActiveCreatedSubscriptionByCustomerId']
+ */
 export abstract class ISubscriptionsRepository {
   abstract findBusinessAccountByUserId(userId: number): Promise<BusinessAccountEntity>;
 

@@ -4,6 +4,11 @@ import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 import { UserStatus } from '@prisma/client';
 
+/**
+ * @description Interface for sessions repository
+ * ['findSessionByDeviceId', 'saveSession',
+ * 'deleteSessionByDeviceId', 'newDeviceId', 'deleteAllSessionsExceptCurrent']
+ */
 export abstract class ISessionsRepository {
   abstract findSessionByDeviceId(deviceId: number): Promise<SessionEntity | null>;
   abstract saveSession(session: SessionEntity): Promise<void>;
