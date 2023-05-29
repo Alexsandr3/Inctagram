@@ -38,9 +38,7 @@ export class PostsRepository implements IPostsRepository {
   async savePost(post: PostEntity): Promise<void> {
     const updateImagesConfig = this.getUpdateImagesConfig(post.images);
     await this.prisma.post.update({
-      where: {
-        id: post.id,
-      },
+      where: { id: post.id },
       data: {
         description: post.description,
         location: post.location,
@@ -53,9 +51,7 @@ export class PostsRepository implements IPostsRepository {
   }
   async findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }> {
     const postWithUser = await this.prisma.post.findFirst({
-      where: {
-        id: postId,
-      },
+      where: { id: postId },
       include: { images: true, user: true },
     });
     if (!postWithUser) return { post: null, owner: null };
@@ -67,9 +63,7 @@ export class PostsRepository implements IPostsRepository {
   private getUpdateImagesConfig(images: ImagePostEntity[]) {
     return images.map(i => {
       return {
-        where: {
-          id: i.id,
-        },
+        where: { id: i.id },
         data: {
           status: i.status,
           imageType: i.imageType,
@@ -112,9 +106,7 @@ export class PostsRepository implements IPostsRepository {
           resourceId: i.resourceId,
         };
       });
-      await tx.postImage.createMany({
-        data: images,
-      });
+      await tx.postImage.createMany({ data: images });
       return post.id;
     });
   }
@@ -144,20 +136,12 @@ export class PostsRepository implements IPostsRepository {
   }
   async getPostsCountByUserId(userId: number): Promise<number> {
     return this.prisma.post.count({
-      where: {
-        ownerId: userId,
-        user: { status: { notIn: [UserStatus.DELETED] } },
-      },
+      where: { ownerId: userId, user: { status: { notIn: [UserStatus.DELETED] } } },
     });
   }
   async getImagesCountByUserId(userId: number): Promise<number> {
     const count = await this.prisma.postImage.count({
-      where: {
-        post: {
-          ownerId: userId,
-          user: { status: { notIn: [UserStatus.DELETED] } },
-        },
-      },
+      where: { post: { ownerId: userId, user: { status: { notIn: [UserStatus.DELETED] } } } },
     });
     return count / 2;
   }

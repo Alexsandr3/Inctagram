@@ -13,9 +13,9 @@ import { BasicAuthForGraphqlGuard } from './guards/basic-auth-for-graphql.guard'
 import { UpdateUserStatusInputArgs } from './input-dto/update-user-status-input.args';
 import { PostForSuperAdminViewModel } from './models/post-for-super-admin-view.model';
 import { IPostsRepository } from '../../posts/infrastructure/posts.repository';
-import { Loader } from 'nestjs-dataloader/dist';
-import { PostLoader } from '../post-loader';
 import DataLoader from 'dataloader';
+import { PostLoader } from '../post-loader';
+import { Loader } from 'nestjs-dataloader';
 
 @UseGuards(BasicAuthForGraphqlGuard)
 @Resolver(() => UserForSuperAdminViewModel)
@@ -49,7 +49,6 @@ export class SuperAdminResolver {
   @ResolveField(() => [PostForSuperAdminViewModel])
   async posts(
     @Parent() user: UserForSuperAdminViewModel,
-    // @ts-ignore
     @Loader(PostLoader) postsLoader: DataLoader<number, PostForSuperAdminViewModel[]>,
   ): Promise<PostForSuperAdminViewModel[]> {
     const { userId } = user;

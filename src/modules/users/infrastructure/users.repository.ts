@@ -73,12 +73,8 @@ export class PrismaUsersRepository implements IUsersRepository {
   async findUserByEmail(email: string): Promise<UserEntity | null> {
     const foundUser = await this.prisma.user.findFirst({
       where: {
-        email: {
-          equals: email.toLowerCase(),
-        },
-        status: {
-          notIn: [UserStatus.DELETED],
-        },
+        email: { equals: email.toLowerCase() },
+        status: { notIn: [UserStatus.DELETED] },
       },
       include: { profile: { include: { avatars: true } }, externalAccounts: true },
     });
@@ -101,9 +97,7 @@ export class PrismaUsersRepository implements IUsersRepository {
     confirmationCode: string,
   ): Promise<{ foundUser: UserEntity; foundEmailConfirmation: EmailConfirmationEntity } | null> {
     const foundUserWithEmailConfirmation = await this.prisma.user.findFirst({
-      where: {
-        emailConfirmation: { confirmationCode: confirmationCode },
-      },
+      where: { emailConfirmation: { confirmationCode: confirmationCode } },
       include: { emailConfirmation: true, profile: { include: { avatars: true } } },
     });
     const { emailConfirmation, ...foundUser } = foundUserWithEmailConfirmation;
@@ -127,12 +121,7 @@ export class PrismaUsersRepository implements IUsersRepository {
     });
     //create businessAccount
     await this.prisma.businessAccount.create({
-      data: {
-        userId: createdUser.id,
-        subscriptions: {
-          create: [],
-        },
-      },
+      data: { userId: createdUser.id, subscriptions: { create: [] } },
     });
   }
 
@@ -172,9 +161,7 @@ export class PrismaUsersRepository implements IUsersRepository {
       };
 
     await this.prisma.user.update({
-      where: {
-        id: user.id,
-      },
+      where: { id: user.id },
       data: {
         userName: user.userName,
         email: user.email,
@@ -188,21 +175,13 @@ export class PrismaUsersRepository implements IUsersRepository {
   }
 
   async deleteUser(userId: number): Promise<void> {
-    await this.prisma.user.delete({
-      where: {
-        id: userId,
-      },
-    });
+    await this.prisma.user.delete({ where: { id: userId } });
   }
 
   async deleteImagesAvatar(userId: number): Promise<void> {
     await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        profile: { update: { avatars: { deleteMany: { profileId: userId } } } },
-      },
+      where: { id: userId },
+      data: { profile: { update: { avatars: { deleteMany: { profileId: userId } } } } },
     });
   }
 
@@ -220,20 +199,14 @@ export class PrismaUsersRepository implements IUsersRepository {
     });
 
     await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        profile: { update: { avatars: { createMany: { data: addAvatarsConfig } } } },
-      },
+      where: { id: userId },
+      data: { profile: { update: { avatars: { createMany: { data: addAvatarsConfig } } } } },
     });
   }
   async updateAvatars(userId: number, avatars: AvatarEntity[]) {
     const updateAvatarsConfig = avatars.map(i => {
       return {
-        where: {
-          id: i.id,
-        },
+        where: { id: i.id },
         data: {
           imageType: i.imageType,
           sizeType: i.sizeType,
@@ -248,12 +221,8 @@ export class PrismaUsersRepository implements IUsersRepository {
     });
 
     await this.prisma.user.update({
-      where: {
-        id: userId,
-      },
-      data: {
-        profile: { update: { avatars: { updateMany: updateAvatarsConfig } } },
-      },
+      where: { id: userId },
+      data: { profile: { update: { avatars: { updateMany: updateAvatarsConfig } } } },
     });
   }
 
@@ -274,12 +243,8 @@ export class PrismaUsersRepository implements IUsersRepository {
     const createdUser = await this.prisma.user.create({
       data: {
         ...user,
-        externalAccounts: {
-          create: user.externalAccounts,
-        },
-        profile: {
-          create: {},
-        },
+        externalAccounts: { create: user.externalAccounts },
+        profile: { create: {} },
       },
       select: { id: true },
     });
@@ -332,9 +297,7 @@ export class PrismaUsersRepository implements IUsersRepository {
   async updateUserExternalAccount(user: UserEntity) {
     const updExternalAccounts = user.externalAccounts.map(a => {
       return {
-        where: {
-          id: a.id,
-        },
+        where: { id: a.id },
         data: {
           isConfirmed: a.isConfirmed,
           provider: a.provider,
@@ -345,14 +308,8 @@ export class PrismaUsersRepository implements IUsersRepository {
     });
 
     await this.prisma.user.update({
-      where: {
-        id: user.id,
-      },
-      data: {
-        externalAccounts: {
-          updateMany: updExternalAccounts,
-        },
-      },
+      where: { id: user.id },
+      data: { externalAccounts: { updateMany: updExternalAccounts } },
     });
   }
 

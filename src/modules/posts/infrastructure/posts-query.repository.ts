@@ -30,11 +30,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
       where: {
         id: postId,
         status,
-        user: {
-          status: {
-            notIn: [UserStatus.DELETED, UserStatus.BANNED],
-          },
-        },
+        user: { status: { notIn: [UserStatus.DELETED, UserStatus.BANNED] } },
       },
       include: {
         images: { where: { status: 'PUBLISHED' }, orderBy: { id: 'asc' } },
@@ -51,11 +47,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
       where: {
         ownerId: userId,
         status: PostStatus.PUBLISHED,
-        user: {
-          status: {
-            notIn: [UserStatus.DELETED, UserStatus.BANNED],
-          },
-        },
+        user: { status: { notIn: [UserStatus.DELETED, UserStatus.BANNED] } },
       },
       orderBy: {
         createdAt: paginationInputModel.isSortDirection(),
@@ -70,11 +62,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
       where: {
         ownerId: userId,
         status: PostStatus.PUBLISHED,
-        user: {
-          status: {
-            notIn: [UserStatus.DELETED, UserStatus.BANNED],
-          },
-        },
+        user: { status: { notIn: [UserStatus.DELETED, UserStatus.BANNED] } },
       },
     });
     return PostsWithPaginationViewDto.getPaginated({

@@ -35,9 +35,7 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
 
   async findUserProfile(userId: number): Promise<ProfileViewModel> {
     const userWithProfile = await this.prisma.user.findUnique({
-      where: {
-        id: userId,
-      },
+      where: { id: userId },
       include: { profile: { include: { avatars: true } } },
     });
     const user = plainToInstance(UserEntity, userWithProfile);

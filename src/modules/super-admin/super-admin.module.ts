@@ -11,8 +11,8 @@ import { UpdateUserStatusUseCase } from './application/use-cases/update-user-sta
 import { GraphQLError, GraphQLFormattedError } from 'graphql/error';
 import { PostsModule } from '../posts/posts.module';
 import { PostLoader } from './post-loader';
-import { DataLoaderInterceptor } from 'nestjs-dataloader/dist';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { DataLoaderInterceptor } from 'nestjs-dataloader';
 
 const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
 const loaderProviders = [
