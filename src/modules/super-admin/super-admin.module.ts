@@ -10,8 +10,18 @@ import { UsersModule } from '../users/users.module';
 import { UpdateUserStatusUseCase } from './application/use-cases/update-user-status-use.case';
 import { GraphQLError, GraphQLFormattedError } from 'graphql/error';
 import { PostsModule } from '../posts/posts.module';
+import { PostLoader } from './post-loader';
+import { DataLoaderInterceptor } from 'nestjs-dataloader/dist';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
+const loaderProviders = [
+  PostLoader,
+  {
+    provide: APP_INTERCEPTOR,
+    useClass: DataLoaderInterceptor,
+  },
+];
 
 @Module({
   imports: [
@@ -26,6 +36,11 @@ const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
           playground: Boolean(configService.GRAPHQL_PLAYGROUND),
           autoSchemaFile: true, //join(process.cwd(), 'src/schema.gql'),
           installSubscriptionHandlers: true,
+          // context: () => ({
+          //   // define the context
+          //   postsLoader: createPostsLoader(postsService),
+          //   // initialize the postsLoader
+          // }),
           buildSchemaOptions: {
             dateScalarMode: 'timestamp',
           },
@@ -45,6 +60,6 @@ const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
     UsersModule,
     PostsModule,
   ],
-  providers: [...useCases, SuperAdminResolver],
+  providers: [...useCases, SuperAdminResolver, ...loaderProviders],
 })
 export class SuperAdminModule {}
