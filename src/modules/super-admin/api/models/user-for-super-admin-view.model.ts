@@ -4,9 +4,13 @@ import { UserStatusType } from '../../../users/types/user-status.type';
 
 registerEnumType(UserStatusType, {
   name: 'UserStatusType',
-  description: 'User Status [Pending, Active, Banned, Deleted]',
+  description:
+    'User Status ' +
+    'PENDING - user registered but not activated; ' +
+    'ACTIVE - user registered and activated; ' +
+    'BANNED - user banned by admin; ' +
+    'DELETED - user deleted by admin',
 });
-
 @ObjectType()
 export class UserForSuperAdminViewModel extends UserEntity {
   @Field(() => Int)

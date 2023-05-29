@@ -27,6 +27,8 @@ export abstract class IPostsRepository {
   abstract getPostsByIds(ids: number[]): Promise<PostForSuperAdminViewModel[]>;
 
   abstract getPostsCountByUserId(userId: number): Promise<number>;
+
+  abstract getImagesCountByUserId(userId: number): Promise<number>;
 }
 
 @Injectable()
@@ -147,6 +149,17 @@ export class PostsRepository implements IPostsRepository {
         user: { status: { notIn: [UserStatus.DELETED] } },
       },
     });
+  }
+  async getImagesCountByUserId(userId: number): Promise<number> {
+    const count = await this.prisma.postImage.count({
+      where: {
+        post: {
+          ownerId: userId,
+          user: { status: { notIn: [UserStatus.DELETED] } },
+        },
+      },
+    });
+    return count / 2;
   }
 }
 

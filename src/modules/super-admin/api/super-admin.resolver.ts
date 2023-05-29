@@ -62,4 +62,10 @@ export class SuperAdminResolver {
     const { userId } = user;
     return this.postsRepository.getPostsCountByUserId(userId);
   }
+
+  @ResolveField(() => Number)
+  async imagesCount(@Parent() user: UserForSuperAdminViewModel): Promise<number> {
+    const { userId } = user;
+    return this.postsRepository.getImagesCountByUserId(userId);
+  }
 }
