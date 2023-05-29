@@ -162,6 +162,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
       profiles.push(profile);
     }
   });
+  //delete user [0] and [13]
   it('08 - / (DELETE) - should return 200 if user deleted', async () => {
     const id = profiles[0].id;
     let query = `
@@ -205,7 +206,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     expect(body['users'].totalCount).toBe(19);
     expect(body['users'].pageSize).toBe(50);
   });
-  //ban two users
+  //ban two users [1] and [2]
   it('11 - / (POST) - should return 200 if user banned', async () => {
     const id = profiles[1].id;
     let query = `
@@ -256,7 +257,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     expect(body).toBeDefined();
     expect(body2).toBeDefined();
   });
-  //unban one users
+  //unban one users [1]
   it('15 - / (POST) - should return 200 if user unbanned', async () => {
     const id = profiles[1].id;
     let query = `
@@ -291,9 +292,18 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     expect(body['users'].totalCount).toBe(1);
     expect(body['users'].pageSize).toBe(50);
   });
-  it('15 - / (POST) - should return 201 if all data is correct for create post', async () => {
+  it('17 - / (POST) - should return 201 if all data is correct for create post', async () => {
     let nameFile = '/images/1271х847_357kb.jpeg';
     const body = { description: 'This is my first post', nameFile: [nameFile] };
     await postsHelper.createPost<PostViewModel>(body, { token: arrAccessToken[5], expectedCode: 201 });
+  });
+  //login banned user [1]
+  it('20 - / (POST) - should return 200 if password and email correct', async () => {
+    const command = { password: commands[1].password, email: commands[1].email };
+    await authHelper.login(command, { expectedCode: 200 });
+  });
+  it('20 - / (POST) - should return 200 if password and email correct', async () => {
+    const command = { password: commands[2].password, email: commands[2].email };
+    await authHelper.login(command, { expectedCode: 200 });
   });
 });
