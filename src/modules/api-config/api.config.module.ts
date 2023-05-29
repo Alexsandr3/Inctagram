@@ -19,9 +19,9 @@ import Joi from 'joi';
 
         DATABASE_URL: Joi.string().required(),
 
-        //MAIL_USER: Joi.string().required(),
-        //MAIL_PASSWORD: Joi.string().required(),
-        //MAIL_FROM: Joi.string().required(),
+        MAIL_USER: Joi.string().required(),
+        MAIL_PASSWORD: Joi.string().required(),
+        MAIL_FROM: Joi.string().required(),
 
         CLIENT_URL: Joi.string().required(),
         SERVER_URL: Joi.string().required(),
@@ -62,10 +62,14 @@ import Joi from 'joi';
         RECAPTCHA_ENTERPRISE_PUBLIC_SITE_KEY: Joi.string().required(),
         RECAPTCHA_ENTERPRISE_PROJECT_ID: Joi.string().required(),
 
+        //--payments
         COST_SUBSCRIPTION: Joi.number().required(),
         STRIPE_MONTHLY_SUBSCRIPTION_PRICE_ID: Joi.string().required(),
         STRIPE_SEMIANNUAL_SUBSCRIPTION_PRICE_ID: Joi.string().required(),
         STRIPE_YEARLY_SUBSCRIPTION_PRICE_ID: Joi.string().required(),
+
+        PAYPAL_CLIENT_ID: Joi.string().required(),
+        PAYPAL_APP_SECRET: Joi.string().required(),
 
         IP_RESTRICTION: Joi.boolean(),
         TEST_CLIENT_URL: Joi.string(),
