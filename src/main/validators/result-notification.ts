@@ -1,6 +1,9 @@
-import { NotificationCode } from '../../configuration/exception.filter';
 import { HTTP_Status } from '../enums/http-status.enum';
+import { NotificationCode } from '../../configuration/notificationCode';
 
+/**
+ * Result Notification is a class for response with status code, messages and data ['success'=0, 'error'=1]
+ */
 export enum NotificationStatus {
   SUCCESS = 0,
   ERROR = 1,

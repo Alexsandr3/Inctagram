@@ -5,7 +5,7 @@ import { IPasswordRecoveryRepository } from '../../infrastructure/password-recov
 import { PasswordRecoveryEntity } from '../../domain/password-recovery.entity';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * Recovery password

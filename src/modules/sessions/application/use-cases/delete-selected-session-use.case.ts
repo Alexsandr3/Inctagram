@@ -3,6 +3,9 @@ import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notific
 import { SessionsService } from '../sessions.service';
 import { ISessionsRepository } from '../../infrastructure/sessions-repository';
 
+/**
+ * @description Delete selected session command
+ */
 export class DeleteSelectedSessionCommand {
   constructor(
     public readonly userId: number,

@@ -5,12 +5,20 @@
   "compilerOptions": {
     "assets": ["**/*.hbs", "**/*.html"],
     "watchAssets": true,
-    "plugins": [ {
+    "plugins": [
+      {
       "name": "@nestjs/swagger",
       "options": {
         "classValidatorShim": true,
         "introspectComments": true
       }
-    }]
+      },
+      {
+        "name": "@nestjs/graphql/plugin",
+        "options": {
+          "typeFileNameSuffix": [".input.ts", ".model.ts", ".args.ts"]
+        }
+      }
+    ]
   }
 }

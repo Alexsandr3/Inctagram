@@ -1,5 +1,5 @@
 /**
- * Payment method enum [STRIPE, PAYPAL]
+ * Payment method enum ['STRIPE', 'PAYPAL']
  */
 export enum PaymentMethod {
   STRIPE = 'STRIPE',

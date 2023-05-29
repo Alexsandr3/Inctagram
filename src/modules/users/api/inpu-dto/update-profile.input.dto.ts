@@ -7,7 +7,7 @@ import { Transform } from 'class-transformer';
  */
 export class UpdateProfileInputDto {
   /**
-   * User name
+   * User name [6, 30]
    */
   @ApiProperty({ pattern: '^[a-zA-Z0-9_-]*$', example: 'string' })
   @Transform(({ value }) => (typeof value === 'string' ? value.trim() : value))

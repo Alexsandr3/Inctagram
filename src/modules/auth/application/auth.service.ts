@@ -5,7 +5,6 @@ import { IUsersRepository } from '../../users/infrastructure/users.repository';
 import { OAuth2InputDto } from '../api/input-dto/o-auth2.input.dto';
 import { Profile } from 'passport-google-oauth20';
 import { NotificationException } from '../../../main/validators/result-notification';
-import { NotificationCode } from '../../../configuration/exception.filter';
 import { UserEntity } from '../../users/domain/user.entity';
 import { TokensType } from './types/types';
 import { SessionEntity } from '../../sessions/domain/session.entity';
@@ -14,6 +13,7 @@ import { ApiJwtService } from '../../api-jwt/api-jwt.service';
 import { ISessionsRepository } from '../../sessions/infrastructure/sessions-repository';
 import { OAuthException, OAuthFlowType } from '../../../main/validators/oauth.exception';
 import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { NotificationCode } from '../../../configuration/notificationCode';
 
 @Injectable()
 export class AuthService {
@@ -103,6 +103,10 @@ export class AuthService {
       );
   }
 
+  /**
+   * Checks confirmation code for adding external account
+   * @param confirmationCode
+   */
   async checkConfirmationCodeForAddingExternalAccount(
     confirmationCode: string,
   ): Promise<{ foundUser: UserEntity; providerId: string }> {
@@ -118,6 +122,10 @@ export class AuthService {
     return { foundUser: foundUser, providerId: foundConfirmationOfExternalAccount.providerId };
   }
 
+  /**
+   * Login user and return tokens
+   * @param command
+   */
   async loginUser(command: LoginCommand): Promise<TokensType> {
     const { userId, deviceName, ip } = command;
 

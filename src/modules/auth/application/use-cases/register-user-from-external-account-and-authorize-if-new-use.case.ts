@@ -10,7 +10,7 @@ import { ConfirmationOfExternalAccountEntity } from '../../domain/confirmation-o
 import { TokensType } from '../types/types';
 import { OAuthFlowType } from '../../../../main/validators/oauth.exception';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * Registration user from external account

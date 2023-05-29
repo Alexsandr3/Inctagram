@@ -1,6 +1,9 @@
 import { IsOptional } from 'class-validator';
 import { SortDirectionType } from '../enums/sort-direction.enum';
 
+/**
+ * Default page size for pagination [12]
+ */
 const DEFAULT_PAGE_SIZE = 12;
 
 /**
@@ -24,7 +27,7 @@ export class BasePaginationInputDto {
   @IsOptional()
   sortBy?: string;
   /**
-   * Sort by desc or asc
+   * Sort by desc or asc ['asc', 'desc']
    */
   @IsOptional()
   sortDirection?: SortDirectionType = SortDirectionType.Desc;

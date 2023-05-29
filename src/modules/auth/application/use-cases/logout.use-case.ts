@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ISessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationCode } from '../../../../configuration/exception.filter';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * @description Logout command

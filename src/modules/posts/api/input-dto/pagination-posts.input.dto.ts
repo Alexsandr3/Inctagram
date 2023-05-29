@@ -1,6 +1,10 @@
 import { BasePaginationInputDto } from '../../../../main/shared/base-pagination.input.dto';
 
+/**
+ * @description Default page size [12]
+ */
 const DEFAULT_PAGE_SIZE = 12;
+
 /**
  * @description Pagination for Posts
  */

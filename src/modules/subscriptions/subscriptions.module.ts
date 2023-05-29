@@ -17,7 +17,7 @@ import { SubscriptionEventHandler } from './application/subscription-event-handl
 const useCases = [CreateSubscriptionUseCase, CanceledAutoRenewalUseCase];
 
 @Module({
-  imports: [CqrsModule, UsersModule, PaymentsModule, ApiConfigModule],
+  imports: [CqrsModule, UsersModule, PaymentsModule, ApiConfigModule, PaymentsModule],
   controllers: [SubscriptionsController, GetSubscriptionsController],
   providers: [
     ...useCases,

@@ -6,7 +6,7 @@ import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { ImageType } from '../../../images/type/image.type';
 import { PostEntity } from '../../domain/post.entity';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * Upload image post command

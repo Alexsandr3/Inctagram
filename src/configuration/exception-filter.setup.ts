@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
-import { ErrorExceptionFilter, ErrorFilter, HttpExceptionFilter, OAuthExceptionFilter } from './exception.filter';
+import { ErrorExceptionFilter, ErrorFilter, HttpExceptionFilter } from './exception.filter';
 import { ApiConfigService } from '../modules/api-config/api.config.service';
+import { OAuthExceptionFilter } from './OAuthException.filter';
 
 /**
  * Exception filter setup

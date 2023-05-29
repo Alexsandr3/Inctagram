@@ -1,5 +1,5 @@
 /**
- * Currency enum [USD, EUR]
+ * Currency enum ['USD', 'EUR']
  */
 export enum Currency {
   USD = 'USD',

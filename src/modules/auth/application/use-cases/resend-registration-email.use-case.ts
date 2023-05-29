@@ -4,8 +4,8 @@ import { RegistrationEmailResendingInputDto } from '../../api/input-dto/registra
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
 import { EmailConfirmationEntity } from '../../domain/email-confirmation.entity';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * @description Resending command

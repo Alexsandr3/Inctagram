@@ -16,3 +16,21 @@ export type PaymentInputData = {
   body: Buffer;
   signature: string | string[];
 };
+
+//try {
+//       const signature = request.headers['stripe-signature'];
+//
+//       const endpointSecret = <string>(
+//         this.configService.get<string>('stripe.webhookSecret')
+//       );
+//
+//       console.log(
+//         this.stripe.webhooks.constructEvent(
+//           request.rawBody,
+//           signature,
+//           endpointSecret,
+//         ),
+//       );
+//
+//       return true;
+//     } catch (e) {}

@@ -1,6 +1,5 @@
 /**
- * Enum for user status input
- * [all, active, banned]
+ * Enum for user status input ['all', 'active', 'banned']
  */
 export enum UserStatusInputType {
   all = 'all',

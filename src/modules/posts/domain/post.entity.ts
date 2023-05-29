@@ -3,22 +3,19 @@ import { ImagePostEntity } from './image-post.entity';
 import { Type } from 'class-transformer';
 import { Post } from '@prisma/client';
 import { BaseImageEntity } from '../../images/domain/base-image.entity';
-
-export enum PostStatus {
-  PUBLISHED = 'PUBLISHED',
-  DELETED = 'DELETED',
-  PENDING = 'PENDING',
-}
+import { PostStatus } from '../types/post-status.type';
 
 export class PostEntity extends BaseDateEntity implements Post {
   id: number;
   ownerId: number;
   description: string;
   location: string;
-
   status: PostStatus;
   @Type(() => ImagePostEntity)
   images: ImagePostEntity[];
+  constructor() {
+    super();
+  }
 
   static initCreate(userId: number, images: ImagePostEntity[], description: string) {
     const post = new PostEntity();

@@ -1,12 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { ImagesEditorService } from '../../../images/application/images-editor.service';
 import { ImageType } from '../../../images/type/image.type';
 import { BaseImageEntity } from '../../../images/domain/base-image.entity';
 import { AvatarEntity } from '../../domain/avatar.entity';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * @description Upload image avatar profile command

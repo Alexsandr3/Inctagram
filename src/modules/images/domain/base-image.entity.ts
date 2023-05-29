@@ -3,6 +3,9 @@ import { ImageSizeConfig } from '../image-size-config.type';
 import { ImageSizeType } from '../type/image-size.type';
 import { ImageType } from '../type/image.type';
 
+/**
+ * @description Base Image Entity for all image entities
+ */
 export class BaseImageEntity extends BaseDateEntity {
   id: number;
   imageType: ImageType;

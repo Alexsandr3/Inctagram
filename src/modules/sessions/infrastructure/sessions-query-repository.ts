@@ -3,6 +3,9 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 
+/**
+ * @description Interface for sessions query repository ['findSessionsByUserId']
+ */
 export abstract class ISessionsQueryRepository {
   abstract findSessionsByUserId(userId: number): Promise<SessionEntity[]>;
 }

@@ -3,7 +3,7 @@ import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notific
 import { UpdateProfileInputDto } from '../../api/inpu-dto/update-profile.input.dto';
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/exception.filter';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * @description Update profile for user command

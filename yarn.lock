@@ -1974,6 +1974,15 @@
     handlebars "^4.7.6"
     pug "^3.0.1"
 
+"@nestjs/apollo@^10.0.22":
+  version "10.2.1"
+  resolved "https://registry.yarnpkg.com/@nestjs/apollo/-/apollo-10.2.1.tgz#717989fc86108e047e1600db23ff1cf1a1c11c5d"
+  integrity sha512-xAui+/ZQ5THeO09YgAyP+AZyPvJplH8F3azwV8sMJjbbEaQev6gyzbZsCCbcVcCiHIL0t20JmNPmLIY9BIdRrg==
+  dependencies:
+    iterall "1.3.0"
+    lodash.omit "4.5.0"
+    tslib "2.5.0"
+
 "@nestjs/apollo@^11.0.5":
   version "11.0.5"
   resolved "https://registry.yarnpkg.com/@nestjs/apollo/-/apollo-11.0.5.tgz#9739bafadc3a48a8372c60c8128a720bf830eedc"
@@ -4001,6 +4010,11 @@ data-uri-to-buffer@3:
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/data-uri-to-buffer/-/data-uri-to-buffer-3.0.1.tgz#594b8973938c5bc2c33046535785341abc4f3636"
   integrity sha512-WboRycPNsVw3B3TL559F7kuBUM4d8CgMEvk6xEJlOp7OBPjt6G7z8WMWlD2rOFZLk6OYfFIUGsCOWzcQH9K2og==
+
+dataloader@^2.1.0:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/dataloader/-/dataloader-2.2.2.tgz#216dc509b5abe39d43a9b9d97e6e5e473dfbe3e0"
+  integrity sha512-8YnDaaf7N3k/q5HnTJVuzSyLETjoZjVmHc4AeKAzOvKHEFQKcn64OKBfzHYtE9zGjctNM7V9I0MfnUVLpi7M5g==
 
 date-fns@^2.29.3:
   version "2.29.3"
@@ -6931,6 +6945,15 @@ neo-async@^2.6.0, neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nestjs-dataloader@^9.0.0:
+  version "9.0.0"
+  resolved "https://registry.yarnpkg.com/nestjs-dataloader/-/nestjs-dataloader-9.0.0.tgz#2fb409c1cdd879cb9c46d0d33e43d00e7d14151e"
+  integrity sha512-BiBEY+dhmhXxMjLOYjBOXs7kR1GF5z6cCBLLtwtRWGBAl7mz9EliyHk1gwlEgag+PK5w/pToqMUCV3D+SQkx9Q==
+  dependencies:
+    "@nestjs/apollo" "^10.0.22"
+    dataloader "^2.1.0"
+    rxjs "^7.5.6"
+
 netmask@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/netmask/-/netmask-2.0.2.tgz#8b01a07644065d536383835823bc52004ebac5e7"
@@ -8031,6 +8054,13 @@ rxjs@^7.2.0, rxjs@^7.5.5:
   version "7.8.0"
   resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.0.tgz#90a938862a82888ff4c7359811a595e14e1e09a4"
   integrity sha512-F2+gxDshqmIub1KdvZkaEfGDwLNpPvk9Fs6LD/MyQxNgMds/WH9OdDDXOmxUZpME+iSK3rQCctkL0DYyytUqMg==
+  dependencies:
+    tslib "^2.1.0"
+
+rxjs@^7.5.6:
+  version "7.8.1"
+  resolved "https://registry.yarnpkg.com/rxjs/-/rxjs-7.8.1.tgz#6f6f3d99ea8044291efd92e7c7fcf562c4057543"
+  integrity sha512-AA3TVj+0A2iuIoQkWEK/tqFjBq2j+6PO6Y0zJcvzLAFhEFIO3HL0vls9hWLncZbAAbK0mar7oZ4V079I/qPMxg==
   dependencies:
     tslib "^2.1.0"
 

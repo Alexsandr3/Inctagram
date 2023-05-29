@@ -5,7 +5,7 @@ import { AuthService } from '../auth.service';
 import { IPasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
 import { NotificationException } from '../../../../main/validators/result-notification';
 import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationCode } from '../../../../configuration/exception.filter';
+import { NotificationCode } from '../../../../configuration/notificationCode';
 
 /**
  * @description - command for new password

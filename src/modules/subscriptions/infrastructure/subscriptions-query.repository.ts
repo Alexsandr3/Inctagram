@@ -8,6 +8,10 @@ import { PaymentsViewModel } from '../api/view-model/payments-view.dto';
 import { StatusSubscriptionType } from '@prisma/client';
 import { plainToInstance } from 'class-transformer';
 
+/**
+ * Abstract class that represents the repository of the subscriptions.
+ * ['getCurrentSubscriptions', 'getMyPayments']
+ */
 export abstract class ISubscriptionsQueryRepository {
   abstract getCurrentSubscriptions(userId: number): Promise<CurrentActiveSubscriptionsViewModel>;
   abstract getMyPayments(userId: number): Promise<PaymentsViewModel[]>;

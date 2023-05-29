@@ -11,6 +11,10 @@ import { PaginationUsersInputDto } from '../../super-admin/api/input-dto/paginat
 import { Paginated } from '../../../main/shared/paginated';
 import { UsersWithPaginationViewModel } from '../../super-admin/api/models/users-with-pagination-view.model';
 
+/**
+ * Abstract class for users query repository
+ * ['findUserById', 'findUserProfile', 'findUserAvatars', 'getUsersForSuperAdmin']
+ */
 export abstract class IUsersQueryRepository {
   abstract findUserById(id: number): Promise<User>;
 
@@ -73,7 +77,14 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
     const usersCount = await this.prisma.user.count({ where: defaultArgs['where'] });
     const usersView = users.map(user => {
       const url = user.profile.avatars.length > 0 ? user.profile.avatars[0].url : null;
-      return UserForSuperAdminViewModel.create(user.id, user.userName, url, user.createdAt, user.status);
+      const instanceUser = plainToInstance(UserEntity, user);
+      return UserForSuperAdminViewModel.create(
+        instanceUser.id,
+        instanceUser.userName,
+        url,
+        instanceUser.createdAt,
+        instanceUser.status,
+      );
     });
     return UsersWithPaginationViewModel.getPaginated({
       items: usersView,

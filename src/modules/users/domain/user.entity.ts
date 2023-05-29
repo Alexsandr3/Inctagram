@@ -107,7 +107,7 @@ export class UserEntity extends BaseDateEntity implements User {
   }
 
   hasActiveStatus(): boolean {
-    return this.status === UserStatusType.ACTIVE;
+    return this.status === UserStatusType.ACTIVE || this.status === UserStatusType.BANNED;
   }
 
   hasProfileAvatar() {

@@ -1,5 +1,5 @@
 /**
- * Ban reason input type. [Bad_behavior, Advertising_placement, Another_reason]
+ * Ban reason input type. ['Bad_behavior', 'Advertising_placement', 'Another_reason']
  */
 export enum BanReasonInputType {
   Bad_behavior = 'Bad_behavior',

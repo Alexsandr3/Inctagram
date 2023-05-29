@@ -78,11 +78,10 @@ export const configuration = () => ({
       API_KEY_STRIPE: process.env.API_KEY_STRIPE,
       SECRET_HOOK_STRIPE: process.env.SECRET_HOOK_STRIPE,
     },
-    // paypal: {
-
-    //   CLIENT_ID_PAYPAL: process.env.CLIENT_ID_PAYPAL,
-    //   SECRET_PAYPAL: process.env.SECRET_PAYPAL,
-    // },
+    paypal: {
+      PAYPAL_CLIENT_ID: process.env.PAYPAL_CLIENT_ID,
+      PAYPAL_APP_SECRET: process.env.PAYPAL_APP_SECRET,
+    },
   },
 
   subscription: {

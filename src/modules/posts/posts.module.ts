@@ -14,12 +14,12 @@ import { CreatePostWithUploadImagesUseCase } from './application/use-cases/creat
 import { DeleteImageExistingPostUseCase } from './application/use-cases/delete-image-post-use.case';
 
 const useCases = [
+  //---deprecated
   // UploadImagePostUseCase,
   // CreatePostUseCase,
   // DeleteImagePostUseCase,
   DeletePostUseCase,
   UpdatePostUseCase,
-  //temp
   CreatePostWithUploadImagesUseCase,
   DeleteImageExistingPostUseCase,
 ];
@@ -39,5 +39,6 @@ const useCases = [
       useClass: PostsQueryRepository,
     },
   ],
+  exports: [IPostsRepository],
 })
 export class PostsModule {}
