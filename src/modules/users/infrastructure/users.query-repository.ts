@@ -77,7 +77,14 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
     const usersCount = await this.prisma.user.count({ where: defaultArgs['where'] });
     const usersView = users.map(user => {
       const url = user.profile.avatars.length > 0 ? user.profile.avatars[0].url : null;
-      return UserForSuperAdminViewModel.create(user.id, user.userName, url, user.createdAt, user.status);
+      const instanceUser = plainToInstance(UserEntity, user);
+      return UserForSuperAdminViewModel.create(
+        instanceUser.id,
+        instanceUser.userName,
+        url,
+        instanceUser.createdAt,
+        instanceUser.status,
+      );
     });
     return UsersWithPaginationViewModel.getPaginated({
       items: usersView,

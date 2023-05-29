@@ -118,15 +118,10 @@ export class PostsRepository implements IPostsRepository {
     const posts = await this.prisma.post.findMany({
       where: {
         ownerId: userId,
-        user: {
-          status: {
-            notIn: [UserStatus.DELETED],
-          },
-        },
+        user: { status: { notIn: [UserStatus.DELETED] } },
       },
       include: { images: true },
     });
-    if (!posts) return [PostForSuperAdminViewModel.createEmpty()];
     const postsWithImages = plainToInstance(PostEntity, posts);
     return postsWithImages.map(p => PostForSuperAdminViewModel.createIns(p));
   }

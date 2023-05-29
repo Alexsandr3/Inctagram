@@ -1,7 +1,14 @@
-import { Field, GraphQLISODateTime, Int, ObjectType } from '@nestjs/graphql';
+import { Field, GraphQLISODateTime, Int, ObjectType, registerEnumType } from '@nestjs/graphql';
+import { UserEntity } from '../../../users/domain/user.entity';
+import { UserStatusType } from '../../../users/types/user-status.type';
+
+registerEnumType(UserStatusType, {
+  name: 'UserStatusType',
+  description: 'User Status [Pending, Active, Banned, Deleted]',
+});
 
 @ObjectType()
-export class UserForSuperAdminViewModel {
+export class UserForSuperAdminViewModel extends UserEntity {
   @Field(() => Int)
   userId: number;
   @Field()
@@ -10,17 +17,19 @@ export class UserForSuperAdminViewModel {
   profileLink: string;
   @Field(() => GraphQLISODateTime)
   createdAt: Date;
-  @Field()
-  status: string;
+  @Field(() => UserStatusType)
+  status: UserStatusType;
 
-  constructor() {}
+  constructor() {
+    super();
+  }
 
   static create(
     userId: number,
     userName: string,
     profileLink: string,
     dataAdded: Date,
-    status: string,
+    status: UserStatusType,
   ): UserForSuperAdminViewModel {
     const user = new UserForSuperAdminViewModel();
     user.userId = userId;
