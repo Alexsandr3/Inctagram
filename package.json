@@ -22,7 +22,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./apps/inctagram/test/jest-e2e.json --runInBand",
-    "test:all": "jest --config ./test/jest-e2e.json --detectOpenHandles --watch",
+    "test:all": "jest --config ./apps/inctagram/test/jest-e2e.json --detectOpenHandles --watch",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js -d ./src/db-migration/torm.config.ts",
     "db:generate": "npm run typeorm migration:generate ./src/db-migration/migrations/migration",
     "db:migrate": "npm run typeorm migration:run",

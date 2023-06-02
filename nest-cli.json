@@ -51,6 +51,15 @@
         "tsConfigPath": "apps/business/tsconfig.app.json"
       }
     },
+    "images": {
+      "type": "application",
+      "root": "apps/images",
+      "entryFile": "main",
+      "sourceRoot": "apps/images/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/images/tsconfig.app.json"
+      }
+    },
     "common": {
       "type": "library",
       "root": "libs/common",
