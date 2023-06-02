@@ -1,0 +1,60 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserForSuperAdminViewModel {
+  userId: Int!
+  userName: String!
+  profileLink: String
+  createdAt: DateTime!
+  status: String!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type UsersWithPaginationViewModel {
+  totalCount: Int!
+  pagesCount: Int!
+  page: Int!
+  pageSize: Int!
+  items: [UserForSuperAdminViewModel!]!
+}
+
+type Query {
+  users(pageNumber: Int, pageSize: Int = 10, sortBy: SortByForUsers = id, sortDirection: SortDirectionType = Desc, status: UserStatusInputType = all, search: String): UsersWithPaginationViewModel!
+}
+
+"""Sort By [id, userName, createdAt]"""
+enum SortByForUsers {
+  id
+  userName
+  createdAt
+}
+
+"""Sort Direction [asc, desc]"""
+enum SortDirectionType {
+  Asc
+  Desc
+}
+
+"""User Status [all, active, banned]"""
+enum UserStatusInputType {
+  all
+  active
+  banned
+}
+
+type Mutation {
+  deleteUser(userId: Float!): Boolean!
+  updateUserStatus(userId: Int!, banReason: BanReasonInputType, isBanned: Boolean!): Boolean!
+}
+
+"""Reasons for banning a user"""
+enum BanReasonInputType {
+  Bad_behavior
+  Advertising_placement
+  Another_reason
+}
