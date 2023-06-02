@@ -38,3 +38,5 @@ lerna-debug.log*
 
 
 /prisma/migrations/
+/temp
+package-lock.json
