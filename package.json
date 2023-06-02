@@ -1,6 +1,6 @@
 {
-  "name": "project-inctagram",
-  "version": "0.0.1",
+  "name": "inctagram",
+  "version": "0.24.0",
   "description": "",
   "author": "Team jobs",
   "private": true,
@@ -11,17 +11,17 @@
   "scripts": {
     "build": "nest build",
     "build:prisma": "nest build && prisma db push",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "yarn prisma migrate deploy && nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
-    "start:prod": "node dist/main",
+    "start:prod": "node dist/apps/inctagram/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json --runInBand",
+    "test:e2e": "jest --config ./apps/inctagram/test/jest-e2e.json --runInBand",
     "test:all": "jest --config ./test/jest-e2e.json --detectOpenHandles --watch",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js -d ./src/db-migration/torm.config.ts",
     "db:generate": "npm run typeorm migration:generate ./src/db-migration/migrations/migration",
@@ -120,7 +120,14 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/apps/",
+      "<rootDir>/libs/"
+    ],
+    "moduleNameMapper": {
+      "^@common/common(|/.*)$": "<rootDir>/libs/common/src/$1"
+    }
   },
   "prisma": {
     "schema": "prisma/schema.prisma"
