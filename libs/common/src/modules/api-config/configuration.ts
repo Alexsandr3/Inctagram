@@ -4,6 +4,8 @@ export const configuration = () => ({
   NODE_ENV: process.env.NODE_ENV,
 
   PORT: process.env.PORT,
+  PORT_IMAGES: process.env.PORT_IMAGES,
+  PORT_BUSINESS: process.env.PORT_BUSINESS,
 
   CORS_ORIGIN: process.env.CORS_ORIGIN,
 

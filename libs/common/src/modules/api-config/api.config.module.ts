@@ -12,6 +12,8 @@ import Joi from 'joi';
       validationSchema: Joi.object({
         NODE_ENV: Joi.string().valid('development', 'production', 'test', 'provision').default('development'),
         PORT: Joi.number(),
+        PORT_IMAGES: Joi.number(),
+        PORT_BUSINESS: Joi.number(),
 
         CORS_ORIGIN: Joi.string().required(),
 

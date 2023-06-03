@@ -13,6 +13,12 @@ export class ApiConfigService {
   get PORT(): number {
     return +this.configService.get('PORT', { infer: true }) || 3000;
   }
+  get PORT_IMAGES(): number {
+    return +this.configService.get('PORT_IMAGES', { infer: true }) || 3001;
+  }
+  get PORT_BUSINESS(): number {
+    return +this.configService.get('PORT_BUSINESS', { infer: true }) || 3002;
+  }
 
   get CORS_ORIGIN(): string {
     return this.configService.get('CORS_ORIGIN', { infer: true });
