@@ -19,22 +19,22 @@ import {
   SwaggerDecoratorsByUpdateProfile,
   SwaggerDecoratorsByUploadPhotoAvatar,
 } from '../swagger/swagger.users.decorators';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
-import { CurrentUserId } from '../../../main/decorators/user.decorator';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
+import { CurrentUserId } from '@common/main/decorators/user.decorator';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
 import { UploadImageAvatarCommand } from '../application/use-cases/upload-image-avatar.use-case';
-import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
+import { NotificationException, ResultNotification } from '@common/main/validators/result-notification';
 import { UpdateProfileInputDto } from './inpu-dto/update-profile.input.dto';
 import { ProfileViewModel } from './view-models/profile-view.dto';
 import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
 import { UpdateProfileCommand } from '../application/use-cases/update-profile.use-case';
-import { ValidationImagePipe } from '../../../main/validators/validation-image.pipe';
+import { ValidationImagePipe } from '@common/main/validators/validation-image.pipe';
 import { DeleteImageAvatarCommand } from '../application/use-cases/delete-image-avatar.use-case';
 import { AvatarsViewModel } from './view-models/avatars-view.dto';
 import { IUsersQueryRepository } from '../infrastructure/users.query-repository';
-import { NotificationErrors } from '../../../main/validators/checker-notification.errors';
-import { NotificationCode } from '../../../configuration/notificationCode';
+import { NotificationErrors } from '@common/main/validators/checker-notification.errors';
+import { NotificationCode } from '@common/configuration/notificationCode';
 
 @ApiBearerAuth()
 @ApiTags('Profile')

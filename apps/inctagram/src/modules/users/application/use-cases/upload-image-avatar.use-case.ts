@@ -1,12 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationException } from '@common/main/validators/result-notification';
 import { IUsersRepository } from '../../infrastructure/users.repository';
-import { ImagesEditorService } from '../../../images/application/images-editor.service';
-import { ImageType } from '../../../images/type/image.type';
-import { BaseImageEntity } from '../../../images/domain/base-image.entity';
+import { BaseImageEntity } from '@common/main/entities/base-image.entity';
 import { AvatarEntity } from '../../domain/avatar.entity';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
+import { ImageType } from '@common/main/entities/type/image.type';
+import { ClientsService } from '../../../Clients/clients-service';
 
 /**
  * @description Upload image avatar profile command
@@ -20,7 +20,7 @@ export class UploadImageAvatarUseCase
   extends BaseNotificationUseCase<UploadImageAvatarCommand, void>
   implements ICommandHandler<UploadImageAvatarCommand>
 {
-  constructor(private readonly usersRepository: IUsersRepository, private readonly imagesEditor: ImagesEditorService) {
+  constructor(private readonly usersRepository: IUsersRepository, private readonly clientsService: ClientsService) {
     super();
   }
 
@@ -40,16 +40,16 @@ export class UploadImageAvatarUseCase
     const type = ImageType.AVATAR;
 
     //generate keys for images and save images on s3 storage and create instances images
-    const result: BaseImageEntity[] = await this.imagesEditor.generateAndSaveImages(user.id, [file], type);
+    const result: BaseImageEntity[] = await this.clientsService.generateAndSaveImages(user.id, [file], type);
     const avatars = result.map(i => AvatarEntity.initCreate(userId, i));
-    //result is array of instances images need to save
+    //result is array of instances modules need to save
     if (user.hasProfileAvatar()) {
       await this.usersRepository.addAvatars(userId, avatars);
     } else {
       //urls for delete
       const urlsForDelete = user.getAvatarURLsForDeletion();
       //delete image from cloud
-      await this.imagesEditor.deleteImageByUrl(urlsForDelete);
+      await this.clientsService.deleteImages(...urlsForDelete);
       //add id for each avatar
       const existingIds = user.getAvatarIds();
       avatars.forEach(avatar => avatar.setId(existingIds.reverse().pop()));

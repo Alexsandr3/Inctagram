@@ -1,5 +1,5 @@
 import { MailManager } from './mail-manager.service';
-import { ApiConfigService } from '../../../modules/api-config/api.config.service';
+import { ApiConfigService } from '../../../../../../libs/common/src/modules/api-config/api.config.service';
 import { EmailAdapter } from '../email.adapter';
 
 describe('MailManager', () => {

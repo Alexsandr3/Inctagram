@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { PostsService } from '../posts.service';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * Delete post command

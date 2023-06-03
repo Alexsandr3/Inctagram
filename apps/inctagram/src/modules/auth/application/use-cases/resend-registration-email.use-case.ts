@@ -2,10 +2,10 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegistrationEmailResendingInputDto } from '../../api/input-dto/registration-email-resending.input.dto';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationException } from '@common/main/validators/result-notification';
 import { EmailConfirmationEntity } from '../../domain/email-confirmation.entity';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * @description Resending command

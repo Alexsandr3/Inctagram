@@ -1,7 +1,7 @@
-import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { ExternalAccount } from '@prisma/client';
 import { RegisterUserFromExternalAccountInputDto } from '../../auth/api/input-dto/register-user-from-external-account-input.dto';
 import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
+import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 
 /**
  * Provider ['GOOGLE', 'GITHUB']

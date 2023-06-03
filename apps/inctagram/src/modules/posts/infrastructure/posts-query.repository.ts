@@ -76,7 +76,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
 
 //unused
 /* async getUploadImages(resourceId: string): Promise<UploadedImageViewModel> {
-  const images = await this.prisma.postImage.findMany({
+  const modules = await this.prisma.postImage.findMany({
     where: {
       resourceId,
       status: PostStatus.PUBLISHED,
@@ -86,7 +86,7 @@ export class PostsQueryRepository implements IPostsQueryRepository {
     },
   });
   return new UploadedImageViewModel(
-    images.map(
+    modules.map(
       image => new PostImageViewModel(image.url, image.width, image.height, image.fileSize, image.resourceId),
     ),
   );

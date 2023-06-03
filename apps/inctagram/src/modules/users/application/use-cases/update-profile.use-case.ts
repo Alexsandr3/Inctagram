@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { UpdateProfileInputDto } from '../../api/inpu-dto/update-profile.input.dto';
 import { IUsersRepository } from '../../infrastructure/users.repository';
-import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationException } from '@common/main/validators/result-notification';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * @description Update profile for user command

@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import request from 'supertest';
 import { sessionsEndpoints } from '../../src/modules/sessions/api/routing/sessions.routing';
 

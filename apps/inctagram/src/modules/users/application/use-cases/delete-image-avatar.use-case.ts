@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationException } from '@common/main/validators/result-notification';
 import { IUsersRepository } from '../../infrastructure/users.repository';
-import { ImagesEditorService } from '../../../images/application/images-editor.service';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { ClientsService } from '../../../Clients/clients-service';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * Delete photo avatar for user command
@@ -17,7 +17,7 @@ export class DeleteImageAvatarUseCase
   extends BaseNotificationUseCase<DeleteImageAvatarCommand, void>
   implements ICommandHandler<DeleteImageAvatarCommand>
 {
-  constructor(private readonly usersRepository: IUsersRepository, private readonly imagesEditor: ImagesEditorService) {
+  constructor(private readonly usersRepository: IUsersRepository, private readonly clientsService: ClientsService) {
     super();
   }
 
@@ -33,7 +33,7 @@ export class DeleteImageAvatarUseCase
     //urls for delete
     const urlsForDelete = user.getAvatarURLsForDeletion();
     //delete image from cloud
-    await this.imagesEditor.deleteImageByUrl(urlsForDelete);
+    await this.clientsService.deleteImages(...urlsForDelete);
     //delete image from db
     await this.usersRepository.deleteImagesAvatar(userId);
   }

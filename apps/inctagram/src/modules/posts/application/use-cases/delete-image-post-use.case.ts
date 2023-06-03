@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { IPostsRepository } from '../../infrastructure/posts.repository';
-import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationException } from '@common/main/validators/result-notification';
 import { PostsService } from '../posts.service';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * Delete image command

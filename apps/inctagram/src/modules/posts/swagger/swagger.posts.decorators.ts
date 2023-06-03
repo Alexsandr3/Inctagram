@@ -1,11 +1,11 @@
 import { applyDecorators } from '@nestjs/common';
-import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { ApiErrorResultDto } from '@common/main/validators/api-error-result.dto';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { PostViewModel } from '../api/view-models/post-view.dto';
 import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 /**
- * Create a new post with upload images
+ * Create a new post with upload modules
  * @constructor
  */
 export function SwaggerDecoratorsByCreatePostWithUploadImages(): MethodDecorator {
@@ -32,13 +32,13 @@ export function SwaggerDecoratorsByCreatePostWithUploadImages(): MethodDecorator
 }
 
 /**
- * Delete images for post by postId and uploadId, when post is published
+ * Delete modules for post by postId and uploadId, when post is published
  * @constructor
  */
 export function SwaggerDecoratorsByDeleteImagePost(): MethodDecorator {
   return applyDecorators(
     ApiOperation({
-      summary: 'Delete images for post by postId and uploadId, when post is published',
+      summary: 'Delete modules for post by postId and uploadId, when post is published',
     }),
     ApiResponse({
       status: HTTP_Status.NO_CONTENT_204,
@@ -166,7 +166,7 @@ export function SwaggerDecoratorsByUploadImagePost(): MethodDecorator {
 export function SwaggerDecoratorsByDeleteImagePosts(): MethodDecorator {
   return applyDecorators(
     ApiOperation({
-      summary: 'Delete images for post by uploadId, when user not create post',
+      summary: 'Delete modules for post by uploadId, when user not create post',
     }),
     ApiResponse({
       status: HTTP_Status.NO_CONTENT_204,

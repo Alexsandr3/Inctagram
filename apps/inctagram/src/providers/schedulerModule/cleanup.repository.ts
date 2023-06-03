@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Status, StatusSubscriptionType } from '@prisma/client';
-import { SubscriptionEntity } from '../../modules/subscriptions/domain/subscription.entity';
+import { SubscriptionEntity } from '../../../../business/src/modules/subscriptions/domain/subscription.entity';
 import { plainToInstance } from 'class-transformer';
 
 @Injectable()
@@ -9,7 +9,7 @@ export class CleanupRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async removeUnsuccessfulSubscriptions(minuteAgo: Date) {
-    //find subscriptions with status pending and created_at is older than 10 minutes
+    //find Clients with status pending and created_at is older than 10 minutes
     await this.prisma.$transaction([
       this.prisma.payment.deleteMany({
         where: {
@@ -33,7 +33,7 @@ export class CleanupRepository {
   }
 
   async getActiveSubscriptionsWithPayments(currentDate: Date): Promise<SubscriptionEntity[]> {
-    //get subscriptions where the end date is equal to or less than the current date
+    //get Clients where the end date is equal to or less than the current date
     const subscriptions = await this.prisma.subscription.findMany({
       where: {
         status: StatusSubscriptionType.ACTIVE,

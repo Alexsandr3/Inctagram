@@ -1,4 +1,4 @@
-import { BaseImageEntity } from '../../images/domain/base-image.entity';
+import { BaseImageEntity } from '@common/main/entities/base-image.entity';
 import { AvatarImage } from '@prisma/client';
 
 export class AvatarEntity extends BaseImageEntity implements AvatarImage {

@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { TokensType } from '../types/types';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { AuthService } from '../auth.service';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * @description login user and return tokens

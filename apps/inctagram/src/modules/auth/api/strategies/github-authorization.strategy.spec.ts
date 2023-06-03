@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from '../../application/auth.service';
-import { ApiConfigModule } from '../../../api-config/api.config.module';
 import { Profile } from 'passport-google-oauth20';
 import { UnauthorizedException } from '@nestjs/common';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 import { UserEntity } from '../../../users/domain/user.entity';
 import { ExternalAccountEntity } from '../../../users/domain/external-account.entity';
 import { GithubAuthorizationStrategy } from './github-authorization.strategy';
+import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 
 describe('test GithubAuthorizationStrategy', () => {
   let app: TestingModule;

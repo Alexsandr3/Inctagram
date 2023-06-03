@@ -3,9 +3,9 @@ import { NewPasswordInputDto } from '../../api/input-dto/new-password.input.dto'
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { AuthService } from '../auth.service';
 import { IPasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
-import { NotificationException } from '../../../../main/validators/result-notification';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationException } from '@common/main/validators/result-notification';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * @description - command for new password

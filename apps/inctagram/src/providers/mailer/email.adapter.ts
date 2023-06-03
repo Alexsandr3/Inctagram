@@ -1,5 +1,5 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { ApiConfigService } from '../../modules/api-config/api.config.service';
+import { ApiConfigService } from '../../../../../libs/common/src/modules/api-config/api.config.service';
 import { Injectable } from '@nestjs/common';
 
 @Injectable()

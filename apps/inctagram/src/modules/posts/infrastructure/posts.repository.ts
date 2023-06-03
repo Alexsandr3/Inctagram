@@ -79,7 +79,7 @@ export class PostsRepository implements IPostsRepository {
     });
   }
   async createPostWithImages(instancePost: PostEntity): Promise<number> {
-    //create post with images in one transaction
+    //create post with modules in one transaction
     return await this.prisma.$transaction(async tx => {
       const post = await tx.post.create({
         data: {
@@ -151,12 +151,12 @@ export class PostsRepository implements IPostsRepository {
 /*
 async createPost(instancePost: PostEntity): Promise<number> {
   //create post
-  const ids = instancePost.images.map(i => {
+  const ids = instancePost.modules.map(i => {
     return {
       id: i.id,
     };
   });
-  const updateImagesConfig = this.getUpdateImagesConfig(instancePost.images);
+  const updateImagesConfig = this.getUpdateImagesConfig(instancePost.modules);
 
   return await this.prisma.$transaction(async tx => {
     const post = await tx.post.create({
@@ -165,14 +165,14 @@ async createPost(instancePost: PostEntity): Promise<number> {
         description: instancePost.description,
         location: instancePost.location,
         status: instancePost.status,
-        images: { connect: ids },
+        modules: { connect: ids },
       },
     });
 
     await tx.post.update({
       where: { id: post.id },
       data: {
-        images: {
+        modules: {
           updateMany: updateImagesConfig,
         },
       },
@@ -180,30 +180,30 @@ async createPost(instancePost: PostEntity): Promise<number> {
     return post.id;
   });
 }
-async saveImages(images: ImagePostEntity[]): Promise<void> {
+async saveImages(modules: ImagePostEntity[]): Promise<void> {
   await this.prisma.postImage.createMany({
-    data: images,
+    data: modules,
   });
 }
 async deleteImages(resourceId: string): Promise<void> {
   await this.prisma.postImage.deleteMany({ where: { resourceId } });
 }
 async findImagesByOwnerIdAndResourceIds(resourceId: string): Promise<ImagePostEntity[]> {
-  const images = await this.prisma.postImage.findMany({
+  const modules = await this.prisma.postImage.findMany({
     where: { resourceId },
   });
-  return plainToInstance(ImagePostEntity, images);
+  return plainToInstance(ImagePostEntity, modules);
 }
 async findImagesByUploadIds(childrenMetadata: ChildMetadataDto[]): Promise<ImagePostEntity[]> {
   const uploadIds = childrenMetadata.map(c => c.uploadId);
-  const images = await this.prisma.postImage.findMany({
+  const modules = await this.prisma.postImage.findMany({
     where: {
       resourceId: {
         in: uploadIds,
       },
     },
   });
-  return plainToInstance(ImagePostEntity, images);
+  return plainToInstance(ImagePostEntity, modules);
 }
 //unused
 async deletePostById(postId: number) {
@@ -211,6 +211,6 @@ async deletePostById(postId: number) {
     where: {
       id: postId,
     },
-    include: { images: true },
+    include: { modules: true },
   });
 }*/

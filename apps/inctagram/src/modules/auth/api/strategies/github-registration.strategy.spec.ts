@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiConfigModule } from '../../../api-config/api.config.module';
 import { BadRequestException } from '@nestjs/common';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
 import { PrismaService } from '../../../../providers/prisma/prisma.service';
 import { GitHubRegistrationStrategy } from './github-registration.strategy';
 import { AuthService } from '../../application/auth.service';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
+import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 
 describe('test GitHubRegistrationStrategy', () => {
   let gitHubRegistrationStrategy: GitHubRegistrationStrategy;

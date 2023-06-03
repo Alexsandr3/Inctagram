@@ -1,6 +1,6 @@
 import { EmailAdapter } from './email.adapter';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ApiConfigService } from '../../modules/api-config/api.config.service';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 describe('EmailAdapter', () => {
   const mailerServiceMock = {

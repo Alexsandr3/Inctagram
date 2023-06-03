@@ -1,10 +1,10 @@
 import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
-import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
-import { TokenTypeSwaggerDto } from '../../../configuration/swagger/helpers/token-type-swagger.dto';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
+import { ApiErrorResultDto } from '@common/main/validators/api-error-result.dto';
 import { PasswordRecoveryViewDto } from '../api/view-dto/password-recovery-view.dto';
 import { MeViewDto } from '../api/view-dto/me.view.dto';
+import { TokenTypeSwaggerDto } from '@common/configuration/swagger/helpers/token-type-swagger.dto';
 
 export function SwaggerDecoratorsByRegistration(): MethodDecorator {
   return applyDecorators(

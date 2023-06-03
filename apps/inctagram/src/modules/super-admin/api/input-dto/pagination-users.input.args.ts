@@ -1,7 +1,7 @@
 import { BasePaginationInputDto } from '../../../../main/shared/base-pagination.input.dto';
 import { ArgsType, Field, Int, registerEnumType } from '@nestjs/graphql';
 import { IsOptional } from 'class-validator';
-import { SortDirectionType } from '../../../../main/enums/sort-direction.enum';
+import { SortDirectionType } from '@common/main/enums/sort-direction.enum';
 import { UserStatusInputType } from './types/user-status.input.type';
 import { SortByForUsersInputType } from './types/sort-by-for-users.input.type';
 

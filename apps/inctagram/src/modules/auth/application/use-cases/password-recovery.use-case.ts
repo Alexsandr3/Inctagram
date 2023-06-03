@@ -3,9 +3,9 @@ import { MailManager } from '../../../../providers/mailer/application/mail-manag
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { IPasswordRecoveryRepository } from '../../infrastructure/password-recovery.repository';
 import { PasswordRecoveryEntity } from '../../domain/password-recovery.entity';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationException } from '@common/main/validators/result-notification';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * Recovery password

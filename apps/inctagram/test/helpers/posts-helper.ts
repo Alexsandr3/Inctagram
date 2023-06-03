@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import fs from 'fs';
 import { postsEndpoints } from '../../src/modules/posts/api/routing/posts.routing';
-import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { UpdatePostInputDto } from '../../src/modules/posts/api/input-dto/update-post.input.dto';
 
@@ -24,6 +24,7 @@ export class PostsHelper {
     // create file
     const files = [];
     for (const file of needBody.nameFile) {
+      console.log(__dirname + '/../' + file);
       files.push(fs.createReadStream(__dirname + '/../' + file));
     }
     // send request for create user
@@ -32,10 +33,6 @@ export class PostsHelper {
       .auth(config.token, { type: 'bearer' })
       .field('description', needBody.description)
       .set('content-type', 'multipart/form-data');
-    // .attach('files', files[0], body.nameFile[0])
-    // .attach('files', files[1], body.nameFile[1])
-    // .attach('files', files[2], body.nameFile[2])
-    // .expect(expectedCode);
 
     for (const file of files) {
       response = response.attach('files', file, file.path);

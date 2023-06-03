@@ -1,7 +1,7 @@
 // import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 // import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 // import { IUsersRepository } from '../../../users/infrastructure/users.repository';
-// import { ImagesEditorService } from '../../../images/application/images-editor.service';
+// import { ImagesEditorService } from '../../../modules/application/modules-editor.service';
 // import { NotificationException } from '../../../../main/validators/result-notification';
 // import { NotificationCode } from '../../../../configuration/exception.filter';
 // import { IPostsRepository } from '../../infrastructure/posts.repository';
@@ -35,7 +35,7 @@
 //     //find user
 //     const user = await this.usersRepository.findById(userId);
 //     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-//     //find images by uploadId and userId
+//     //find modules by uploadId and userId
 //     const imagesForDelete = await this.postsRepository.findImagesByOwnerIdAndResourceIds(uploadId);
 //     if (imagesForDelete.length === 0)
 //       throw new NotificationException(
@@ -47,7 +47,7 @@
 //     const urlsForDelete = imagesForDelete.map(image => image.url);
 //     //delete image from aws
 //     await this.imagesEditor.deleteImageByUrl(urlsForDelete);
-//     //delete images from db
+//     //delete modules from db
 //     await this.postsRepository.deleteImages(uploadId);
 //   }
 // }

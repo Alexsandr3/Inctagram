@@ -1,9 +1,9 @@
-import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
 import { AvatarEntity } from './avatar.entity';
 import { Profile } from '@prisma/client';
 import { BanReasonInputType } from '../../super-admin/api/input-dto/types/ban-reason.input.type';
+import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 
 export class ProfileEntity extends BaseDateEntity implements Profile {
   userId: number;

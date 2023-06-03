@@ -1,5 +1,5 @@
 import { Body, Controller, Get, Headers, HttpCode, Ip, Post, Res, UseGuards } from '@nestjs/common';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { RegisterInputDto } from './input-dto/register.input.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { CommandBus } from '@nestjs/cqrs';
@@ -20,7 +20,7 @@ import { ResendRegistrationEmailCommand } from '../application/use-cases/resend-
 import { LoginCommand } from '../application/use-cases/login.use-case';
 import { LogoutCommand } from '../application/use-cases/logout.use-case';
 import { ConfirmRegistrationCommand } from '../application/use-cases/confirm-registration.use-case';
-import { ResultNotification } from '../../../main/validators/result-notification';
+import { ResultNotification } from '@common/main/validators/result-notification';
 import { LoginSuccessViewDto } from './view-dto/login-success.view.dto';
 import { TokensType } from '../application/types/types';
 import { RegisterUserCommand } from '../application/use-cases/register-user.use-case';
@@ -41,7 +41,7 @@ import {
   SwaggerDecoratorsByUpdateTokens,
 } from '../swagger/swagger.auth.decorators';
 import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
-import { CurrentUserId } from '../../../main/decorators/user.decorator';
+import { CurrentUserId } from '@common/main/decorators/user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { MeViewDto } from './view-dto/me.view.dto';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';

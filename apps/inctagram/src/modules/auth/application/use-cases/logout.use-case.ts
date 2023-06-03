@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { ISessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
-import { NotificationException } from '../../../../main/validators/result-notification';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationException } from '@common/main/validators/result-notification';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * @description Logout command

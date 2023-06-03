@@ -2,9 +2,9 @@ import { Controller, Get, Headers, HttpCode, Ip, Res, UseGuards } from '@nestjs/
 import { Response } from 'express';
 import { GitHubAuthorizationGuard } from './guards/github-authorization.guard';
 import { LoginCommand } from '../application/use-cases/login.use-case';
-import { ResultNotification } from '../../../main/validators/result-notification';
+import { ResultNotification } from '@common/main/validators/result-notification';
 import { TokensType } from '../application/types/types';
-import { CurrentUserId } from '../../../main/decorators/user.decorator';
+import { CurrentUserId } from '@common/main/decorators/user.decorator';
 import { CommandBus } from '@nestjs/cqrs';
 import {
   SwaggerDecoratorsByGitHubAuthorization,
@@ -17,8 +17,8 @@ import { PayloadData } from '../../../main/decorators/payload-data.decorator';
 import { GitHubRegistrationGuard } from './guards/github-registration.guard';
 import { RegisterUserFromExternalAccountAndAuthorizeIfNewCommand } from '../application/use-cases/register-user-from-external-account-and-authorize-if-new-use.case';
 import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
-import { ApiConfigService } from '../../api-config/api.config.service';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @ApiTags('GitHub-OAuth2')
 @Controller('auth/github')

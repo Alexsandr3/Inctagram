@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { usersEndpoints } from '../../src/modules/users/api/routing/users.routing';
 import fs from 'fs';
-import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 
 export class UsersHelper {
   constructor(private readonly app: INestApplication) {}

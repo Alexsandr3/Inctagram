@@ -1,9 +1,9 @@
 import { BadRequestException, PipeTransform } from '@nestjs/common';
 import sharp, { Metadata } from 'sharp';
-import { ParametersImageValidation } from '../validators/parameters-image.validation';
+import { ParametersImageValidation } from '@common/main/validators/parameters-image.validation';
 
 /**
- * @description This pipe is used to validate images
+ * @description This pipe is used to validate modules
  */
 export class ValidationParamsImagePipe<T extends ParametersImageValidation>
   implements PipeTransform<Express.Multer.File, Promise<Express.Multer.File>>

@@ -1,8 +1,13 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
+import LogsMiddleware from '@common/modules/logger/logs.middleware';
 
 @Module({
   imports: [],
   controllers: [],
   providers: [],
 })
-export class BusinessModule {}
+export class BusinessModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(LogsMiddleware).forRoutes('*');
+  }
+}

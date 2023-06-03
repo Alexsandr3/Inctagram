@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ISessionsRepository } from '../infrastructure/sessions-repository';
-import { NotificationException } from '../../../main/validators/result-notification';
-import { NotificationCode } from '../../../configuration/notificationCode';
+import { NotificationException } from '@common/main/validators/result-notification';
+import { NotificationCode } from '@common/configuration/notificationCode';
 
 @Injectable()
 export class SessionsService {

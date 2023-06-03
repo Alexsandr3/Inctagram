@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-github2';
-import { ApiConfigService } from '../../../api-config/api.config.service';
 import { Profile } from 'passport-google-oauth20';
 import { AuthService } from '../../application/auth.service';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @Injectable()
 export class GithubAuthorizationStrategy extends PassportStrategy(Strategy, 'github-authorization') {

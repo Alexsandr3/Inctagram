@@ -116,7 +116,7 @@ export class PrismaUsersRepository implements IUsersRepository {
         externalAccounts: {},
         profile: {
           create: {},
-        }, //{ create: { ...user.profile, images: { create: user.profile.images } } },
+        }, //{ create: { ...user.profile, modules: { create: user.profile.modules } } },
       },
     });
     //create businessAccount
@@ -136,7 +136,7 @@ export class PrismaUsersRepository implements IUsersRepository {
             city: user.profile.city,
             dateOfBirth: user.profile.dateOfBirth,
             aboutMe: user.profile.aboutMe,
-            //images: { disconnect: true },
+            //modules: { disconnect: true },
           },
           update: {
             firstName: user.profile.firstName,
@@ -145,7 +145,7 @@ export class PrismaUsersRepository implements IUsersRepository {
             dateOfBirth: user.profile.dateOfBirth,
             aboutMe: user.profile.aboutMe,
             banReason: user.profile.banReason,
-            //images: { disconnect: true },
+            //modules: { disconnect: true },
           },
         },
       };

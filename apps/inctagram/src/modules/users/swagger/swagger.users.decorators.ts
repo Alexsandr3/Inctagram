@@ -1,7 +1,7 @@
 import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
-import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { ApiErrorResultDto } from '@common/main/validators/api-error-result.dto';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { ProfileViewModel } from '../api/view-models/profile-view.dto';
 import { AvatarsViewModel } from '../api/view-models/avatars-view.dto';
 

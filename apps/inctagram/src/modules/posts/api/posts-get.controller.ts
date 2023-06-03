@@ -1,5 +1,5 @@
 import { Controller, Get, HttpCode, Param, ParseIntPipe, Query } from '@nestjs/common';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { ApiTags } from '@nestjs/swagger';
 import { IPostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { PaginationPostsInputDto } from './input-dto/pagination-posts.input.dto';

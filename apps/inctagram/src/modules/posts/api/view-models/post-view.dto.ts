@@ -1,6 +1,6 @@
 import { PostImageVersionViewModel, PostImageViewModel } from './post-image-view.dto';
 import { PostEntity } from '../../domain/post.entity';
-import { BasePhotoSizeViewModel } from '../../../images/api/view-models/base-photo-size-view.dto';
+import { BasePhotoSizeViewModel } from '../../../../../../images/src/modules/images/api/view-models/base-photo-size-view.dto';
 import { ImagePostEntity } from '../../domain/image-post.entity';
 
 export class PostViewModel {

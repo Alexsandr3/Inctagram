@@ -7,7 +7,7 @@ import { SuperAdminHelper } from '../helpers/super-admin-helper';
 import { PaginationUsersInputDto } from '../../src/modules/super-admin/api/input-dto/pagination-users.input.args';
 import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
 import gql from 'graphql-tag';
-import { ImageSizeConfig } from '../../src/modules/images/image-size-config.type';
+import { ImageSizeConfig } from '../../../images/src/modules/images/image-size-config.type';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { PostsHelper } from '../helpers/posts-helper';
 
@@ -67,7 +67,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
   });
   //Upload image for profile
   it('02 - / (POST) - should return 201 if all data is correct for upload image profile', async () => {
-    let nameFile = '/images/1000x667_304kb.jpeg';
+    let nameFile = '/modules/1000x667_304kb.jpeg';
     const responseBody: AvatarsViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       token: arrAccessToken[3],
       expectedCode: 201,
@@ -77,7 +77,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     expect(responseBody.avatars[1].width).toBe(ImageSizeConfig.THUMBNAIL.defaultWidth);
   });
   it('03 - / (POST) - should return 201 if all data is correct for upload image profile', async () => {
-    let nameFile = '/images/image1.png';
+    let nameFile = '/modules/image1.png';
     const responseBody: AvatarsViewModel = await usersHelper.uploadPhotoAvatar(nameFile, {
       token: arrAccessToken[5],
       expectedCode: 201,
@@ -293,7 +293,7 @@ describe('Super-admin with GraphQL AppResolve -  e2e', () => {
     expect(body['users'].pageSize).toBe(50);
   });
   it('17 - / (POST) - should return 201 if all data is correct for create post', async () => {
-    let nameFile = '/images/1271х847_357kb.jpeg';
+    let nameFile = '/modules/1271х847_357kb.jpeg';
     const body = { description: 'This is my first post', nameFile: [nameFile] };
     await postsHelper.createPost<PostViewModel>(body, { token: arrAccessToken[5], expectedCode: 201 });
   });

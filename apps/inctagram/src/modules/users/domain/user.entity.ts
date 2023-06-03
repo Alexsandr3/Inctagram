@@ -1,5 +1,4 @@
 import { ProfileEntity } from './profile.entity';
-import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { UpdateProfileInputDto } from '../api/inpu-dto/update-profile.input.dto';
 import { Type } from 'class-transformer';
 import { User } from '@prisma/client';
@@ -8,6 +7,7 @@ import { RegisterUserFromExternalAccountInputDto } from '../../auth/api/input-dt
 import { UserStatusType } from '../types/user-status.type';
 import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
 import { BanReasonInputType } from '../../super-admin/api/input-dto/types/ban-reason.input.type';
+import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 
 /**
  * User field parameters [min length -6, max length - 30]

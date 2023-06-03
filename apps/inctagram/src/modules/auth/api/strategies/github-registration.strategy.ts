@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-github2';
-import { ApiConfigService } from '../../../api-config/api.config.service';
 import { Profile } from 'passport-google-oauth20';
 import { Request } from 'express';
 import { RegisterUserFromExternalAccountInputDto } from '../input-dto/register-user-from-external-account-input.dto';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
 import { AuthService } from '../../application/auth.service';
 import { OAuthException, OAuthFlowType } from '../../../../main/validators/oauth.exception';
-import { HTTP_Status } from '../../../../main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @Injectable()
 export class GitHubRegistrationStrategy extends PassportStrategy(Strategy, 'github-registration') {

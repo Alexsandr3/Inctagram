@@ -1,5 +1,4 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { AuthService } from '../auth.service';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { RegisterUserFromExternalAccountInputDto } from '../../api/input-dto/register-user-from-external-account-input.dto';
@@ -9,8 +8,9 @@ import { MailManager } from '../../../../providers/mailer/application/mail-manag
 import { ConfirmationOfExternalAccountEntity } from '../../domain/confirmation-of-external-account.entity';
 import { TokensType } from '../types/types';
 import { OAuthFlowType } from '../../../../main/validators/oauth.exception';
-import { NotificationException } from '../../../../main/validators/result-notification';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationException } from '@common/main/validators/result-notification';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * Registration user from external account

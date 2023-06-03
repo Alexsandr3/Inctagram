@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
-import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import request from 'supertest';
-import { CreateSubscriptionInputDto } from '../../src/modules/subscriptions/api/input-dtos/create-subscription-input.dto';
-import { subscriptionsEndpoints } from '../../src/modules/subscriptions/api/routing/subscriptions.routing';
-import { PaymentSessionUrlViewModel } from '../../src/modules/subscriptions/api/view-model/payment-session-url-view-view.dto';
+import { CreateSubscriptionInputDto } from '../../../business/src/modules/subscriptions/api/input-dtos/create-subscription-input.dto';
+import { subscriptionsEndpoints } from '../../../business/src/modules/subscriptions/api/routing/subscriptions.routing';
+import { PaymentSessionUrlViewModel } from '../../../business/src/modules/subscriptions/api/view-model/payment-session-url-view-view.dto';
 
 export class SubscriptionsHelper {
   constructor(private readonly app: INestApplication) {}

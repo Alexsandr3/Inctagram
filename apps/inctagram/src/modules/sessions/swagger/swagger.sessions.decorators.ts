@@ -1,6 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { DevicesViewModel } from '../api/session.view.dto';
 
 /**

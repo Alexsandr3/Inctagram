@@ -7,18 +7,18 @@ import {
   SwaggerDecoratorsByGoogleRegistration,
   SwaggerDecoratorsByGoogleRegistrationHandler,
 } from '../swagger/swagger.google-oauth.decorators';
-import { CurrentUserId } from '../../../main/decorators/user.decorator';
+import { CurrentUserId } from '@common/main/decorators/user.decorator';
 import { LoginCommand } from '../application/use-cases/login.use-case';
-import { ResultNotification } from '../../../main/validators/result-notification';
+import { ResultNotification } from '@common/main/validators/result-notification';
 import { TokensType } from '../application/types/types';
 import { Response } from 'express';
 import { GoogleRegistrationGuard } from './guards/google-registration.guard';
 import { PayloadData } from '../../../main/decorators/payload-data.decorator';
 import { RegisterUserFromExternalAccountAndAuthorizeIfNewCommand } from '../application/use-cases/register-user-from-external-account-and-authorize-if-new-use.case';
 import { RegisterUserFromExternalAccountInputDto } from './input-dto/register-user-from-external-account-input.dto';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { GoogleAuthorizationGuard } from './guards/google-authorization.guard';
-import { ApiConfigService } from '../../api-config/api.config.service';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @ApiTags('Google-OAuth2')
 @Controller('auth/google')

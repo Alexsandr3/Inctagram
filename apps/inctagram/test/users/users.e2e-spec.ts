@@ -2,10 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import { AuthHelper } from '../helpers/auth-helper';
 import { getAppForE2ETesting } from '../utils/tests.utils';
 import { UsersHelper } from '../helpers/users-helper';
-import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
+import { ApiErrorResultDto } from '@common/main/validators/api-error-result.dto';
 import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
 import { AvatarsViewModel } from '../../src/modules/users/api/view-models/avatars-view.dto';
-import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 
 jest.setTimeout(120000);
 describe('Update-profile -  e2e', () => {

@@ -1,4 +1,4 @@
-import { BasePhotoSizeViewModel } from '../../../images/api/view-models/base-photo-size-view.dto';
+import { BasePhotoSizeViewModel } from '../../../../../../images/src/modules/images/api/view-models/base-photo-size-view.dto';
 
 export class PostImageVersionViewModel {
   huge?: BasePhotoSizeViewModel;

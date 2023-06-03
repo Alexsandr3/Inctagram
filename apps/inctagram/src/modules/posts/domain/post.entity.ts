@@ -1,9 +1,9 @@
-import { BaseDateEntity } from '../../../main/entities/base-date.entity';
 import { ImagePostEntity } from './image-post.entity';
 import { Type } from 'class-transformer';
 import { Post } from '@prisma/client';
-import { BaseImageEntity } from '../../images/domain/base-image.entity';
+import { BaseImageEntity } from '@common/main/entities/base-image.entity';
 import { PostStatus } from '../types/post-status.type';
+import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 
 export class PostEntity extends BaseDateEntity implements Post {
   id: number;
@@ -48,7 +48,7 @@ export class PostEntity extends BaseDateEntity implements Post {
   }
 
   hasLastImage() {
-    //filter images with status publisher and sizeType contains HUGE_HD1_1 or HUGE_HD16_9 or HUGE_HD4_5
+    //filter modules with status publisher and sizeType contains HUGE_HD1_1 or HUGE_HD16_9 or HUGE_HD4_5
     const images = this.images.filter(image => image.isPublished() && image.isHugeSize());
     return images.length === 1;
   }

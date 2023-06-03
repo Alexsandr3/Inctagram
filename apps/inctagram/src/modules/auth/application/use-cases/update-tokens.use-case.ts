@@ -4,7 +4,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { GenerateNewTokensDto } from '../types/GenerateNewTokensDto';
 import { SessionExtendedDto } from '../../../sessions/application/dto/SessionExtendedDto';
 import { ISessionsRepository } from '../../../sessions/infrastructure/sessions-repository';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * @description Refresh command

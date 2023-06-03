@@ -1,7 +1,7 @@
-import { ApiConfigService } from '../../modules/api-config/api.config.service';
 import { Injectable, Logger } from '@nestjs/common';
 import { RecaptchaResponse } from './recaptcha.response.type';
 import axios from 'axios';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @Injectable()
 export class RecaptchaAdapter {

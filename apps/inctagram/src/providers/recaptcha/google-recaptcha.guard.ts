@@ -1,8 +1,8 @@
 import { BadRequestException, CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
-import { ApiConfigService } from '../../modules/api-config/api.config.service';
 import axios from 'axios';
 import { RecaptchaResponse } from './recaptcha.response.type';
 import { GoogleRecaptchaNetwork } from './enums/google-recaptcha-network';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @Injectable()
 export class GoogleRecaptchaGuard implements CanActivate {

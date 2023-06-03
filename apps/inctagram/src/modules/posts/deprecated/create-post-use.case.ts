@@ -36,10 +36,10 @@
 //     //find user
 //     const user = await this.usersRepository.findById(userId);
 //     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-//     //find all images
-//     const images = await this.postsRepository.findImagesByUploadIds(childrenMetadata);
+//     //find all modules
+//     const modules = await this.postsRepository.findImagesByUploadIds(childrenMetadata);
 //     //create post
-//     const instancePost = PostEntity.initCreate(userId, images, description);
+//     const instancePost = PostEntity.initCreate(userId, modules, description);
 //     //save post
 //     return this.postsRepository.createPost(instancePost);
 //   }

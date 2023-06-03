@@ -1,5 +1,5 @@
 import { IsOptional } from 'class-validator';
-import { SortDirectionType } from '../enums/sort-direction.enum';
+import { SortDirectionType } from '@common/main/enums/sort-direction.enum';
 
 /**
  * Default page size for pagination [12]

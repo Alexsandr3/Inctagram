@@ -2,26 +2,26 @@ import { INestApplication } from '@nestjs/common';
 import { AuthHelper } from '../helpers/auth-helper';
 import { getAppForE2ETesting } from '../utils/tests.utils';
 import { SubscriptionsHelper } from '../helpers/subscriptions-helper';
-import { CreateSubscriptionInputDto } from '../../src/modules/subscriptions/api/input-dtos/create-subscription-input.dto';
-import { SubscriptionType } from '../../src/modules/subscriptions/types/subscription.type';
-import { PaymentMethod } from '../../src/modules/subscriptions/types/payment.method';
-import { PaymentSessionUrlViewModel } from '../../src/modules/subscriptions/api/view-model/payment-session-url-view-view.dto';
-import { CurrentActiveSubscriptionsViewModel } from '../../src/modules/subscriptions/api/view-model/current-subscriptions-view.dto';
+import { CreateSubscriptionInputDto } from '../../../business/src/modules/subscriptions/api/input-dtos/create-subscription-input.dto';
+import { SubscriptionType } from '../../../business/src/modules/subscriptions/types/subscription.type';
+import { PaymentMethod } from '../../../business/src/modules/subscriptions/types/payment.method';
+import { PaymentSessionUrlViewModel } from '../../../business/src/modules/subscriptions/api/view-model/payment-session-url-view-view.dto';
+import { CurrentActiveSubscriptionsViewModel } from '../../../business/src/modules/subscriptions/api/view-model/current-subscriptions-view.dto';
 import {
   PricingDetailsViewModel,
   SubscriptionPriceViewModel,
-} from '../../src/modules/subscriptions/api/view-model/cost-monthly-subscription-view.dto';
+} from '../../../business/src/modules/subscriptions/api/view-model/cost-monthly-subscription-view.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import {
   checkoutSessionCompletedForTestSubscription,
   checkoutSessionCompletedForTestSubscription2,
 } from './helpers/checkoutSessionCompletedForTestSubscription';
-import { PaymentEventType } from '../../src/main/payment-event.type';
-import { PaymentStripeService } from '../../src/providers/payment/application/payment-stripe.service';
+import { PaymentEventType } from '@common/main/payment-event.type';
+import { PaymentStripeService } from '../../../business/src/providers/payment/application/payment-stripe.service';
 import { LoginInputDto } from '../../src/modules/auth/api/input-dto/login.input.dto';
 
 jest.setTimeout(120000);
-describe('Testing create subscriptions -  e2e', () => {
+describe('Testing create Clients -  e2e', () => {
   let app: INestApplication;
   let authHelper: AuthHelper;
   let subscriptionsHelper: SubscriptionsHelper;
@@ -47,8 +47,8 @@ describe('Testing create subscriptions -  e2e', () => {
     const command = { password: '12345678', email: correctEmail_first_user, userName: correctUserName_first_user };
     accessToken = await authHelper.createUser(command, { expectedCode: 204 });
   });
-  //The user wants all active subscriptions
-  it('02 - / (GET) - should get all subscriptions for current user', async () => {
+  //The user wants all active Clients
+  it('02 - / (GET) - should get all Clients for current user', async () => {
     const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
       token: accessToken,
       expectedCode: 200,
@@ -73,7 +73,7 @@ describe('Testing create subscriptions -  e2e', () => {
   });
 
   //Create a subscription
-  it('04 - / (POST) - should create subscriptions for current user', async () => {
+  it('04 - / (POST) - should create Clients for current user', async () => {
     const command: CreateSubscriptionInputDto = {
       typeSubscription: SubscriptionType.MONTHLY,
       paymentType: PaymentMethod.STRIPE,
@@ -89,8 +89,8 @@ describe('Testing create subscriptions -  e2e', () => {
     await new Promise(resolve => setTimeout(resolve, 2000));
   });
 
-  //Get all active subscriptions
-  it('05 - / (GET) - should get all subscriptions for current user', async () => {
+  //Get all active Clients
+  it('05 - / (GET) - should get all Clients for current user', async () => {
     const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
       token: accessToken,
       expectedCode: 200,
@@ -113,7 +113,7 @@ describe('Testing create subscriptions -  e2e', () => {
   it('07 - / (DELETE) - should delete autoRenewal for current user', async () => {
     await subscriptionsHelper.canceledAutoRenewal({ token: accessToken, expectedCode: 204 });
   });
-  it('08 - / (GET) - should get all subscriptions for current user', async () => {
+  it('08 - / (GET) - should get all Clients for current user', async () => {
     const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
       token: accessToken,
       expectedCode: 200,
@@ -125,7 +125,7 @@ describe('Testing create subscriptions -  e2e', () => {
     expect(body.data[0].autoRenewal).toBe(false);
   });
   //Create a subscription
-  it('09 - / (POST) - should create subscriptions for current user', async () => {
+  it('09 - / (POST) - should create Clients for current user', async () => {
     const command: CreateSubscriptionInputDto = {
       typeSubscription: SubscriptionType.YEARLY,
       paymentType: PaymentMethod.STRIPE,
@@ -140,7 +140,7 @@ describe('Testing create subscriptions -  e2e', () => {
     eventEmitter.emit(PaymentEventType.successSubscription, checkoutSessionCompletedForTestSubscription2.data.object);
     await new Promise(resolve => setTimeout(resolve, 2000));
   });
-  it('10 - / (GET) - should get all subscriptions for current user', async () => {
+  it('10 - / (GET) - should get all Clients for current user', async () => {
     const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
       token: accessToken,
       expectedCode: 200,
@@ -152,7 +152,7 @@ describe('Testing create subscriptions -  e2e', () => {
   });
 
   //Check the status of the subscription after 1 month
-  it.skip('13 - / (GET) - should get all subscriptions for current user', async () => {
+  it.skip('13 - / (GET) - should get all Clients for current user', async () => {
     jest.useFakeTimers();
     //after 1 month
     jest.advanceTimersByTime(1000 * 60 * 60 * 24 * 30);
@@ -192,8 +192,8 @@ describe('Create session for   -  e2e', () => {
     const command = { password: '12345678', email: correctEmail_first_user, userName: correctUserName_first_user };
     accessToken = await authHelper.createUser(command, { expectedCode: 204 });
   });
-  //The user wants all active subscriptions
-  it('02 - / (GET) - should get all subscriptions for current user', async () => {
+  //The user wants all active Clients
+  it('02 - / (GET) - should get all Clients for current user', async () => {
     const body = await subscriptionsHelper.getCurrentSubscriptions<CurrentActiveSubscriptionsViewModel>({
       token: accessToken,
       expectedCode: 200,
@@ -219,7 +219,7 @@ describe('Create session for   -  e2e', () => {
 
   let customerId: string;
   let sessionId: string;
-  it('04 - / (POST) - should create subscriptions for current user', async () => {
+  it('04 - / (POST) - should create Clients for current user', async () => {
     const command: CreateSubscriptionInputDto = {
       typeSubscription: SubscriptionType.MONTHLY,
       paymentType: PaymentMethod.STRIPE,

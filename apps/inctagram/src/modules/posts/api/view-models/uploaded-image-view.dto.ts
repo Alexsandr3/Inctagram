@@ -1,7 +1,7 @@
 import { PostImageViewModel } from './post-image-view.dto';
 
 /**
- * @description -> This class is used to return the post images
+ * @description -> This class is used to return the post modules
  */
 export class UploadedImageViewModel {
   /**

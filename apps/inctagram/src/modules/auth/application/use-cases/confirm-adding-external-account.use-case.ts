@@ -1,9 +1,9 @@
 import { ConfirmationCodeInputDto } from '../../api/input-dto/confirmation-code.input.dto';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { AuthService } from '../auth.service';
 import { TokensType } from '../types/types';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * @description confirm adding External Account to user by code

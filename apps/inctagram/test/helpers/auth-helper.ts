@@ -5,7 +5,7 @@ import { authEndpoints } from '../../src/modules/auth/api/routing/auth.routing';
 import { RegistrationEmailResendingInputDto } from '../../src/modules/auth/api/input-dto/registration-email-resending.input.dto';
 import { ConfirmationCodeInputDto } from '../../src/modules/auth/api/input-dto/confirmation-code.input.dto';
 import { LoginInputDto } from '../../src/modules/auth/api/input-dto/login.input.dto';
-import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { PasswordRecoveryInputDto } from '../../src/modules/auth/api/input-dto/password-recovery.input.dto';
 import { PasswordRecoveryCodeInputDto } from '../../src/modules/auth/api/input-dto/password-recovery-code.input.dto';
 import { NewPasswordInputDto } from '../../src/modules/auth/api/input-dto/new-password.input.dto';

@@ -4,7 +4,7 @@ import { LoginInputDto } from '../api/input-dto/login.input.dto';
 import { IUsersRepository } from '../../users/infrastructure/users.repository';
 import { OAuth2InputDto } from '../api/input-dto/o-auth2.input.dto';
 import { Profile } from 'passport-google-oauth20';
-import { NotificationException } from '../../../main/validators/result-notification';
+import { NotificationException } from '@common/main/validators/result-notification';
 import { UserEntity } from '../../users/domain/user.entity';
 import { TokensType } from './types/types';
 import { SessionEntity } from '../../sessions/domain/session.entity';
@@ -12,8 +12,8 @@ import { LoginCommand } from './use-cases/login.use-case';
 import { ApiJwtService } from '../../api-jwt/api-jwt.service';
 import { ISessionsRepository } from '../../sessions/infrastructure/sessions-repository';
 import { OAuthException, OAuthFlowType } from '../../../main/validators/oauth.exception';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
-import { NotificationCode } from '../../../configuration/notificationCode';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
+import { NotificationCode } from '@common/configuration/notificationCode';
 
 @Injectable()
 export class AuthService {

@@ -13,8 +13,8 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { CurrentUserId } from '../../../main/decorators/user.decorator';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { CurrentUserId } from '@common/main/decorators/user.decorator';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import {
   SwaggerDecoratorsByCreatePostWithUploadImages,
@@ -25,7 +25,7 @@ import {
   SwaggerDecoratorsByUpdatePost,
 } from '../swagger/swagger.posts.decorators';
 import { UpdatePostInputDto } from './input-dto/update-post.input.dto';
-import { NotificationException, ResultNotification } from '../../../main/validators/result-notification';
+import { NotificationException, ResultNotification } from '@common/main/validators/result-notification';
 import { typeImagePost } from '../default-options-for-validate-images-post';
 import { IPostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { FilesInterceptor } from '@nestjs/platform-express';
@@ -34,12 +34,12 @@ import { PostViewModel } from './view-models/post-view.dto';
 import { ProfileViewModel } from '../../users/api/view-models/profile-view.dto';
 import { DeletePostCommand } from '../application/use-cases/delete-post-use.case';
 import { UpdatePostCommand } from '../application/use-cases/update-post-use.case';
-import { ValidationArrayImagePipe } from '../../../main/validators/validation-array-image.pipe';
+import { ValidationArrayImagePipe } from '@common/main/validators/validation-array-image.pipe';
 import { CreatePostWithUploadImagesCommand } from '../application/use-cases/create-post-use.case';
 import { DeleteImageExistingPostCommand } from '../application/use-cases/delete-image-post-use.case';
 import { CreatePostInputDto } from './input-dto/create-post.input.dto';
-import { NotificationErrors } from '../../../main/validators/checker-notification.errors';
-import { NotificationCode } from '../../../configuration/notificationCode';
+import { NotificationErrors } from '@common/main/validators/checker-notification.errors';
+import { NotificationCode } from '@common/configuration/notificationCode';
 import { PostStatus } from '../types/post-status.type';
 
 @ApiBearerAuth()
@@ -50,7 +50,7 @@ export class PostsController {
   constructor(private readonly commandBus: CommandBus, private readonly postsQueryRepository: IPostsQueryRepository) {}
 
   /**
-   * Create post with upload images
+   * Create post with upload modules
    * @param userId
    * @param files
    * @param body

@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { appConfig } from './configuration/app.config';
-import { ApiConfigService } from './modules/api-config/api.config.service';
-import { swaggerConfig } from './configuration/swagger/swagger.config';
-import getLogLevels from './providers/logger/getLogLevels';
-import { connectToNgrok } from './configuration/connectToNgrok';
+import { swaggerConfig } from '@common/configuration/swagger/swagger.config';
+import { connectToNgrok } from '@common/configuration/connectToNgrok';
+import { appConfig } from '@common/configuration/app.config';
+import getLogLevels from '@common/modules/logger/getLogLevels';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

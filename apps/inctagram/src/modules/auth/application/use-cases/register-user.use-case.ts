@@ -2,12 +2,12 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 import { RegisterInputDto } from '../../api/input-dto/register.input.dto';
 import { AuthService } from '../auth.service';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-import { NotificationException } from '../../../../main/validators/result-notification';
+import { NotificationException } from '@common/main/validators/result-notification';
 import { UserEntity } from '../../../users/domain/user.entity';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { EmailConfirmationEntity } from '../../domain/email-confirmation.entity';
-import { NotificationCode } from '../../../../configuration/notificationCode';
+import { NotificationCode } from '@common/configuration/notificationCode';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * @description create new user and send email for confirmation

@@ -9,7 +9,6 @@ import { ResendRegistrationEmailUseCase } from './application/use-cases/resend-r
 import { CqrsModule } from '@nestjs/cqrs';
 import { LocalStrategy } from './api/strategies/local.strategy';
 import { JwtStrategy } from './api/strategies/jwt.strategy';
-import { ApiConfigModule } from '../api-config/api.config.module';
 import { ApiJwtModule } from '../api-jwt/api-jwt.module';
 import { SessionsModule } from '../sessions/sessions.module';
 import { PassportModule } from '@nestjs/passport';
@@ -32,6 +31,7 @@ import { GitHubRegistrationStrategy } from './api/strategies/github-registration
 import { RegisterUserFromExternalAccountAndAuthorizeIfNewUseCase } from './application/use-cases/register-user-from-external-account-and-authorize-if-new-use.case';
 import { ConfirmAddingExternalAccountUseCase } from './application/use-cases/confirm-adding-external-account.use-case';
 import { RejectAddingExternalAccountUseCase } from './application/use-cases/reject-adding-external-account.use-case';
+import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 
 const useCases = [
   RegisterUserUseCase,

@@ -1,8 +1,8 @@
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
-import { TokenTypeSwaggerDto } from '../../../configuration/swagger/helpers/token-type-swagger.dto';
-import { ApiErrorResultDto } from '../../../main/validators/api-error-result.dto';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
+import { ApiErrorResultDto } from '@common/main/validators/api-error-result.dto';
+import { TokenTypeSwaggerDto } from '@common/configuration/swagger/helpers/token-type-swagger.dto';
 
 /**
  * @description Swagger decorators redirect to google authorization

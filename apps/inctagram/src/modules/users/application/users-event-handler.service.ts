@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { IUsersRepository } from '../infrastructure/users.repository';
-import { SubscriptionEntity } from '../../subscriptions/domain/subscription.entity';
-import { SubscriptionEventType } from '../../../main/subscription-event.type';
+import { SubscriptionEntity } from '../../../../../business/src/modules/subscriptions/domain/subscription.entity';
+import { SubscriptionEventType } from '@common/main/subscription-event.type';
 import { UserEntity } from '../domain/user.entity';
 
 @Injectable()

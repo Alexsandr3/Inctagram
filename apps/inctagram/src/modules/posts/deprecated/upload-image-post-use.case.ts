@@ -1,11 +1,11 @@
 // import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 // import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
-// import { ImageType } from '../../../images/type/image.type';
+// import { ImageType } from '../../../modules/type/image.type';
 // import { IUsersRepository } from '../../../users/infrastructure/users.repository';
-// import { ImagesEditorService } from '../../../images/application/images-editor.service';
+// import { ImagesEditorService } from '../../../modules/application/modules-editor.service';
 // import { NotificationException } from '../../../../main/validators/result-notification';
 // import { NotificationCode } from '../../../../configuration/exception.filter';
-// import { BaseImageEntity } from '../../../images/domain/base-image.entity';
+// import { BaseImageEntity } from '../../../modules/domain/base-image.entity';
 // import { IPostsRepository } from '../../infrastructure/posts.repository';
 // import { ImagePostEntity } from '../../domain/image-post.entity';
 //
@@ -38,14 +38,14 @@
 //     //find user
 //     const user = await this.usersRepository.findById(userId);
 //     if (!user) throw new NotificationException(`User with id: ${userId} not found`, 'user', NotificationCode.NOT_FOUND);
-//     //set type  for images
+//     //set type  for modules
 //     const type = ImageType.POST;
-//     //generate keys for images and save images on s3 storage and create instances images
+//     //generate keys for modules and save modules on s3 storage and create instances modules
 //     const result: BaseImageEntity[] = await this.imagesEditor.generateAndSaveImages(user.id, [file], type);
 //     const postImage = result.map(i => ImagePostEntity.initCreate(userId, i));
-//     //save images
+//     //save modules
 //     await this.postsRepository.saveImages(postImage);
-//     //return resourceId for save in db instance images
+//     //return resourceId for save in db instance modules
 //     return result[0].resourceId;
 //   }
 // }

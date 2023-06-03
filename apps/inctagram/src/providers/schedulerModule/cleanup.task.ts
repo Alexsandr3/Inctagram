@@ -8,14 +8,14 @@ export class CleanupTask {
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   public async handlerUnsuccessfulSubscriptions() {
-    //remove unsuccessful subscriptions with payment where status pending and created_at is older than 10 minutes
+    //remove unsuccessful Clients with payment where status pending and created_at is older than 10 minutes
     const tenMinuteAgo = new Date(Date.now() - 10 * 60 * 1000);
     await this.cleanupService.cleanupUnsuccessfulSubscriptions(tenMinuteAgo);
   }
 
   @Cron(CronExpression.EVERY_10_SECONDS)
   public async handlerCheckActiveSubscriptions() {
-    //check active subscriptions where endDate is equal to current date
+    //check active Clients where endDate is equal to current date
     const currentDate = new Date();
     await this.cleanupService.checkActiveSubscriptions(currentDate);
   }

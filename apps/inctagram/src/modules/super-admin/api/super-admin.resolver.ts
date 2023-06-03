@@ -1,6 +1,6 @@
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { CommandBus } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../main/validators/result-notification';
+import { ResultNotification } from '@common/main/validators/result-notification';
 import { DeleteUserCommand } from '../application/use-cases/delete-user.use-case';
 import { UpdateUserStatusCommand } from '../application/use-cases/update-user-status-use.case';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';

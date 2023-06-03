@@ -1,20 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { CleanupRepository } from './cleanup.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
-import { PostsEventType } from '../../main/posts-event.type';
-import { SubscriptionEventType } from '../../main/subscription-event.type';
+import { PostsEventType } from '@common/main/posts-event.type';
+import { SubscriptionEventType } from '@common/main/subscription-event.type';
 
 @Injectable()
 export class CleanupService {
   constructor(private readonly cleanupRepository: CleanupRepository, private readonly eventEmitter: EventEmitter2) {}
 
   async cleanupUnsuccessfulSubscriptions(tenMinuteAgo: Date) {
-    //remove unsuccessful subscriptions with payment where status pending and created_at is older than 10 minutes
+    //remove unsuccessful Clients with payment where status pending and created_at is older than 10 minutes
     await this.cleanupRepository.removeUnsuccessfulSubscriptions(tenMinuteAgo);
   }
 
   async checkActiveSubscriptions(currentDate: Date) {
-    //find active subscriptions where endDate is equal to current date
+    //find active Clients where endDate is equal to current date
     const subscriptions = await this.cleanupRepository.getActiveSubscriptionsWithPayments(currentDate);
     if (subscriptions.length === 0) {
       return;
@@ -24,7 +24,7 @@ export class CleanupService {
       subscription.updateFinishedSubscription();
       this.eventEmitter.emit(SubscriptionEventType.notExistingActiveSubscription, subscription.businessAccountId);
     });
-    //save subscriptions
+    //save Clients
     await this.cleanupRepository.saveSubscriptions(subscriptions);
   }
 
@@ -32,11 +32,11 @@ export class CleanupService {
     //find posts with status deleted
     const posts = await this.cleanupRepository.getPostsWithStatusDeleted(tenDaysAgo);
     if (posts.length === 0) return;
-    //find keys of images for delete from s3
+    //find keys of modules for delete from s3
     const keys = posts.reduce((imageUrls, post) => {
       return imageUrls.concat(post.images.map(image => image.url));
     }, []);
-    //trigger event for delete images from s3
+    //trigger event for delete modules from s3
     this.eventEmitter.emit(PostsEventType.deleteImages, keys);
     //filter ids of posts
     const ids = posts.map(post => post.id);

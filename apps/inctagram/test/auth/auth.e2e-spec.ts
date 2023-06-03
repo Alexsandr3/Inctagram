@@ -1,10 +1,10 @@
 import { INestApplication } from '@nestjs/common';
 import { getAppForE2ETesting } from '../utils/tests.utils';
 import { AuthHelper } from '../helpers/auth-helper';
-import { ApiErrorResultDto } from '../../src/main/validators/api-error-result.dto';
+import { ApiErrorResultDto } from '@common/main/validators/api-error-result.dto';
 import { MailManager } from '../../src/providers/mailer/application/mail-manager.service';
 import { EmailAdapter } from '../../src/providers/mailer/email.adapter';
-import { HTTP_Status } from '../../src/main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { GoogleRegistrationGuard } from '../../src/modules/auth/api/guards/google-registration.guard';
 import { RegisterUserFromExternalAccountInputDto } from '../../src/modules/auth/api/input-dto/register-user-from-external-account-input.dto';
 import { Provider } from '../../src/modules/users/domain/external-account.entity';
@@ -12,8 +12,8 @@ import { GoogleAuthorizationGuard } from '../../src/modules/auth/api/guards/goog
 import { IUsersRepository } from '../../src/modules/users/infrastructure/users.repository';
 import { GitHubRegistrationGuard } from '../../src/modules/auth/api/guards/github-registration.guard';
 import { GitHubAuthorizationGuard } from '../../src/modules/auth/api/guards/github-authorization.guard';
-import { ApiConfigService } from '../../src/modules/api-config/api.config.service';
 import { UserStatusType } from '../../src/modules/users/types/user-status.type';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 jest.setTimeout(120000);
 describe('Authorisation -  e2e', () => {

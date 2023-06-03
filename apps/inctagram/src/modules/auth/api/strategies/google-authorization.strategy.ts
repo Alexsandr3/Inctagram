@@ -1,8 +1,8 @@
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth20';
 import { Injectable } from '@nestjs/common';
-import { ApiConfigService } from '../../../api-config/api.config.service';
 import { AuthService } from '../../application/auth.service';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @Injectable()
 export class GoogleAuthorizationStrategy extends PassportStrategy(Strategy, 'google-authorization') {

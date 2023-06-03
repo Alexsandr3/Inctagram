@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { GoogleAuthorizationStrategy } from './google-authorization.strategy';
-import { ApiConfigModule } from '../../../api-config/api.config.module';
 import { Profile } from 'passport-google-oauth20';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 import { UserEntity } from '../../../users/domain/user.entity';
@@ -9,6 +8,7 @@ import { ISessionsRepository, PrismaSessionsRepository } from '../../../sessions
 import { AuthService } from '../../application/auth.service';
 import { ApiJwtService } from '../../../api-jwt/api-jwt.service';
 import { OAuthException } from '../../../../main/validators/oauth.exception';
+import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 
 describe('test GoogleAuthorizationStrategy', () => {
   let app: TestingModule;

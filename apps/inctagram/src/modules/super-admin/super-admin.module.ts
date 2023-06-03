@@ -2,8 +2,6 @@ import { Module } from '@nestjs/common';
 import { SuperAdminResolver } from './api/super-admin.resolver';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
-import { ApiConfigModule } from '../api-config/api.config.module';
-import { ApiConfigService } from '../api-config/api.config.service';
 import { DeleteUserUseCase } from './application/use-cases/delete-user.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { UsersModule } from '../users/users.module';
@@ -13,6 +11,8 @@ import { PostsModule } from '../posts/posts.module';
 import { PostLoader } from './post-loader';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DataLoaderInterceptor } from 'nestjs-dataloader';
+import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
 const loaderProviders = [

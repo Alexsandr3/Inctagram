@@ -8,12 +8,12 @@ import {
 } from '../swagger/swagger.sessions.decorators';
 import { DevicesViewModel } from './session.view.dto';
 import { CommandBus } from '@nestjs/cqrs';
-import { ResultNotification } from '../../../main/validators/result-notification';
+import { ResultNotification } from '@common/main/validators/result-notification';
 import { SessionData } from '../../../main/decorators/session-data.decorator';
 import { SessionDto } from '../application/dto/SessionDto';
 import { DeleteSelectedSessionCommand } from '../application/use-cases/delete-selected-session-use.case';
 import { TerminateAllSessionsExceptCurrentCommand } from '../application/use-cases/terminate-all-sessions-except-current-use.case';
-import { HTTP_Status } from '../../../main/enums/http-status.enum';
+import { HTTP_Status } from '@common/main/enums/http-status.enum';
 import { RefreshTokenGuard } from '../../../main/guards/refresh-token.guard';
 
 @ApiTags(`Device's`)

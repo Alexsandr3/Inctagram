@@ -1,11 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ApiConfigModule } from '../../../api-config/api.config.module';
 import { BadRequestException } from '@nestjs/common';
 import { GoogleRegistrationStrategy } from './google-registration.strategy';
 import { ValidatorService } from '../../../../providers/validation/validator.service';
 import { PrismaService } from '../../../../providers/prisma/prisma.service';
 import { AuthService } from '../../application/auth.service';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
+import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 
 describe('test GoogleRegistrationStrategy', () => {
   let googleRegistrationStrategy: GoogleRegistrationStrategy;

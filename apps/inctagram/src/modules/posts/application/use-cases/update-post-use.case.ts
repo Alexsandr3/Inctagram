@@ -1,9 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BaseNotificationUseCase } from '../../../../main/use-cases/base-notification.use-case';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { UpdatePostInputDto } from '../../api/input-dto/update-post.input.dto';
 import { PostsService } from '../posts.service';
+import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
  * Update post command

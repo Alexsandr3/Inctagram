@@ -17,7 +17,7 @@
 // import { FilesInterceptor } from '@nestjs/platform-express';
 // import { TempCreatePostInputDto } from './temp-create-post.input.dto';
 // import { ValidationArrayImagePipe } from '../../../main/validators/validation-array-image.pipe';
-// import { typeImagePost } from '../default-options-for-validate-images-post';
+// import { typeImagePost } from '../default-options-for-validate-modules-post';
 // import { ResultNotification } from '../../../main/validators/result-notification';
 // import { CurrentUserId } from '../../../main/decorators/user.decorator';
 // import {
@@ -39,7 +39,7 @@
 //
 //   @SwaggerDecoratorsByCreatePostWithUploadImages()
 //   @SwaggerDecoratorsByFormDataForArrayFileWith()
-//   @Post(`posts/images`)
+//   @Post(`posts/modules`)
 //   @HttpCode(HTTP_Status.CREATED_201)
 //   @UseInterceptors(FilesInterceptor('files', 10))
 //   async uploadFilesWithPost(
@@ -55,7 +55,7 @@
 //   }
 //
 //   @SwaggerDecoratorsByDeleteImagePost()
-//   @Delete('posts/:postId/images/:uploadId')
+//   @Delete('posts/:postId/modules/:uploadId')
 //   @HttpCode(HTTP_Status.NO_CONTENT_204)
 //   async deleteImagePost(
 //     @CurrentUserId() userId: number,
