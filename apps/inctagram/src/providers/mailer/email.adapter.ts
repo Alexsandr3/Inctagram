@@ -1,6 +1,6 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import { ApiConfigService } from '../../../../../libs/common/src/modules/api-config/api.config.service';
 import { Injectable } from '@nestjs/common';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @Injectable()
 export class EmailAdapter {

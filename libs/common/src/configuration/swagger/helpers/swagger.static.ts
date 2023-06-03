@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { get } from 'http';
 import { createWriteStream } from 'fs';
-import { ApiConfigService } from '../../../modules/api-config/api.config.service';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 export const swaggerStatic = (app: INestApplication) => {
   // for -----------------------------> swagger
