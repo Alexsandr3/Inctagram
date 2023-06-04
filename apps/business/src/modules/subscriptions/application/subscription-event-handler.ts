@@ -3,7 +3,7 @@ import { EventEmitter2, OnEvent } from '@nestjs/event-emitter';
 import { ISubscriptionsRepository } from '../infrastructure/subscriptions.repository';
 import { PaymentEventType } from '@common/main/payment-event.type';
 import { StripeEventType } from '../types/stripe-event.type';
-import { PaymentStripeService } from '../../../providers/payment/application/payment-stripe.service';
+import { PaymentStripeService } from '../../payment/application/payment-stripe.service';
 import { IUsersRepository } from '../../../../../inctagram/src/modules/users/infrastructure/users.repository';
 
 @Injectable()

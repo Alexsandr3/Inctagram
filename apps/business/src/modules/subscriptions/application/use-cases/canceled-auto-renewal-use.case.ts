@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 import { NotificationException } from '@common/main/validators/result-notification';
 import { IUsersRepository } from '../../../../../../inctagram/src/modules/users/infrastructure/users.repository';
-import { PaymentStripeService } from '../../../../providers/payment/application/payment-stripe.service';
+import { PaymentStripeService } from '../../../payment/application/payment-stripe.service';
 import { ISubscriptionsRepository } from '../../infrastructure/subscriptions.repository';
 import { NotificationCode } from '@common/configuration/notificationCode';
 

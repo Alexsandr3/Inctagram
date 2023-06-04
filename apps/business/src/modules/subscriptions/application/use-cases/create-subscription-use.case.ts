@@ -5,7 +5,7 @@ import { IUsersRepository } from '../../../../../../inctagram/src/modules/users/
 import { CreateSubscriptionInputDto } from '../../api/input-dtos/create-subscription-input.dto';
 import { ISubscriptionsRepository } from '../../infrastructure/subscriptions.repository';
 import { NotificationCode } from '@common/configuration/notificationCode';
-import { PaymentGateway } from '../../../../providers/payment/payment-gateway';
+import { PaymentGateway } from '../../../payment/payment-gateway';
 
 export class CreateSubscriptionCommand {
   constructor(public readonly userId: number, public readonly createSubscriptionDto: CreateSubscriptionInputDto) {}

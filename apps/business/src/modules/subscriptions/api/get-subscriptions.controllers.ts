@@ -11,7 +11,7 @@ export class GetSubscriptionsController {
   constructor(private readonly apiConfigService: ApiConfigService) {}
 
   @SwaggerDecoratorsGetCostOfSubscription()
-  @Get('cost-of-Clients')
+  @Get('cost-of-subscriptions')
   @HttpCode(HTTP_Status.OK_200)
   async getCurrentCostSubscription(): Promise<SubscriptionPriceViewModel> {
     return new SubscriptionPriceViewModel(this.apiConfigService.COST_SUBSCRIPTION);

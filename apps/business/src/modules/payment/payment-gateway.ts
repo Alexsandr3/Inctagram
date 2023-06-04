@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentStripeService } from './application/payment-stripe.service';
-import { CreateSubscriptionInputDto } from '../../modules/subscriptions/api/input-dtos/create-subscription-input.dto';
-import { SubscriptionType } from '../../modules/subscriptions/types/subscription.type';
-import { PaymentMethod } from '../../modules/subscriptions/types/payment.method';
+import { CreateSubscriptionInputDto } from '../subscriptions/api/input-dtos/create-subscription-input.dto';
+import { SubscriptionType } from '../subscriptions/types/subscription.type';
+import { PaymentMethod } from '../subscriptions/types/payment.method';
 import { PaymentPaypalService } from './application/payment-paypal.service';
 
 @Injectable()
