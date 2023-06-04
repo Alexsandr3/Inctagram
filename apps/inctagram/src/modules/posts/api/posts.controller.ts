@@ -29,7 +29,7 @@ import { NotificationException, ResultNotification } from '@common/main/validato
 import { typeImagePost } from '../default-options-for-validate-images-post';
 import { IPostsQueryRepository } from '../infrastructure/posts-query.repository';
 import { FilesInterceptor } from '@nestjs/platform-express';
-import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@common/main/strategies/jwt-auth.guard';
 import { PostViewModel } from './view-models/post-view.dto';
 import { ProfileViewModel } from '../../users/api/view-models/profile-view.dto';
 import { DeletePostCommand } from '../application/use-cases/delete-post-use.case';

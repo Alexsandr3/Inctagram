@@ -8,7 +8,7 @@ import { PasswordRecoveryUseCase } from './application/use-cases/password-recove
 import { ResendRegistrationEmailUseCase } from './application/use-cases/resend-registration-email.use-case';
 import { CqrsModule } from '@nestjs/cqrs';
 import { LocalStrategy } from './api/strategies/local.strategy';
-import { JwtStrategy } from './api/strategies/jwt.strategy';
+import { JwtStrategy } from '@common/main/strategies/jwt.strategy';
 import { ApiJwtModule } from '../api-jwt/api-jwt.module';
 import { SessionsModule } from '../sessions/sessions.module';
 import { PassportModule } from '@nestjs/passport';

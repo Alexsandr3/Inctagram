@@ -17,7 +17,7 @@ import {
   checkoutSessionCompletedForTestSubscription2,
 } from './helpers/checkoutSessionCompletedForTestSubscription';
 import { PaymentEventType } from '@common/main/payment-event.type';
-import { PaymentStripeService } from '../../../business/src/providers/payment/application/payment-stripe.service';
+import { PaymentStripeService } from '../../../business/src/modules/payment/application/payment-stripe.service';
 import { LoginInputDto } from '../../src/modules/auth/api/input-dto/login.input.dto';
 
 jest.setTimeout(120000);

@@ -42,7 +42,7 @@ import {
 } from '../swagger/swagger.auth.decorators';
 import { UpdateTokensCommand } from '../application/use-cases/update-tokens.use-case';
 import { CurrentUserId } from '@common/main/decorators/user.decorator';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@common/main/strategies/jwt-auth.guard';
 import { MeViewDto } from './view-dto/me.view.dto';
 import { IUsersQueryRepository } from '../../users/infrastructure/users.query-repository';
 import { GoogleEnterpriseRecaptchaGuard } from '../../../providers/recaptcha/google-enterprise-recaptcha.guard';

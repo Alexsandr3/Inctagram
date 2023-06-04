@@ -49,7 +49,7 @@ describe('test GitHubRegistrationStrategy', () => {
     req = {};
   });
 
-  it('shouldn`t pass strategy if don`t get email', async () => {
+  it('shouldn`t pass strategies if don`t get email', async () => {
     await expect(gitHubRegistrationStrategy.validate(req, '', '', { ...profile, emails: null })).rejects.toThrow(
       BadRequestException,
     );
@@ -70,7 +70,7 @@ describe('test GitHubRegistrationStrategy', () => {
       gitHubRegistrationStrategy.validate(req, '', '', { ...profile, emails: [{ value: undefined }] }),
     ).rejects.toThrow(BadRequestException);
   });
-  it('shouldn`t pass strategy if don`t get provider', async () => {
+  it('shouldn`t pass strategies if don`t get provider', async () => {
     await expect(gitHubRegistrationStrategy.validate(req, '', '', { ...profile, provider: undefined })).rejects.toThrow(
       BadRequestException,
     );
@@ -84,7 +84,7 @@ describe('test GitHubRegistrationStrategy', () => {
       BadRequestException,
     );
   });
-  it('shouldn`t pass strategy if don`t get providerId', async () => {
+  it('shouldn`t pass strategies if don`t get providerId', async () => {
     await expect(gitHubRegistrationStrategy.validate(req, '', '', { ...profile, id: null })).rejects.toThrow(
       BadRequestException,
     );
@@ -95,7 +95,7 @@ describe('test GitHubRegistrationStrategy', () => {
       BadRequestException,
     );
   });
-  it('should pass strategy with full data', async () => {
+  it('should pass strategies with full data', async () => {
     const result = await gitHubRegistrationStrategy.validate(req, '', '', profile);
 
     expect(req.payLoad).toEqual({
@@ -106,7 +106,7 @@ describe('test GitHubRegistrationStrategy', () => {
     });
     expect(result).toEqual(true);
   });
-  it('should pass strategy if user not register early (transform email upper case)', async () => {
+  it('should pass strategies if user not register early (transform email upper case)', async () => {
     const result = await gitHubRegistrationStrategy.validate(req, '', '', {
       ...profile,
       emails: [{ value: profile.emails[0].value.toUpperCase() }],
@@ -120,7 +120,7 @@ describe('test GitHubRegistrationStrategy', () => {
     });
     expect(result).toEqual(true);
   });
-  it('should pass strategy if user not register early and don`t get displayName', async () => {
+  it('should pass strategies if user not register early and don`t get displayName', async () => {
     const profile: any = {
       id: '1234567890',
       emails: [{ value: 'test@int.tst', verified: 'true' }],

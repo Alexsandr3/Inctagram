@@ -14,6 +14,8 @@ import { SuperAdminModule } from './modules/super-admin/super-admin.module';
 import LogsMiddleware from '@common/modules/logger/logs.middleware';
 import { LoggerModule } from '@common/modules/logger/logger.module';
 import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
+import { SchedulerModule } from './providers/schedulerModule/scheduler.module';
+import { RedirectModule } from './switch/redirect.module';
 
 @Module({
   imports: [
@@ -29,9 +31,10 @@ import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
     PostsModule,
     // PaymentsModule,
     EventEmitterModule.forRoot(),
-    // SchedulerModule,
+    SchedulerModule,
     InboxEventsModule,
     SuperAdminModule,
+    RedirectModule,
   ],
   controllers: [AppController],
   providers: [],

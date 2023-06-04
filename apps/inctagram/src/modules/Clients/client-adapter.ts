@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
+import { AxiosResponse } from 'axios/index';
 
 @Injectable()
 export class ClientAdapter {
@@ -7,20 +8,23 @@ export class ClientAdapter {
   constructor() {}
 
   async sendFormData<T>(formData: FormData): Promise<T> {
-    try {
-      const response = await axios.post('http://localhost:5004/images', formData, {
-        headers: { 'Content-Type': 'multipart/form-data' },
-      });
-      return response.data;
-    } catch (error) {
-      this.logger.error(error);
-      throw new Error(error);
-    }
+    const response = await axios.post('http://localhost:5004/images', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return this._handleResponse(response);
   }
 
   deleteImages(keys: string[]) {
     return axios.delete('http://localhost:5004/images', {
       data: { keys: keys },
     });
+  }
+
+  private async _handleResponse(response: AxiosResponse) {
+    if (response.status === 200 || response.status === 201) {
+      return response.data;
+    }
+    const errorMessage = await response.data.error.message;
+    throw new Error(errorMessage);
   }
 }

@@ -27,7 +27,7 @@ import { UploadImageAvatarCommand } from '../application/use-cases/upload-image-
 import { NotificationException, ResultNotification } from '@common/main/validators/result-notification';
 import { UpdateProfileInputDto } from './inpu-dto/update-profile.input.dto';
 import { ProfileViewModel } from './view-models/profile-view.dto';
-import { JwtAuthGuard } from '../../auth/api/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@common/main/strategies/jwt-auth.guard';
 import { UpdateProfileCommand } from '../application/use-cases/update-profile.use-case';
 import { ValidationImagePipe } from '@common/main/validators/validation-image.pipe';
 import { DeleteImageAvatarCommand } from '../application/use-cases/delete-image-avatar.use-case';
