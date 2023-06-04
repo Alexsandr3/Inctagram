@@ -13,13 +13,6 @@ async function bootstrap() {
   //configuration app
   const createdApp = appConfig(app);
 
-  // createdApp.connectMicroservice<MicroserviceOptions>({
-  //   transport: Transport.TCP,
-  //   options: { retryAttempts: 5, retryDelay: 3000, host: '0.0.0.0', port: 5005 },
-  // });
-  //
-  // await createdApp.startAllMicroservices();
-  //configuration app
   const PORT = app.get(ApiConfigService).PORT_IMAGES;
   //configuration swagger
   swaggerConfig(createdApp);
