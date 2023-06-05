@@ -1,11 +1,11 @@
-import { ImagesEditorService } from '../application/images-editor.service';
-import { CreateImagesInputDto } from './input-dto/create-images.input.dto';
 import { Body, Controller, Delete, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ValidationArrayImagePipe } from '@common/main/validators/validation-array-image.pipe';
-import { typeImagePost } from '../../../../../inctagram/src/modules/posts/default-options-for-validate-images-post';
 import { BaseImageEntity } from '@common/main/entities/base-image.entity';
-import { DeleteImagesInputDto } from './input-dto/delete-images.input.dto';
+import { ImagesEditorService } from '@images-ms/modules/images/application/images-editor.service';
+import { typeImagePost } from '@common/main/config-for-validate-images/default-options-for-validate-images-post';
+import { CreateImagesInputDto } from '@images-ms/modules/images/api/input-dto/create-images.input.dto';
+import { DeleteImagesInputDto } from '@images-ms/modules/images/api/input-dto/delete-images.input.dto';
 
 @Controller('images')
 export class ImagesController {

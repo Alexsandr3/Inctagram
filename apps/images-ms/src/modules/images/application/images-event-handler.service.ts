@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PostsEventType } from '@common/main/posts-event.type';
-import { ImagesEditorService } from './images-editor.service';
+import { ImagesEditorService } from '@images-ms/modules/images/application/images-editor.service';
 
 @Injectable()
 export class ImagesEventHandlerService {

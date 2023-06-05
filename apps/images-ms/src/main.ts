@@ -1,9 +1,9 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import getLogLevels from '@common/modules/logger/getLogLevels';
 import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 import { swaggerConfig } from '@common/configuration/swagger/swagger.config';
+import getLogLevels from '@common/modules/logger/getLogLevels';
 import { appConfig } from '@common/configuration/app.config';
+import { AppModule } from '@images-ms/app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
