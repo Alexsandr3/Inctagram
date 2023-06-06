@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 import axios, { AxiosResponse } from 'axios';
-import { SubscriptionType } from '../../subscriptions/types/subscription.type';
+import { SubscriptionType } from '@common/main/types/subscription.type';
 
 @Injectable()
 export class PaymentPaypalService {

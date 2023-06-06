@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { IInboxEventRepository, InboxEventRepository } from './inbox-event.repository';
-import { EventsHandler } from './events.handler';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { InboxStripeEventEntity } from './inbox-stripe-event.entity';
 import { DatabaseModule } from '@common/modules/database/database.module';
+import { InboxStripeEventEntity } from '@payments-ms/modules/inboxEvents/inbox-stripe-event.entity';
+import { EventsHandler } from '@payments-ms/modules/inboxEvents/events.handler';
+import { IInboxEventRepository, InboxEventRepository } from '@payments-ms/modules/inboxEvents/inbox-event.repository';
 
 @Module({
   imports: [DatabaseModule, TypeOrmModule.forFeature([InboxStripeEventEntity])],

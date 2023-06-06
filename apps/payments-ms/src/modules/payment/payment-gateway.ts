@@ -1,9 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { PaymentStripeService } from './application/payment-stripe.service';
-import { CreateSubscriptionInputDto } from '../subscriptions/api/input-dtos/create-subscription-input.dto';
-import { SubscriptionType } from '../subscriptions/types/subscription.type';
-import { PaymentMethod } from '../subscriptions/types/payment.method';
+import { PaymentMethod } from '@common/main/types/payment.method';
 import { PaymentPaypalService } from './application/payment-paypal.service';
+import {
+  CreatedSessionResponseInterface,
+  CreateSessionRequestInterface,
+} from '@common/modules/ampq/ampq-contracts/queues/images/subscriptions.contract';
+import { SubscriptionType } from '@common/main/types/subscription.type';
 
 @Injectable()
 export class PaymentGateway {
@@ -16,26 +19,21 @@ export class PaymentGateway {
    * Create session for payment by payment type ['stripe', 'paypal']
    * @param data
    */
-  async createSession(data: {
-    customerId: string;
-    email: string;
-    userName: string;
-    subscriptionType: CreateSubscriptionInputDto;
-  }): Promise<any> {
-    if (data.subscriptionType.paymentType === PaymentMethod.STRIPE) {
+  async createSession(data: CreateSessionRequestInterface): Promise<CreatedSessionResponseInterface> {
+    if (data.subscriptionInputData.paymentType === PaymentMethod.STRIPE) {
       return this.stripeMethod({
         customerId: data.customerId,
         email: data.email,
         userName: data.userName,
-        subscriptionType: data.subscriptionType.typeSubscription,
+        subscriptionType: data.subscriptionInputData.typeSubscription,
       });
     }
-    if (data.subscriptionType.paymentType === PaymentMethod.PAYPAL) {
+    if (data.subscriptionInputData.paymentType === PaymentMethod.PAYPAL) {
       return this.paypalMethod({
         customerId: data.customerId,
         email: data.email,
         userName: data.userName,
-        subscriptionType: data.subscriptionType.typeSubscription,
+        subscriptionType: data.subscriptionInputData.typeSubscription,
       });
     }
     return;
@@ -46,21 +44,21 @@ export class PaymentGateway {
     email: string;
     userName: string;
     subscriptionType: SubscriptionType;
-  }): Promise<{ customer: string; id: string; url: string }> {
+  }): Promise<CreatedSessionResponseInterface> {
     const { customer, id, url } = await this.paymentStripeService.createSession({
       customerId: data.customerId,
       email: data.email,
       userName: data.userName,
       subscriptionType: data.subscriptionType,
     });
-    return { customer, id, url } as { customer: string; id: string; url: string };
+    return { customer, id, url } as CreatedSessionResponseInterface;
   }
   private async paypalMethod(data: {
     customerId: string;
     email: string;
     userName: string;
     subscriptionType: SubscriptionType;
-  }): Promise<{ customer: string; id: string; url: string }> {
+  }): Promise<CreatedSessionResponseInterface> {
     const response = await this.paymentPaypalService.createSession({
       customerId: data.customerId,
       email: data.email,

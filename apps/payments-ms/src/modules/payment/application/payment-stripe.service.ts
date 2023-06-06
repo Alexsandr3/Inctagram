@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Stripe } from 'stripe';
 import { ApiConfigService } from '@common/modules/api-config/api.config.service';
-import { SubscriptionType } from '../../subscriptions/types/subscription.type';
+import { SubscriptionType } from '@common/main/types/subscription.type';
 
 @Injectable()
 export class PaymentStripeService {

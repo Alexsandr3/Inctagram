@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import { PaymentEventType } from '@common/main/payment-event.type';
-import { IInboxEventRepository } from './inbox-event.repository';
 import Stripe from 'stripe';
-import { InboxStripeEventEntity } from './inbox-stripe-event.entity';
+import { IInboxEventRepository } from '@payments-ms/modules/inboxEvents/inbox-event.repository';
+import { InboxStripeEventEntity } from '@payments-ms/modules/inboxEvents/inbox-stripe-event.entity';
 
 @Injectable()
 export class EventsHandler {
