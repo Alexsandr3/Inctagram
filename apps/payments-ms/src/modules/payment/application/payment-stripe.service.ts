@@ -88,7 +88,7 @@ export class PaymentStripeService {
     const subscriptions = await this.findSubscriptions(customerId);
     //get subscription where id is not equal to customerId
     const subscription = subscriptions.data.find(subscription => subscription.id !== subscriptionId);
-    if (!subscription) return;
+    if (!subscription) return null;
     //cancel subscription
     await this.cancelSubscription(subscription.id);
   }

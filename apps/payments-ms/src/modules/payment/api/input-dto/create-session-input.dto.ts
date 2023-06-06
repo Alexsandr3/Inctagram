@@ -1,9 +1,12 @@
 import { IsEnum, IsInstance, IsNumber, IsString } from 'class-validator';
-import { CreateSessionRequestInterface } from '@common/modules/ampq/ampq-contracts/queues/images/subscriptions.contract';
 import { SubscriptionType } from '@common/main/types/subscription.type';
 import { PaymentMethod } from '@common/main/types/payment.method';
+import {
+  CreateSessionRequestInterface,
+  CreateSubscriptionInterface,
+} from '@common/main/types/create-session-interface.type';
 
-export class CreateSubscriptionInputDto {
+export class CreateSubscriptionInputDto implements CreateSubscriptionInterface {
   @IsEnum(SubscriptionType)
   typeSubscription: SubscriptionType;
 

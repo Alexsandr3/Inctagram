@@ -1,21 +1,19 @@
 import { Injectable } from '@nestjs/common';
-import { RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import {
-  CreatedSessionResponseInterface,
-  CreateSessionRequestInterface,
-  SubscriptionsContract,
-} from '@common/modules/ampq/ampq-contracts/queues/images/subscriptions.contract';
-import { PaymentGateway } from '@payments-ms/modules/payment/payment-gateway';
+import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { SubscriptionsContract } from '@common/modules/ampq/ampq-contracts/queues/images/subscriptions.contract';
+import { PaymentStripeService } from '@payments-ms/modules/payment/application/payment-stripe.service';
 
 @Injectable()
 export class ConsumerService {
-  constructor(private readonly paymentGateway: PaymentGateway) {}
-  @RabbitRPC({
+  constructor(private readonly paymentsService: PaymentStripeService) {}
+  @RabbitSubscribe({
     exchange: SubscriptionsContract.queue.exchange.name,
     routingKey: SubscriptionsContract.queue.routingKey,
-    queue: SubscriptionsContract.queue.queue,
   })
-  async createSession(request: CreateSessionRequestInterface): Promise<CreatedSessionResponseInterface> {
-    return this.paymentGateway.createSession(request);
+  async deactivateSubscription(request: SubscriptionsContract.request) {
+    return this.paymentsService.deactivateLastActiveSubscription(
+      request.payload.customerId,
+      request.payload.subscriptionId,
+    );
   }
 }
