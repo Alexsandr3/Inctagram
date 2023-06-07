@@ -31,7 +31,7 @@ export class ActivateSubscriptionUseCase
    * @param command
    */
   async executeUseCase(command: ActivateSubscriptionCommand): Promise<void> {
-    const { sessionId, customer, subscription } = command.event;
+    const { sessionId } = command.event;
     const currentSubscription = await this.subscriptionsRepository.getSubscriptionWithStatusPendingByPaymentSessionId(
       sessionId,
     );

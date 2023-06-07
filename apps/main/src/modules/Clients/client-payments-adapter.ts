@@ -1,11 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
 import { CreateSessionRequestInterface } from '@common/main/types/create-session-interface.type';
 import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @Injectable()
 export class ClientPaymentsAdapter {
-  private readonly logger = new Logger(ClientPaymentsAdapter.name);
   urlServicePayments: string;
   constructor(private readonly configService: ApiConfigService) {
     this.urlServicePayments = this.configService.SERVER_URL_PAYMENTS;

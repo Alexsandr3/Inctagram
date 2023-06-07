@@ -17,8 +17,8 @@ import {
   checkoutSessionCompletedForTestSubscription2,
 } from './helpers/checkoutSessionCompletedForTestSubscription';
 import { PaymentEventType } from '@common/main/payment-event.type';
-import { PaymentStripeService } from '../../../payments-ms/src/modules/payment/application/payment-stripe.service';
 import { LoginInputDto } from '../../src/modules/auth/api/input-dto/login.input.dto';
+import { PaymentStripeService } from '@payments-ms/modules/payment/application/payment-stripe.service';
 
 jest.setTimeout(120000);
 describe('Testing create Clients -  e2e', () => {

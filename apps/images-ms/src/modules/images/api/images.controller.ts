@@ -2,7 +2,6 @@ import { Body, Controller, Delete, HttpCode, Post, UploadedFiles, UseInterceptor
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { ValidationArrayImagePipe } from '@common/main/validators/validation-array-image.pipe';
 import { BaseImageEntity } from '@common/main/entities/base-image.entity';
-import { ImagesEditorService } from '@images-ms/modules/images/application/images-editor.service';
 import { typeImagePost } from '@common/main/config-for-validate-images/default-options-for-validate-images-post';
 import { CreateImagesInputDto } from '@images-ms/modules/images/api/input-dto/create-images.input.dto';
 import { DeleteImagesInputDto } from '@images-ms/modules/images/api/input-dto/delete-images.input.dto';
@@ -21,11 +20,7 @@ import { DeleteImagesCommand } from '@images-ms/modules/images/application/use-c
 @ApiTags('Images')
 @Controller('images')
 export class ImagesController {
-  constructor(
-    private readonly commandBus: CommandBus,
-
-    private readonly imagesEditorService: ImagesEditorService,
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @SwaggerDecoratorsByUploadImages()
   @SwaggerDecoratorsByFormDataForArrayFileWith()

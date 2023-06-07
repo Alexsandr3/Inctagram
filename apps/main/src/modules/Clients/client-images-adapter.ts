@@ -1,10 +1,9 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import axios, { AxiosResponse } from 'axios';
 import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 
 @Injectable()
 export class ClientImagesAdapter {
-  private readonly logger = new Logger(ClientImagesAdapter.name);
   urlServiceImages: string;
   constructor(private readonly configService: ApiConfigService) {
     this.urlServiceImages = this.configService.SERVER_URL_IMAGES;
