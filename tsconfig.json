@@ -24,6 +24,18 @@
       ],
       "@common/*": [
         "libs/common/src/*"
+      ],
+      "@images-ms": [
+        "apps/images-ms/src"
+      ],
+      "@images-ms/*": [
+        "apps/images-ms/src/*"
+      ],
+      "@payments-ms": [
+        "apps/payments-ms/src"
+      ],
+      "@payments-ms/*": [
+        "apps/payments-ms/src/*"
       ]
     }
   }
