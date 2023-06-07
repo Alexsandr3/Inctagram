@@ -4,7 +4,11 @@ import { CommandBus } from '@nestjs/cqrs';
 import { CreateSessionInputDto } from '@payments-ms/modules/payment/api/input-dto/create-session-input.dto';
 import { NotificationException, ResultNotification } from '@common/main/validators/result-notification';
 import { CreateSessionCommand } from '@payments-ms/modules/payment/application/use-cases/create-session-use.case';
-import { SwaggerDecoratorsByCreateSession } from '@payments-ms/modules/payment/swagger/swagger.payment.decorators';
+import {
+  SwaggerDecoratorsByCancelSubscription,
+  SwaggerDecoratorsByCreateSession,
+  SwaggerDecoratorsByFindActiveSubscriptions,
+} from '@payments-ms/modules/payment/swagger/swagger.payment.decorators';
 import { SessionViewModel } from '@payments-ms/modules/payment/api/view-model/session-view.dto';
 import { PaymentStripeService } from '@payments-ms/modules/payment/application/payment-stripe.service';
 import { NotificationCode } from '@common/configuration/notificationCode';
@@ -19,7 +23,7 @@ export class PaymentsController {
 
   @SwaggerDecoratorsByCreateSession()
   @Post()
-  @HttpCode(201)
+  @HttpCode(HTTP_Status.CREATED_201)
   async createSession(@Body() inputData: CreateSessionInputDto): Promise<SessionViewModel> {
     const notification = await this.commandBus.execute<CreateSessionCommand, ResultNotification<SessionViewModel>>(
       new CreateSessionCommand(inputData),
@@ -27,6 +31,7 @@ export class PaymentsController {
     return notification.getData();
   }
 
+  @SwaggerDecoratorsByFindActiveSubscriptions()
   @Get('subscriptions/:id')
   @HttpCode(HTTP_Status.OK_200)
   async findActiveSubscriptions(@Param('id') id: string): Promise<Stripe.ApiListPromise<Stripe.Subscription>> {
@@ -41,6 +46,7 @@ export class PaymentsController {
     return activeSubscription;
   }
 
+  @SwaggerDecoratorsByCancelSubscription()
   @Delete('subscriptions/:id')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async cancelSubscription(@Param('id') id: string): Promise<void> {

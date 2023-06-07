@@ -5,7 +5,12 @@ export const configuration = () => ({
 
   PORT: process.env.PORT,
   PORT_IMAGES: process.env.PORT_IMAGES,
-  PORT_BUSINESS: process.env.PORT_BUSINESS,
+  PORT_PAYMENTS: process.env.PORT_PAYMENTS,
+  url_apps: {
+    SERVER_URL_MAIN: process.env.SERVER_URL_MAIN,
+    SERVER_URL_IMAGES: process.env.SERVER_URL_IMAGES,
+    SERVER_URL_PAYMENTS: process.env.SERVER_URL_PAYMENTS,
+  },
 
   CORS_ORIGIN: process.env.CORS_ORIGIN,
 
@@ -93,6 +98,9 @@ export const configuration = () => ({
       STRIPE_SEMIANNUAL_SUBSCRIPTION_PRICE_ID: process.env.STRIPE_SEMIANNUAL_SUBSCRIPTION_PRICE_ID,
       STRIPE_YEARLY_SUBSCRIPTION_PRICE_ID: process.env.STRIPE_YEARLY_SUBSCRIPTION_PRICE_ID,
     },
+  },
+  brokers: {
+    RABBITMQ_URL: process.env.RABBITMQ_URL,
   },
 
   IP_RESTRICTION: process.env.IP_RESTRICTION,

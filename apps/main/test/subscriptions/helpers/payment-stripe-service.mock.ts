@@ -1,4 +1,4 @@
-import { SubscriptionType } from '../../../src/modules/subscriptions/types/subscription.type';
+import { SubscriptionType } from '@common/main/types/subscription.type';
 import { Stripe } from 'stripe';
 import { sessionForTestSubscription, sessionForTestSubscription2 } from './sessionForTestSubscription';
 import { activeSubscriptionForTestSubscription } from './active.subcription.type';

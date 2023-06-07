@@ -17,6 +17,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 import { SuccessfulPaymentUseCase } from '@payments-ms/modules/payment/application/use-cases/successful-payment-use.case';
 import { FailedPaymentCommand } from '@payments-ms/modules/payment/application/use-cases/failed-payment-use.case';
+import { PaymentsEventHandler } from '@payments-ms/modules/payment/application/even-handler/payments-event-handler';
 
 const useCases = [CreateSessionUseCase, SuccessfulPaymentUseCase, FailedPaymentCommand];
 
@@ -28,12 +29,14 @@ const useCases = [CreateSessionUseCase, SuccessfulPaymentUseCase, FailedPaymentC
     PaymentGateway,
     PaymentStripeService,
     PaymentPaypalService,
+    PaymentsEventHandler,
     StripePaymentWebhookService,
     {
       provide: IPaymentsRepository,
       useClass: PaymentsRepository,
     },
   ],
+  exports: [PaymentStripeService],
   // exports: [PaymentStripeService, PaymentPaypalService, PaymentGateway],
 })
 export class PaymentsModule {}

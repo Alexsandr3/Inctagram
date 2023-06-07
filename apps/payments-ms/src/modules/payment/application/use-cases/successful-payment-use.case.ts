@@ -3,11 +3,11 @@ import { BaseNotificationUseCase } from '@common/main/use-cases/base-notificatio
 import { IPaymentsRepository } from '@payments-ms/modules/payment/infrastructure/payments.repository';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { StripeEventType } from '@common/main/types/stripe-event.type';
-import { PaymentsContract } from '@common/modules/ampq/ampq-contracts/queues/images/payments.contract';
 import { randomUUID } from 'crypto';
 import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 import { Logger } from '@nestjs/common';
 import { FailedPaymentUseCase } from '@payments-ms/modules/payment/application/use-cases/failed-payment-use.case';
+import { PaymentsContract } from '@common/modules/ampq/ampq-contracts/payments.contract';
 
 export class SuccessfulPaymentCommand {
   constructor(public readonly eventType: StripeEventType) {}
@@ -31,7 +31,7 @@ export class SuccessfulPaymentUseCase
    * @param command
    */
   async executeUseCase(command: SuccessfulPaymentCommand): Promise<void> {
-    const { id, customer } = command.eventType;
+    const { id, customer, subscription } = command.eventType;
     // find current payment with status pending
     const currentPayment = await this.paymentsRepository.getPaymentWithStatusPendingByPaymentSessionId(id);
     if (!currentPayment) return;
@@ -44,7 +44,8 @@ export class SuccessfulPaymentUseCase
       requestId: randomUUID(),
       payload: {
         sessionId: id,
-        customer: customer,
+        customer,
+        subscription,
       },
       timestamp: Date.now(),
       type: {

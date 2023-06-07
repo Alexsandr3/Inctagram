@@ -1,13 +1,13 @@
 import { Subscription } from '@prisma/client';
-import { SubscriptionType } from '../types/subscription.type';
-import { PaymentMethod } from '../types/payment.method';
+import { SubscriptionType } from '@common/main/types/subscription.type';
+import { PaymentMethod } from '@common/main/types/payment.method';
 import { Type } from 'class-transformer';
 import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 import { PaymentEntity } from './payment.entity';
 import { RenewalEntity } from './renewal.entity';
 import { CreateSubscriptionInputDto } from '../api/input-dtos/create-subscription-input.dto';
-import { StatusSubscriptionType } from '../types/status-subscription.type';
-import { StripeEventType } from '../types/stripe-event.type';
+import { StatusSubscriptionType } from '@common/main/types/status-subscription.type';
+import { PaymentEventSuccess } from '../application/subscriptions-event-handler';
 
 export class SubscriptionEntity extends BaseDateEntity implements Subscription {
   id: string;
@@ -58,22 +58,22 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
     return subscription;
   }
 
-  changeStatusToActive(event: StripeEventType, current_period_end: Date) {
+  changeStatusToActive(event: PaymentEventSuccess, current_period_end: Date) {
     this.externalSubId = event.subscription;
     this.status = StatusSubscriptionType.ACTIVE;
     this.dateOfPayment = new Date();
     this.startDate = current_period_end ? current_period_end : this.dateOfPayment;
     this.customerId = event.customer;
     this.endDate = this.getEndDateSubscription();
-    this.payments[0].changeStatusToSuccess(event);
+    this.payments[0].changeStatusToSuccess();
     return this;
   }
 
-  changeStatusToFailing(event: StripeEventType) {
-    this.externalSubId = event.subscription;
+  changeStatusToFailing(customer: string, sessionId: string) {
+    this.externalSubId = sessionId;
     this.status = StatusSubscriptionType.DELETED;
-    this.customerId = event.customer;
-    this.payments[0].changeStatusToFailing(event);
+    this.customerId = customer;
+    this.payments[0].changeStatusToFailing();
     return this;
   }
 

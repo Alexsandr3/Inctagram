@@ -7,7 +7,7 @@ import { SuperAdminHelper } from '../helpers/super-admin-helper';
 import { PaginationUsersInputDto } from '../../src/modules/super-admin/api/input-dto/pagination-users.input.args';
 import { ProfileViewModel } from '../../src/modules/users/api/view-models/profile-view.dto';
 import gql from 'graphql-tag';
-import { ImageSizeConfig } from '../../../images-ms/src/modules/images/image-size-config.type';
+import { ImageSizeConfig } from '@common/main/types/image-size-config.type';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import { PostsHelper } from '../helpers/posts-helper';
 

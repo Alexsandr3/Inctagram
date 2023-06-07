@@ -7,7 +7,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 export const swaggerConfig = (app: INestApplication) => {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Open API for team  The 🍊🍊🍊 Dogs 🦮 🔜 🤦🏽‍♂️')
-    .setDescription('Week.08 Add Devises in API 🤦🏽‍')
+    .setDescription('Week.999 division into more microservices 🤦🏽')
     .setVersion('0.0.8')
     .addBearerAuth()
     .addBasicAuth()

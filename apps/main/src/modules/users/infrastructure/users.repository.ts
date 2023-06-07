@@ -1,11 +1,11 @@
 import { UserEntity } from '../domain/user.entity';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.entity';
 import { AvatarEntity } from '../domain/avatar.entity';
 import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
 import { UserStatus } from '@prisma/client';
+import { PrismaService } from '../../../providers/prisma/prisma.service';
 
 /**
  * Abstract class for users repository

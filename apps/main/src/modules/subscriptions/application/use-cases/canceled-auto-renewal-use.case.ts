@@ -4,11 +4,7 @@ import { NotificationException } from '@common/main/validators/result-notificati
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { ISubscriptionsRepository } from '../../infrastructure/subscriptions.repository';
 import { NotificationCode } from '@common/configuration/notificationCode';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import {
-  CreatedSessionResponseInterface,
-  SubscriptionsContract,
-} from '@common/modules/ampq/ampq-contracts/queues/images/subscriptions.contract';
+import { ClientPaymentsService } from '../../../Clients/client-payments-service';
 
 export class CanceledAutoRenewalCommand {
   constructor(public readonly userId: number) {}
@@ -21,9 +17,8 @@ export class CanceledAutoRenewalUseCase
 {
   constructor(
     private readonly usersRepository: IUsersRepository,
-    // private readonly paymentStripeService: PaymentStripeService,
-    private readonly amqpConnection: AmqpConnection,
     private readonly subscriptionsRepository: ISubscriptionsRepository,
+    private readonly clientPaymentService: ClientPaymentsService,
   ) {
     super();
   }
@@ -45,25 +40,10 @@ export class CanceledAutoRenewalUseCase
         'user',
         NotificationCode.NOT_FOUND,
       );
-    //find active subscription from stripe
-    const activeSubscription = await this.amqpConnection.request<CreatedSessionResponseInterface>({
-      exchange: SubscriptionsContract.queue.exchange.name,
-      routingKey: SubscriptionsContract.queue.routingKey,
-      payload: {
-        id: businessAccount.stipeCustomerId,
-      },
-    });
-    // const activeSubscription = await this.paymentStripeService.findSubscriptions(businessAccount.stipeCustomerId);
+    //find active subscription from another microservice
+    const activeSubscription = await this.clientPaymentService.findSubscriptions(businessAccount.stipeCustomerId);
     //cancel subscription
-
-    await this.amqpConnection.publish(
-      SubscriptionsContract.queue.exchange.name,
-      SubscriptionsContract.queue.routingKey,
-      // @ts-ignore
-      activeSubscription.data[0].id,
-    );
-
-    // await this.paymentStripeService.cancelSubscription(activeSubscription.data[0].id);
+    await this.clientPaymentService.cancelSubscription(activeSubscription.data[0].id);
     //change status to canceled
     businessAccount.changeStatusToCanceledAutoRenewal();
     //save

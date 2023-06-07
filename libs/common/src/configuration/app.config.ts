@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { pipeSetup } from './pipe.setup';
 import { exceptionFilterSetup } from './exception-filter.setup';
 import cookieParser from 'cookie-parser';
-import CustomLogger from '../modules/logger/customLogger';
+import CustomLogger from '@common/modules/logger/customLogger';
 
 /**
  * Need for use without testing

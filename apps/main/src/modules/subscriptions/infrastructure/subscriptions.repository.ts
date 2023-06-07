@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../providers/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 import { SubscriptionEntity } from '../domain/subscription.entity';
-import { StatusSubscriptionType } from '../types/status-subscription.type';
-import { PaymentStatus } from '../types/paymentStatus';
+import { StatusSubscriptionType } from '@common/main/types/status-subscription.type';
+import { PaymentStatus } from '@common/main/types/paymentStatus';
 
 /**
  * Abstract class that represents the repository of the Clients.
@@ -75,7 +75,6 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
         where: { id: subscriptionEntity.payments[0].id },
         data: {
           status: subscriptionEntity.payments[0].status,
-          context: subscriptionEntity.payments[0].context,
         },
       });
     });

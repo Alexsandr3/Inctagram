@@ -11,7 +11,7 @@ import { PostsService } from './application/posts.service';
 import { PostsGetController } from './api/posts-get.controller';
 import { CreatePostWithUploadImagesUseCase } from './application/use-cases/create-post-use.case';
 import { DeleteImageExistingPostUseCase } from './application/use-cases/delete-image-post-use.case';
-import { ClientModule } from '../Clients/clients.module';
+import { ClientModule } from '../Clients/client.module';
 
 const useCases = [
   //---deprecated

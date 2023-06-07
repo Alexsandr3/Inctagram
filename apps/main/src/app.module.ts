@@ -14,9 +14,11 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
 import { AmpqModule } from '@common/modules/ampq/ampq.module';
 import { RabbitMQExchangeConfig } from '@golevelup/nestjs-rabbitmq';
 import { EXCHANGE_IMAGES } from '@common/modules/ampq/ampq-contracts/exchanges/images.exchange';
+import { ChannelsModule } from './modules/channels/channels.module';
 import { EXCHANGE_SUBSCRIPTIONS } from '@common/modules/ampq/ampq-contracts/exchanges/subscriptions.exchange';
+import { EXCHANGE_PAYMENTS } from '@common/modules/ampq/ampq-contracts/exchanges/payments.exchange';
 
-const AMPQ_EXCHANGES: RabbitMQExchangeConfig[] = [EXCHANGE_IMAGES, EXCHANGE_SUBSCRIPTIONS];
+const AMPQ_EXCHANGES: RabbitMQExchangeConfig[] = [EXCHANGE_IMAGES, EXCHANGE_SUBSCRIPTIONS, EXCHANGE_PAYMENTS];
 
 @Module({
   imports: [
@@ -33,6 +35,7 @@ const AMPQ_EXCHANGES: RabbitMQExchangeConfig[] = [EXCHANGE_IMAGES, EXCHANGE_SUBS
     ProvidersModule,
     SubscriptionsModule,
     AmpqModule.forRoot(AMPQ_EXCHANGES),
+    ChannelsModule,
   ],
   controllers: [AppController],
   providers: [],

@@ -2,7 +2,7 @@ import { ImagePostEntity } from './image-post.entity';
 import { Type } from 'class-transformer';
 import { Post } from '@prisma/client';
 import { BaseImageEntity } from '@common/main/entities/base-image.entity';
-import { PostStatus } from '../types/post-status.type';
+import { PostStatus } from '@common/main/types/post-status.type';
 import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 
 export class PostEntity extends BaseDateEntity implements Post {
@@ -62,5 +62,9 @@ export class PostEntity extends BaseDateEntity implements Post {
   addImages(userId: number, images: BaseImageEntity[]) {
     this.images = images.map(image => ImagePostEntity.initCreate(userId, image));
     return this;
+  }
+
+  getImagesUrlsForDelete(uploadId: string): string[] {
+    return this.images.filter(image => image.resourceId === uploadId).map(image => image.url);
   }
 }

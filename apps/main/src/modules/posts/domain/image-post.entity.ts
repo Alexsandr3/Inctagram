@@ -1,6 +1,6 @@
 import { BaseImageEntity } from '@common/main/entities/base-image.entity';
 import { PostImage } from '@prisma/client';
-import { PostStatus } from '../types/post-status.type';
+import { PostStatus } from '@common/main/types/post-status.type';
 
 export class ImagePostEntity extends BaseImageEntity implements PostImage {
   postId: number;

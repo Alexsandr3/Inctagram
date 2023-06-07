@@ -4,6 +4,7 @@ import { swaggerConfig } from '@common/configuration/swagger/swagger.config';
 import getLogLevels from '@common/modules/logger/getLogLevels';
 import { appConfig } from '@common/configuration/app.config';
 import { AppModule } from '@images-ms/app.module';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -17,6 +18,7 @@ async function bootstrap() {
   //configuration swagger
   swaggerConfig(createdApp);
   await createdApp.listen(PORT).then(async () => {
+    Logger.log(`Server running on http://localhost:${PORT}`, 'Bootstrap');
     console.log(`Server is listening on ${await app.getUrl()}`);
   });
 }

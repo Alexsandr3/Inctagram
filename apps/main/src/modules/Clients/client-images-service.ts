@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { BaseImageEntity } from '@common/main/entities/base-image.entity';
 import { ImageType } from '@common/main/entities/type/image.type';
-import { ClientAdapter } from './client-adapter';
-
-// import FormData from 'form-data';
+import { ClientImagesAdapter } from './client-images-adapter';
 
 @Injectable()
-export class ClientsService {
-  constructor(private readonly clientAdapter: ClientAdapter) {}
+export class ClientImagesService {
+  constructor(private readonly clientAdapter: ClientImagesAdapter) {}
 
   async generateAndSaveImages(
     userId: number,
@@ -16,8 +14,7 @@ export class ClientsService {
   ): Promise<BaseImageEntity[]> {
     const formData = new FormData();
     files.forEach(file => {
-      const blob = new Blob([file.buffer]);
-      // formData.append(`files`, blob);
+      let blob = new Blob([file.buffer], { type: file.mimetype });
       formData.append(`files`, blob);
     });
     formData.append('userId', userId.toString());

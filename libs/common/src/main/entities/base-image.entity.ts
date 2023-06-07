@@ -1,7 +1,7 @@
 import { BaseDateEntity } from './base-date.entity';
-import { ImageSizeConfig } from '../../../../../apps/images/src/modules/images/image-size-config.type';
 import { ImageSizeType } from './type/image-size.type';
 import { ImageType } from './type/image.type';
+import { ImageSizeConfig } from '@common/main/types/image-size-config.type';
 
 /**
  * @description Base Image Entity for all image entities

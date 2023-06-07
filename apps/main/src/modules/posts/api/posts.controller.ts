@@ -40,7 +40,7 @@ import { DeleteImageExistingPostCommand } from '../application/use-cases/delete-
 import { CreatePostInputDto } from './input-dto/create-post.input.dto';
 import { NotificationErrors } from '@common/main/validators/checker-notification.errors';
 import { NotificationCode } from '@common/configuration/notificationCode';
-import { PostStatus } from '../types/post-status.type';
+import { PostStatus } from '@common/main/types/post-status.type';
 
 @ApiBearerAuth()
 @ApiTags('Posts')
@@ -79,7 +79,7 @@ export class PostsController {
    * @param uploadId
    */
   @SwaggerDecoratorsByDeleteImagePost()
-  @Delete('/:postId/images-ms/:uploadId')
+  @Delete('/:postId/images/:uploadId')
   @HttpCode(HTTP_Status.NO_CONTENT_204)
   async deleteImageExistingPost(
     @CurrentUserId() userId: number,

@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { NotificationException } from '@common/main/validators/result-notification';
 import { IUsersRepository } from '../../infrastructure/users.repository';
 import { NotificationCode } from '@common/configuration/notificationCode';
-import { ClientsService } from '../../../Clients/clients-service';
+import { ClientImagesService } from '../../../Clients/client-images-service';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 
 /**
@@ -17,7 +17,10 @@ export class DeleteImageAvatarUseCase
   extends BaseNotificationUseCase<DeleteImageAvatarCommand, void>
   implements ICommandHandler<DeleteImageAvatarCommand>
 {
-  constructor(private readonly usersRepository: IUsersRepository, private readonly clientsService: ClientsService) {
+  constructor(
+    private readonly usersRepository: IUsersRepository,
+    private readonly clientsService: ClientImagesService,
+  ) {
     super();
   }
 

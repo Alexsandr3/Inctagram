@@ -6,7 +6,7 @@ import { NotificationException } from '@common/main/validators/result-notificati
 import { NotificationCode } from '@common/configuration/notificationCode';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 import { ImageType } from '@common/main/entities/type/image.type';
-import { ClientsService } from '../../../Clients/clients-service';
+import { ClientImagesService } from '../../../Clients/client-images-service';
 
 /**
  * Upload image post command
@@ -26,7 +26,7 @@ export class CreatePostWithUploadImagesUseCase
 {
   constructor(
     private readonly usersRepository: IUsersRepository,
-    private readonly clientService: ClientsService,
+    private readonly clientService: ClientImagesService,
     private readonly postsRepository: IPostsRepository,
   ) {
     super();

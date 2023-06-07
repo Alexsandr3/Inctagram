@@ -4,6 +4,11 @@ import { NotificationException } from '@common/main/validators/result-notificati
 import { PostsService } from '../posts.service';
 import { NotificationCode } from '@common/configuration/notificationCode';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { ImagesContract } from '@common/modules/ampq/ampq-contracts/images.contract';
+import { randomUUID } from 'crypto';
+import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
+import { Logger } from '@nestjs/common';
 
 /**
  * Delete image command
@@ -17,7 +22,12 @@ export class DeleteImageExistingPostUseCase
   extends BaseNotificationUseCase<DeleteImageExistingPostCommand, void>
   implements ICommandHandler<DeleteImageExistingPostCommand>
 {
-  constructor(private readonly postsRepository: IPostsRepository, private readonly postsService: PostsService) {
+  private readonly logg = new Logger(DeleteImageExistingPostUseCase.name);
+  constructor(
+    private readonly postsRepository: IPostsRepository,
+    private readonly postsService: PostsService,
+    private readonly amqpConnection: AmqpConnection,
+  ) {
     super();
   }
 
@@ -40,5 +50,27 @@ export class DeleteImageExistingPostUseCase
     post.changeStatusToDeletedForImage(uploadId);
     //update post
     await this.postsRepository.savePost(post);
+    //send message to queue
+    // this.eventEmitter.emit(PostsEventType.deleteImages, keys);
+    const message: ImagesContract.request = {
+      requestId: randomUUID(),
+      payload: post.getImagesUrlsForDelete(uploadId),
+      timestamp: Date.now(),
+      type: {
+        microservice: MICROSERVICES.MAIN,
+        event: ImagesContract.ImageEventType.deleteImages,
+      },
+    };
+    //send to rabbitmq
+    await this.amqpConnection.publish<ImagesContract.request>(
+      ImagesContract.queue.exchange.name,
+      ImagesContract.queue.routingKey,
+      message,
+    );
+    this.logg.log(
+      `Message sent to queue ${ImagesContract.queue.exchange.name} with message ${JSON.stringify(message)} from ${
+        DeleteImageExistingPostUseCase.name
+      }`,
+    );
   }
 }

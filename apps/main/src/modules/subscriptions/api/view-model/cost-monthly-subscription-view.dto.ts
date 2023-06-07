@@ -1,4 +1,4 @@
-import { SubscriptionType } from '../../types/subscription.type';
+import { SubscriptionType } from '@common/main/types/subscription.type';
 
 export class SubscriptionPriceViewModel {
   data: PricingDetailsViewModel[];

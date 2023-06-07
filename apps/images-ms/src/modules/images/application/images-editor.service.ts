@@ -5,7 +5,7 @@ import { randomUUID } from 'crypto';
 import { ImageType } from '@common/main/entities/type/image.type';
 import { ImageSizeType } from '@common/main/entities/type/image-size.type';
 import { S3StorageAdapter } from '@images-ms/providers/aws/s3-storage.adapter';
-import { ImageSizeConfig } from '@images-ms/modules/images/image-size-config.type';
+import { ImageSizeConfig } from '@common/main/types/image-size-config.type';
 
 @Injectable()
 export class ImagesEditorService {

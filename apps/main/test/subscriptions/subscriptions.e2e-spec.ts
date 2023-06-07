@@ -3,8 +3,8 @@ import { AuthHelper } from '../helpers/auth-helper';
 import { getAppForE2ETesting } from '../utils/tests.utils';
 import { SubscriptionsHelper } from '../helpers/subscriptions-helper';
 import { CreateSubscriptionInputDto } from '../../src/modules/subscriptions/api/input-dtos/create-subscription-input.dto';
-import { SubscriptionType } from '../../src/modules/subscriptions/types/subscription.type';
-import { PaymentMethod } from '../../src/modules/subscriptions/types/payment.method';
+import { SubscriptionType } from '@common/main/types/subscription.type';
+import { PaymentMethod } from '@common/main/types/payment.method';
 import { PaymentSessionUrlViewModel } from '../../src/modules/subscriptions/api/view-model/payment-session-url-view-view.dto';
 import { CurrentActiveSubscriptionsViewModel } from '../../src/modules/subscriptions/api/view-model/current-subscriptions-view.dto';
 import {

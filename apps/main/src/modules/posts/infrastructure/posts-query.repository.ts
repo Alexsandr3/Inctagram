@@ -7,7 +7,7 @@ import { PaginationPostsInputDto } from '../api/input-dto/pagination-posts.input
 import { PostsWithPaginationViewDto } from '../api/view-models/posts-with-pagination-view.dto';
 import { Paginated } from '../../../main/shared/paginated';
 import { UserStatus } from '@prisma/client';
-import { PostStatus } from '../types/post-status.type';
+import { PostStatus } from '@common/main/types/post-status.type';
 
 /**
  * Abstract class for posts query repository

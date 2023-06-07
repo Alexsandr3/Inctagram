@@ -9,7 +9,7 @@ import { UpdateProfileUseCase } from './application/use-cases/update-profile.use
 import { ImagesEditorService } from '../../../../images-ms/src/modules/images/application/images-editor.service';
 import { DeleteImageAvatarUseCase } from './application/use-cases/delete-image-avatar.use-case';
 import { UsersEventHandlerService } from './application/users-event-handler.service';
-import { ClientModule } from '../Clients/clients.module';
+import { ClientModule } from '../Clients/client.module';
 
 const useCases = [UploadImageAvatarUseCase, UpdateProfileUseCase, DeleteImageAvatarUseCase];
 

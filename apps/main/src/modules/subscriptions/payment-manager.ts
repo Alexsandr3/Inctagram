@@ -1,5 +1,5 @@
-import { SubscriptionType } from './types/subscription.type';
-import { PaymentMethod } from './types/payment.method';
+import { SubscriptionType } from '@common/main/types/subscription.type';
+import { PaymentMethod } from '@common/main/types/payment.method';
 import { Injectable } from '@nestjs/common';
 
 interface IPaymentGateway {

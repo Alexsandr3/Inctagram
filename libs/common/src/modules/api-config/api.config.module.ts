@@ -13,7 +13,11 @@ import Joi from 'joi';
         NODE_ENV: Joi.string().valid('development', 'production', 'test', 'provision').default('development'),
         PORT: Joi.number(),
         PORT_IMAGES: Joi.number(),
-        PORT_BUSINESS: Joi.number(),
+        PORT_PAYMENTS: Joi.number(),
+        //urls of apps
+        SERVER_URL_MAIN: Joi.string(),
+        SERVER_URL_IMAGES: Joi.string(),
+        SERVER_URL_PAYMENTS: Joi.string(),
 
         CORS_ORIGIN: Joi.string().required(),
 
@@ -77,6 +81,8 @@ import Joi from 'joi';
         TEST_CLIENT_URL: Joi.string(),
 
         GRAPHQL_PLAYGROUND: Joi.boolean(),
+
+        RABBITMQ_URL: Joi.string().required(),
       }),
       expandVariables: true,
     }),

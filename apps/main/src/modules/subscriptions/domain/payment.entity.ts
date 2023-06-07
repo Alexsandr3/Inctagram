@@ -1,8 +1,7 @@
 import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 import { Payment } from '@prisma/client';
-import { Currency } from '../types/currency';
-import { PaymentStatus } from '../types/paymentStatus';
-import { StripeEventType } from '../types/stripe-event.type';
+import { Currency } from '@common/main/types/currency';
+import { PaymentStatus } from '@common/main/types/paymentStatus';
 
 export class PaymentEntity extends BaseDateEntity implements Payment {
   id: number;
@@ -25,15 +24,13 @@ export class PaymentEntity extends BaseDateEntity implements Payment {
     return instancePayment;
   }
 
-  changeStatusToSuccess(event: StripeEventType): PaymentEntity {
+  changeStatusToSuccess(): PaymentEntity {
     this.status = PaymentStatus.SUCCESSFUL;
-    this.context = event;
     return this;
   }
 
-  changeStatusToFailing(event: StripeEventType): PaymentEntity {
+  changeStatusToFailing(): PaymentEntity {
     this.status = PaymentStatus.FAILED;
-    this.context = event;
     return this;
   }
 }

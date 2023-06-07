@@ -16,8 +16,18 @@ export class ApiConfigService {
   get PORT_IMAGES(): number {
     return +this.configService.get('PORT_IMAGES', { infer: true }) || 3001;
   }
-  get PORT_BUSINESS(): number {
-    return +this.configService.get('PORT_BUSINESS', { infer: true }) || 3002;
+  get PORT_PAYMENTS(): number {
+    return +this.configService.get('PORT_PAYMENTS', { infer: true }) || 3002;
+  }
+
+  get SERVER_URL_MAIN(): string {
+    return this.configService.get('url_apps.SERVER_URL_MAIN', { infer: true });
+  }
+  get SERVER_URL_IMAGES(): string {
+    return this.configService.get('url_apps.SERVER_URL_IMAGES', { infer: true });
+  }
+  get SERVER_URL_PAYMENTS(): string {
+    return this.configService.get('url_apps.SERVER_URL_PAYMENTS', { infer: true });
   }
 
   get CORS_ORIGIN(): string {
@@ -192,5 +202,8 @@ export class ApiConfigService {
   }
   get GRAPHQL_PLAYGROUND(): boolean {
     return this.configService.get('dev.graphql.GRAPHQL_PLAYGROUND', { infer: true });
+  }
+  get RABBITMQ_URL(): string {
+    return this.configService.get('brokers.RABBITMQ_URL', { infer: true });
   }
 }

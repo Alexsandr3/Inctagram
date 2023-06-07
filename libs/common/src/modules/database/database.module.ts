@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ApiConfigModule } from '../api-config/api.config.module';
 import { ApiConfigService } from '../api-config/api.config.service';
-import DatabaseLogger from './utils/databaseLogger';
 
 @Module({
   imports: [
@@ -15,7 +14,7 @@ import DatabaseLogger from './utils/databaseLogger';
         const isSsl = !regex.test(url);
         return {
           autoLoadEntities: true,
-          logger: new DatabaseLogger(),
+          // logger: new DatabaseLogger(),
           // entities: [...entities],
           synchronize: true,
           type: 'postgres',

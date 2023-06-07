@@ -3,10 +3,10 @@ import { BaseNotificationUseCase } from '@common/main/use-cases/base-notificatio
 import { IPaymentsRepository } from '@payments-ms/modules/payment/infrastructure/payments.repository';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { StripeEventType } from '@common/main/types/stripe-event.type';
-import { PaymentsContract } from '@common/modules/ampq/ampq-contracts/queues/images/payments.contract';
 import { randomUUID } from 'crypto';
 import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 import { Logger } from '@nestjs/common';
+import { PaymentsContract } from '@common/modules/ampq/ampq-contracts/payments.contract';
 
 export class FailedPaymentCommand {
   constructor(public readonly eventType: StripeEventType) {}
@@ -39,9 +39,12 @@ export class FailedPaymentUseCase
     //save payment
     await this.paymentsRepository.save(currentPayment);
     //send notification to user
-    const message = {
+    const message: PaymentsContract.requestFailed = {
       requestId: randomUUID(),
-      payload: { customer },
+      payload: {
+        customer,
+        sessionId: id,
+      },
       timestamp: Date.now(),
       type: {
         microservice: MICROSERVICES.PAYMENTS,

@@ -1,13 +1,15 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CleanupRepository } from './cleanup.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SubscriptionEventType } from '@common/main/subscription-event.type';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { ImagesContract } from '@common/modules/ampq/ampq-contracts/queues/images/images.contract';
 import { randomUUID } from 'crypto';
+import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
+import { ImagesContract } from '@common/modules/ampq/ampq-contracts/images.contract';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 @Injectable()
 export class CleanupService {
+  private readonly logger = new Logger(CleanupService.name);
   constructor(
     private readonly cleanupRepository: CleanupRepository,
     private readonly eventEmitter: EventEmitter2,
@@ -44,21 +46,30 @@ export class CleanupService {
     }, []);
     //trigger event for delete modules from s3
     // this.eventEmitter.emit(PostsEventType.deleteImages, keys);
+    const message: ImagesContract.request = {
+      requestId: randomUUID(),
+      payload: keys,
+      timestamp: Date.now(),
+      type: {
+        microservice: MICROSERVICES.MAIN,
+        event: ImagesContract.ImageEventType.deleteImages,
+      },
+    };
     //send to rabbitmq
     await this.amqpConnection.publish<ImagesContract.request>(
       ImagesContract.queue.exchange.name,
       ImagesContract.queue.routingKey,
-      {
-        requestId: randomUUID(),
-        payload: keys,
-        timestamp: Date.now(),
-        type: CleanupService.name,
-      },
+      message,
     );
     //filter ids of posts
     const ids = posts.map(post => post.id);
     //remove posts by ids
     await this.cleanupRepository.removePostsByIds(ids);
+    this.logger.log(
+      `Message sent to queue ${ImagesContract.queue.exchange.name} with message ${JSON.stringify(message)} from ${
+        CleanupService.prototype.removePostWithStatusDeleted.name
+      }`,
+    );
   }
 
   async removeExpiredSessions(currentDate: number) {

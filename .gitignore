@@ -38,6 +38,6 @@ lerna-debug.log*
 
 
 /prisma/migrations/
-/apps/inctagram/src/modules/posts/temp
+/apps/main/src/modules/posts/temp
 /temp
 package-lock.json

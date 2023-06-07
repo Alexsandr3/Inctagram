@@ -11,16 +11,25 @@ import {
 } from './infrastructure/subscriptions-query.repository';
 import { GetSubscriptionsController } from './api/get-subscriptions.controllers';
 import { CanceledAutoRenewalUseCase } from './application/use-cases/canceled-auto-renewal-use.case';
-import { SubscriptionEventHandler } from './application/subscription-event-handler';
+import { ClientModule } from '../Clients/client.module';
+import { SubscriptionsEventHandler } from './application/subscriptions-event-handler';
+import { ActivateSubscriptionUseCase } from './application/use-cases/activate-subscription-use.case';
+import { UnActivateSubscriptionUseCase } from './application/use-cases/unactivate-subscription-use.case';
 
-const useCases = [CreateSubscriptionUseCase, CanceledAutoRenewalUseCase];
+const useCases = [
+  CreateSubscriptionUseCase,
+  CanceledAutoRenewalUseCase,
+  ActivateSubscriptionUseCase,
+  UnActivateSubscriptionUseCase,
+];
 
 @Module({
-  imports: [CqrsModule, UsersModule, ApiConfigModule],
+  imports: [CqrsModule, UsersModule, ApiConfigModule, ClientModule],
   controllers: [SubscriptionsController, GetSubscriptionsController],
   providers: [
     ...useCases,
-    SubscriptionEventHandler,
+    // SubscriptionEventHandler,
+    SubscriptionsEventHandler,
     {
       provide: ISubscriptionsRepository,
       useClass: SubscriptionsRepository,

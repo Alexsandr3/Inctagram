@@ -6,7 +6,7 @@ import { AvatarEntity } from '../../domain/avatar.entity';
 import { NotificationCode } from '@common/configuration/notificationCode';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 import { ImageType } from '@common/main/entities/type/image.type';
-import { ClientsService } from '../../../Clients/clients-service';
+import { ClientImagesService } from '../../../Clients/client-images-service';
 
 /**
  * @description Upload image avatar profile command
@@ -20,7 +20,10 @@ export class UploadImageAvatarUseCase
   extends BaseNotificationUseCase<UploadImageAvatarCommand, void>
   implements ICommandHandler<UploadImageAvatarCommand>
 {
-  constructor(private readonly usersRepository: IUsersRepository, private readonly clientsService: ClientsService) {
+  constructor(
+    private readonly usersRepository: IUsersRepository,
+    private readonly clientsService: ClientImagesService,
+  ) {
     super();
   }
 

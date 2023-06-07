@@ -1,11 +1,11 @@
 import { ArgumentsHost, Catch, ExceptionFilter, HttpException, Logger } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiErrorResultDto } from '../main/validators/api-error-result.dto';
-import { OAuthFlowType } from '../../../../apps/inctagram/src/main/validators/oauth.exception';
+import { OAuthFlowType } from '../../../../apps/main/src/main/validators/oauth.exception';
 import { NotificationExtension } from '../main/validators/result-notification';
 import { NotificationErrors } from '../main/validators/checker-notification.errors';
-import { GraphqlExceptionFilter } from '../../../../apps/inctagram/src/configuration/graphqlException.filter';
-import { GraphQLErrorType } from '../../../../apps/inctagram/src/main/enums/graphQL-error.type';
+import { GraphqlExceptionFilter } from '../../../../apps/main/src/configuration/graphqlException.filter';
+import { GraphQLErrorType } from '../../../../apps/main/src/main/enums/graphQL-error.type';
 import { NotificationCode } from '@common/configuration/notificationCode';
 
 @Catch(Error)

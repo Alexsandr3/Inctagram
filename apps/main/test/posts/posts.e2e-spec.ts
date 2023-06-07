@@ -4,7 +4,7 @@ import { getAppForE2ETesting } from '../utils/tests.utils';
 import { PostsHelper } from '../helpers/posts-helper';
 import { PostViewModel } from '../../src/modules/posts/api/view-models/post-view.dto';
 import FormData from 'form-data';
-import { ImageSizeConfig } from '../../../images-ms/src/modules/images/image-size-config.type';
+import { ImageSizeConfig } from '@common/main/types/image-size-config.type';
 import { ApiErrorResultDto } from '@common/main/validators/api-error-result.dto';
 import { Paginated } from '../../src/main/shared/paginated';
 
