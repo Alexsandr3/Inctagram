@@ -89,8 +89,7 @@ To start the project, get a local copy up and running follow these simple exampl
 - **NestJS** <a href="https://nestjs.com" target="_blank" rel="noreferrer">
   <img src="assets/images/iconc/nestjs-plain.svg" alt="nestjs" width="12" height="12"/> </a>
 - **TypeORM**  <a href="https://typeorm.io" target="_blank" rel="noreferrer">
-  <img src="assets/images/iconc/typeOrm.svg" alt="postgresql" width="12" height="12"/> </a>
-  <a href="https://typeorm.io" target="_blank" rel="noreferrer"> with **PostgreSQL** <a href="https://www.postgresql.org" target="_blank" rel="noreferrer">
+  <img src="assets/images/iconc/typeOrm.svg" alt="TypeORM" width="12" height="12"/> </a> with **PostgreSQL** <a href="https://www.postgresql.org" target="_blank" rel="noreferrer">
   <img src="assets/images/iconc/postgresql-original.svg" alt="postgresql" width="12" height="12"/> </a>
 - **Prisma** <a href="https://prisma.io" target="_blank" rel="noreferrer">
   <img src="assets/images/iconc/Prisma-DarkSymbol.svg" alt="prisma" width="12" height="12"/> </a> with **PostgreSQL** <a href="https://www.postgresql.org" target="_blank" rel="noreferrer">
