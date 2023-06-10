@@ -65,6 +65,7 @@ For detailed API documentation, please refer to the Swagger Documentation.
 
 ## App Screenshots
 
+![Project screenshot](assets/images/screens/10.png)
 ![Project screenshot](assets/images/screens/1.png)
 ![Project screenshot](assets/images/screens/2.png)
 ![Project screenshot](assets/images/screens/3.png)
