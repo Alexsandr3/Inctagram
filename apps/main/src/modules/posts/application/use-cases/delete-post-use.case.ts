@@ -3,8 +3,6 @@ import { IUsersRepository } from '../../../users/infrastructure/users.repository
 import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { PostsService } from '../posts.service';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { OUTBOX_EVENT } from '@common/modules/outbox/outbox.processor';
 import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 /**
@@ -23,7 +21,6 @@ export class DeletePostUseCase
     private readonly usersRepository: IUsersRepository,
     private readonly postsRepository: IPostsRepository,
     private readonly postsService: PostsService,
-    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
   }
@@ -41,7 +38,5 @@ export class DeletePostUseCase
     const { post, event } = foundPost.setPostStatusToDeleted(`${MICROSERVICES.MAIN}_${DeletePostUseCase.name}`);
 
     await this.postsRepository.savePost(post, event);
-
-    this.eventEmitter.emit(OUTBOX_EVENT, event);
   }
 }

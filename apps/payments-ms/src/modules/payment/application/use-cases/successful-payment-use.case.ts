@@ -3,8 +3,6 @@ import { BaseNotificationUseCase } from '@common/main/use-cases/base-notificatio
 import { IPaymentsRepository } from '@payments-ms/modules/payment/infrastructure/payments.repository';
 import { StripeEventType } from '@common/main/types/stripe-event.type';
 import { Logger } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { OUTBOX_EVENT } from '@common/modules/outbox/outbox.processor';
 import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 export class SuccessfulPaymentCommand {
@@ -17,7 +15,7 @@ export class SuccessfulPaymentUseCase
   implements ICommandHandler<SuccessfulPaymentCommand>
 {
   private readonly logg = new Logger(SuccessfulPaymentUseCase.name);
-  constructor(private readonly paymentsRepository: IPaymentsRepository, private readonly eventEmitter: EventEmitter2) {
+  constructor(private readonly paymentsRepository: IPaymentsRepository) {
     super();
   }
 
@@ -37,7 +35,5 @@ export class SuccessfulPaymentUseCase
     );
     //save payment
     await this.paymentsRepository.save(payment, event);
-    //send notification to user
-    this.eventEmitter.emit(OUTBOX_EVENT, event);
   }
 }

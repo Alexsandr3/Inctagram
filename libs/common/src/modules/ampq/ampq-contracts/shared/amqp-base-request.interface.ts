@@ -1,18 +1,16 @@
-import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
-
-export interface AmqpBaseRequestInterface<T = unknown> {
-  requestId: string;
-  type: TypeAmqpBaseRequestInterface;
+export interface IAmqpBaseRequestInterface<T = unknown> {
+  id: number;
+  userId: number;
+  senderService: string;
+  eventName: string;
+  statusEvent: IOutBoxEventType;
   payload: T;
-  timestamp: number;
-  exchange?: string;
-  routingKey?: string;
-  // retryCount: number;
-  // retryTimestamps: number[];
-  // error?: any;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface TypeAmqpBaseRequestInterface {
-  microservice: MICROSERVICES;
-  event: string;
+export interface IOutBoxEventType {
+  PENDING_FOR_BROKER: 'PENDING_FOR_BROKER';
+  SENT_TO_BROKER: 'SENT_TO_BROKER';
+  FAILED_SEND_TO_BROKER: 'FAILED_SEND_TO_BROKER';
 }

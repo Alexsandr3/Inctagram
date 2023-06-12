@@ -5,7 +5,7 @@ import { BaseImageEntity } from '@common/main/entities/base-image.entity';
 import { PostStatus } from '@common/main/types/post-status.type';
 import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
-import { AMPQ_CONTRACT } from '@common/modules/ampq/ampq-contracts/ampq.contract';
+import { IDeleteImagesRequestInterface, IMAGES_CONTRACT } from '@common/modules/ampq/ampq-contracts/images.contract';
 
 export class PostEntity extends BaseDateEntity implements Post {
   id: number;
@@ -40,11 +40,11 @@ export class PostEntity extends BaseDateEntity implements Post {
   setPostStatusToDeleted(senderService: string): { post: PostEntity; event: OutboxEventEntity } {
     this.status = PostStatus.DELETED;
     this.images = this.images.map(image => image.changeStatusToDeletedForEachInstance());
-    const event = OutboxEventEntity.create(
+    const event = OutboxEventEntity.create<IDeleteImagesRequestInterface>(
       this.ownerId,
       senderService,
-      AMPQ_CONTRACT.EVENTS.IMAGES.deleteImages,
-      this.images.map(image => image.getImagesUrls()),
+      IMAGES_CONTRACT.EVENTS.deleteImages,
+      { urls: this.images.map(image => image.getImagesUrls()) },
     );
     return { post: this, event };
   }
@@ -68,11 +68,11 @@ export class PostEntity extends BaseDateEntity implements Post {
     senderService: string,
   ): { post: PostEntity; event: OutboxEventEntity } {
     this.images = this.images.filter(image => image.changeStatusToDeleted(uploadId));
-    const event = OutboxEventEntity.create(
+    const event = OutboxEventEntity.create<IDeleteImagesRequestInterface>(
       this.ownerId,
       senderService,
-      AMPQ_CONTRACT.EVENTS.IMAGES.deleteImages,
-      this.getImagesUrlsForDelete(uploadId),
+      IMAGES_CONTRACT.EVENTS.deleteImages,
+      { urls: this.getImagesUrlsForDelete(uploadId) },
     );
     return { post: this, event };
   }

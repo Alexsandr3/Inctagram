@@ -5,8 +5,6 @@ import { PostsService } from '../posts.service';
 import { NotificationCode } from '@common/configuration/notificationCode';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 import { Logger } from '@nestjs/common';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { OUTBOX_EVENT } from '@common/modules/outbox/outbox.processor';
 import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 /**
@@ -22,11 +20,7 @@ export class DeleteImageExistingPostUseCase
   implements ICommandHandler<DeleteImageExistingPostCommand>
 {
   private readonly logg = new Logger(DeleteImageExistingPostUseCase.name);
-  constructor(
-    private readonly postsRepository: IPostsRepository,
-    private readonly postsService: PostsService,
-    private readonly eventEmitter: EventEmitter2,
-  ) {
+  constructor(private readonly postsRepository: IPostsRepository, private readonly postsService: PostsService) {
     super();
   }
 
@@ -52,7 +46,5 @@ export class DeleteImageExistingPostUseCase
     );
     //update post
     await this.postsRepository.savePost(post, event);
-    //send message to queue
-    this.eventEmitter.emit(OUTBOX_EVENT, event);
   }
 }

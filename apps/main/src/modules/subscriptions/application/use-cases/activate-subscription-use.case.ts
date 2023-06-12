@@ -4,8 +4,6 @@ import { Logger } from '@nestjs/common';
 import { ISubscriptionsRepository } from '../../infrastructure/subscriptions.repository';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { PaymentEventSuccess } from '../subscriptions-event-handler';
-import { EventEmitter2 } from '@nestjs/event-emitter';
-import { OUTBOX_EVENT } from '@common/modules/outbox/outbox.processor';
 import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 export class ActivateSubscriptionCommand {
@@ -21,7 +19,6 @@ export class ActivateSubscriptionUseCase
   constructor(
     private readonly subscriptionsRepository: ISubscriptionsRepository,
     private readonly usersRepository: IUsersRepository,
-    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
   }
@@ -58,8 +55,6 @@ export class ActivateSubscriptionUseCase
     try {
       //save subscription with payment
       await this.subscriptionsRepository.saveSubscriptionWithPayment(subscription, event);
-      //send notification to outbox
-      this.eventEmitter.emit(OUTBOX_EVENT, event);
     } catch (e) {
       user.deactivateBusinessAccount();
       await this.usersRepository.updateExistingUser(user);

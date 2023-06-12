@@ -1,6 +1,6 @@
 import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 import { RabbitMQConfig, RabbitMQExchangeConfig } from '@golevelup/nestjs-rabbitmq';
-import { EXCHANGE_INCTAGRAM } from '@common/modules/ampq/ampq-contracts/inctagram.exchange';
+import { EXCHANGE_INCTAGRAM } from '@common/modules/ampq/ampq-contracts/consts/inctagram.exchange';
 
 const AMPQ_EXCHANGES: RabbitMQExchangeConfig[] = [EXCHANGE_INCTAGRAM];
 

@@ -1,20 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OutboxService } from '@common/modules/outbox/outbox.service';
-import { OnEvent } from '@nestjs/event-emitter';
-import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
 import { IRabbitProducer } from '@common/modules/ampq/rabbit.producer';
-
-export const OUTBOX_EVENT = 'outbox';
 
 @Injectable()
 export class OutboxProcessor {
   private readonly logger = new Logger(OutboxProcessor.name);
   constructor(private readonly outboxService: OutboxService, private readonly rabbitProducer: IRabbitProducer) {}
 
-  @OnEvent(OUTBOX_EVENT)
-  async handleOutboxEvent(event: OutboxEventEntity) {
-    this.logger.log(`Received event: ${JSON.stringify(event)}`);
+  async handleOutboxEvent() {
     const events = await this.outboxService.getPendingAndFailedOutboxEvents();
+    if (!events.length) return;
     for (const event of events) {
       try {
         //send to rabbitmq

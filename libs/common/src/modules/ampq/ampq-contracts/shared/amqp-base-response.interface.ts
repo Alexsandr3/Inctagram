@@ -1,17 +1,17 @@
 import {
-  AmqpBaseRequestInterface,
-  TypeAmqpBaseRequestInterface,
+  IAmqpBaseRequestInterface,
+  IOutBoxEventType,
 } from '@common/modules/ampq/ampq-contracts/shared/amqp-base-request.interface';
 
-export interface AmqpBaseResponseInterface<T = unknown> extends AmqpBaseRequestInterface<T> {
-  requestId: string;
-  type: TypeAmqpBaseRequestInterface;
+export interface IAmqpBaseResponseInterface<T = unknown> extends IAmqpBaseRequestInterface<T> {
+  id: number;
+  userId: number;
+  senderService: string;
+  eventName: string;
+  statusEvent: IOutBoxEventType;
   payload: T;
-  timestamp: number;
-  exchange?: string;
-  routingKey?: string;
-  // retryCount: number;
-  // retryTimestamps: number[];
+  createdAt: Date;
+  updatedAt: Date;
   error?: {
     message: string;
     code: string;

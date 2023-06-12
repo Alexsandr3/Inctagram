@@ -2,10 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import { CleanupRepository } from './cleanup.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SubscriptionEventType } from '@common/main/subscription-event.type';
-import { randomUUID } from 'crypto';
-import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
-import { ImagesContract } from '@common/modules/ampq/ampq-contracts/images.contract';
-import { AMPQ_CONTRACT } from '@common/modules/ampq/ampq-contracts/ampq.contract';
 
 @Injectable()
 export class CleanupService {
@@ -45,15 +41,15 @@ export class CleanupService {
     }, []);
     //trigger event for delete modules from s3
     // this.eventEmitter.emit(PostsEventType.deleteImages, keys);
-    const message: ImagesContract.request = {
-      requestId: randomUUID(),
-      payload: keys,
-      timestamp: Date.now(),
-      type: {
-        microservice: MICROSERVICES.MAIN,
-        event: AMPQ_CONTRACT.EVENTS.IMAGES.deleteImages,
-      },
-    };
+    // const message: ImagesContract.request = {
+    //   requestId: randomUUID(),
+    //   payload: keys,
+    //   timestamp: Date.now(),
+    //   type: {
+    //     microservice: MICROSERVICES.MAIN,
+    //     event: AMPQ_CONTRACT.EVENTS.IMAGES.deleteImages,
+    //   },
+    // };
     //send to rabbitmq
     // await this.amqpConnection.publish<ImagesContract.request>(
     //   AMPQ_CONTRACT.queue.exchange.name,
@@ -64,11 +60,11 @@ export class CleanupService {
     const ids = posts.map(post => post.id);
     //remove posts by ids
     await this.cleanupRepository.removePostsByIds(ids);
-    this.logger.log(
-      `Message sent to queue ${AMPQ_CONTRACT.queue.exchange.name} with message ${JSON.stringify(message)} from ${
-        CleanupService.prototype.removePostWithStatusDeleted.name
-      }`,
-    );
+    // this.logger.log(
+    //   `Message sent to queue ${AMPQ_CONTRACT.queue.exchange.name} with message ${JSON.stringify(message)} from ${
+    //     CleanupService.prototype.removePostWithStatusDeleted.name
+    //   }`,
+    // );
   }
 
   async removeExpiredSessions(currentDate: number) {

@@ -1,5 +1,5 @@
 import { BaseDateEntity } from '@common/main/entities/base-date.entity';
-import { OutBoxEvent, Prisma } from '@prisma/client';
+import { OutBoxEvent } from '@prisma/client';
 import { OutBoxEventType } from '@common/modules/outbox/out-box-event.type';
 
 export class OutboxEventEntity extends BaseDateEntity implements OutBoxEvent {
@@ -8,12 +8,12 @@ export class OutboxEventEntity extends BaseDateEntity implements OutBoxEvent {
   senderService: string;
   eventName: string;
   statusEvent: OutBoxEventType;
-  payload: Prisma.JsonValue;
+  payload: any;
   constructor() {
     super();
   }
 
-  static create(ownerId: number, senderService: string, eventName: string, payload: any): OutboxEventEntity {
+  static create<T>(ownerId: number, senderService: string, eventName: string, payload: T): OutboxEventEntity {
     const event = new OutboxEventEntity();
     event.userId = ownerId;
     event.senderService = senderService;

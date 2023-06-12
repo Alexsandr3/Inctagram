@@ -9,7 +9,10 @@ import { CreateSubscriptionInputDto } from '../api/input-dtos/create-subscriptio
 import { StatusSubscriptionType } from '@common/main/types/status-subscription.type';
 import { PaymentEventSuccess } from '../application/subscriptions-event-handler';
 import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
-import { AMPQ_CONTRACT } from '@common/modules/ampq/ampq-contracts/ampq.contract';
+import {
+  IDeactivateLastActiveSubscriptionRequestInterface,
+  PAYMENTS_CONTRACT,
+} from '@common/modules/ampq/ampq-contracts/payments.contract';
 
 export class SubscriptionEntity extends BaseDateEntity implements Subscription {
   id: string;
@@ -72,10 +75,10 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
     this.customerId = inputEvent.customer;
     this.endDate = this.getEndDateSubscription();
     this.payments[0].changeStatusToSuccess();
-    const event = OutboxEventEntity.create(
+    const event = OutboxEventEntity.create<IDeactivateLastActiveSubscriptionRequestInterface>(
       this.businessAccountId,
       senderService,
-      AMPQ_CONTRACT.EVENTS.SUBSCRIPTIONS.deactivateLastActiveSubscription,
+      PAYMENTS_CONTRACT.EVENTS.SUBSCRIPTIONS.deactivateLastActiveSubscription,
       {
         customerId: this.customerId,
         subscriptionId: this.id,
