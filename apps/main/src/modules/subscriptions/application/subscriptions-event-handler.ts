@@ -6,10 +6,8 @@ import { ResultNotification } from '@common/main/validators/result-notification'
 import { ActivateSubscriptionCommand } from './use-cases/activate-subscription-use.case';
 import { UnActivateSubscriptionCommand } from './use-cases/unactivate-subscription-use.case';
 import { IsString } from 'class-validator';
-import {
-  PaymentsContract,
-  SuccessfulPaymentRequestInterface,
-} from '@common/modules/ampq/ampq-contracts/payments.contract';
+import { SuccessfulPaymentRequestInterface } from '@common/modules/ampq/ampq-contracts/payments.contract';
+import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
 
 export class PaymentEventSuccess implements SuccessfulPaymentRequestInterface {
   @IsString()
@@ -29,8 +27,9 @@ export class SubscriptionsEventHandler {
    * @param event
    */
   @OnEvent(PaymentEventType.successSubscription)
-  async handleSuccessfulStripeEvent(event: PaymentsContract.requestSuccess): Promise<void> {
+  async handleSuccessfulStripeEvent(event: OutboxEventEntity): Promise<void> {
     await this.commandBus.execute<ActivateSubscriptionCommand, ResultNotification<void>>(
+      // @ts-ignore
       new ActivateSubscriptionCommand(event.payload),
     );
     return;
@@ -41,8 +40,9 @@ export class SubscriptionsEventHandler {
    * @param event
    */
   @OnEvent(PaymentEventType.failedSubscription)
-  async handleFailedSubscriptionEventFromStripe(event: PaymentsContract.requestSuccess) {
+  async handleFailedSubscriptionEventFromStripe(event: OutboxEventEntity): Promise<void> {
     await this.commandBus.execute<UnActivateSubscriptionCommand, ResultNotification<void>>(
+      // @ts-ignore
       new UnActivateSubscriptionCommand(event),
     );
     return;

@@ -5,7 +5,7 @@ import { EmailConfirmationEntity } from '../../auth/domain/email-confirmation.en
 import { AvatarEntity } from '../domain/avatar.entity';
 import { ConfirmationOfExternalAccountEntity } from '../../auth/domain/confirmation-of-external-account.entity';
 import { UserStatus } from '@prisma/client';
-import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 
 /**
  * Abstract class for users repository

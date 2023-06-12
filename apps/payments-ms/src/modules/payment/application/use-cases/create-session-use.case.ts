@@ -4,7 +4,6 @@ import { CreateSessionInputDto } from '@payments-ms/modules/payment/api/input-dt
 import { PaymentGateway } from '@payments-ms/modules/payment/payment-gateway';
 import { IPaymentsRepository } from '@payments-ms/modules/payment/infrastructure/payments.repository';
 import { Payment } from '@payments-ms/modules/payment/domain/payment.entity';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { SessionViewModel } from '@payments-ms/modules/payment/api/view-model/session-view.dto';
 
 export class CreateSessionCommand {
@@ -19,7 +18,6 @@ export class CreateSessionUseCase
   constructor(
     private readonly paymentGateway: PaymentGateway,
     private readonly paymentsRepository: IPaymentsRepository,
-    private readonly amqpConnection: AmqpConnection,
   ) {
     super();
   }

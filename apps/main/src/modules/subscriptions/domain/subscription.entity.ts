@@ -8,6 +8,8 @@ import { RenewalEntity } from './renewal.entity';
 import { CreateSubscriptionInputDto } from '../api/input-dtos/create-subscription-input.dto';
 import { StatusSubscriptionType } from '@common/main/types/status-subscription.type';
 import { PaymentEventSuccess } from '../application/subscriptions-event-handler';
+import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
+import { AMPQ_CONTRACT } from '@common/modules/ampq/ampq-contracts/ampq.contract';
 
 export class SubscriptionEntity extends BaseDateEntity implements Subscription {
   id: string;
@@ -58,15 +60,28 @@ export class SubscriptionEntity extends BaseDateEntity implements Subscription {
     return subscription;
   }
 
-  changeStatusToActive(event: PaymentEventSuccess, current_period_end: Date) {
-    this.externalSubId = event.subscription;
+  changeStatusToActive(
+    inputEvent: PaymentEventSuccess,
+    current_period_end: Date,
+    senderService: string,
+  ): { subscription: SubscriptionEntity; event: OutboxEventEntity } {
+    this.externalSubId = inputEvent.subscription;
     this.status = StatusSubscriptionType.ACTIVE;
     this.dateOfPayment = new Date();
     this.startDate = current_period_end ? current_period_end : this.dateOfPayment;
-    this.customerId = event.customer;
+    this.customerId = inputEvent.customer;
     this.endDate = this.getEndDateSubscription();
     this.payments[0].changeStatusToSuccess();
-    return this;
+    const event = OutboxEventEntity.create(
+      this.businessAccountId,
+      senderService,
+      AMPQ_CONTRACT.EVENTS.SUBSCRIPTIONS.deactivateLastActiveSubscription,
+      {
+        customerId: this.customerId,
+        subscriptionId: this.id,
+      },
+    );
+    return { subscription: this, event };
   }
 
   changeStatusToFailing(customer: string, sessionId: string) {

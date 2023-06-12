@@ -163,7 +163,6 @@ describe('Testing create Clients -  e2e', () => {
       token: accessToken2,
       expectedCode: 200,
     });
-    console.log(body);
   });
 });
 

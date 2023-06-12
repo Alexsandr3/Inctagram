@@ -4,6 +4,8 @@ import { Post } from '@prisma/client';
 import { BaseImageEntity } from '@common/main/entities/base-image.entity';
 import { PostStatus } from '@common/main/types/post-status.type';
 import { BaseDateEntity } from '@common/main/entities/base-date.entity';
+import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
+import { AMPQ_CONTRACT } from '@common/modules/ampq/ampq-contracts/ampq.contract';
 
 export class PostEntity extends BaseDateEntity implements Post {
   id: number;
@@ -35,9 +37,16 @@ export class PostEntity extends BaseDateEntity implements Post {
     return post;
   }
 
-  setPostStatusToDeleted() {
+  setPostStatusToDeleted(senderService: string): { post: PostEntity; event: OutboxEventEntity } {
     this.status = PostStatus.DELETED;
     this.images = this.images.map(image => image.changeStatusToDeletedForEachInstance());
+    const event = OutboxEventEntity.create(
+      this.ownerId,
+      senderService,
+      AMPQ_CONTRACT.EVENTS.IMAGES.deleteImages,
+      this.images.map(image => image.getImagesUrls()),
+    );
+    return { post: this, event };
   }
 
   updateDescription(description: string) {
@@ -54,9 +63,18 @@ export class PostEntity extends BaseDateEntity implements Post {
     return images.length === 1;
   }
 
-  changeStatusToDeletedForImage(uploadId: string) {
+  changeStatusToDeletedForImage(
+    uploadId: string,
+    senderService: string,
+  ): { post: PostEntity; event: OutboxEventEntity } {
     this.images = this.images.filter(image => image.changeStatusToDeleted(uploadId));
-    return this;
+    const event = OutboxEventEntity.create(
+      this.ownerId,
+      senderService,
+      AMPQ_CONTRACT.EVENTS.IMAGES.deleteImages,
+      this.getImagesUrlsForDelete(uploadId),
+    );
+    return { post: this, event };
   }
 
   addImages(userId: number, images: BaseImageEntity[]) {

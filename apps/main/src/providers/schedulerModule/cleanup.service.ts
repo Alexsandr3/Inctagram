@@ -5,15 +5,14 @@ import { SubscriptionEventType } from '@common/main/subscription-event.type';
 import { randomUUID } from 'crypto';
 import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 import { ImagesContract } from '@common/modules/ampq/ampq-contracts/images.contract';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { AMPQ_CONTRACT } from '@common/modules/ampq/ampq-contracts/ampq.contract';
 
 @Injectable()
 export class CleanupService {
   private readonly logger = new Logger(CleanupService.name);
   constructor(
     private readonly cleanupRepository: CleanupRepository,
-    private readonly eventEmitter: EventEmitter2,
-    private readonly amqpConnection: AmqpConnection,
+    private readonly eventEmitter: EventEmitter2, // private readonly amqpConnection: AmqpConnection,
   ) {}
 
   async cleanupUnsuccessfulSubscriptions(tenMinuteAgo: Date) {
@@ -52,21 +51,21 @@ export class CleanupService {
       timestamp: Date.now(),
       type: {
         microservice: MICROSERVICES.MAIN,
-        event: ImagesContract.ImageEventType.deleteImages,
+        event: AMPQ_CONTRACT.EVENTS.IMAGES.deleteImages,
       },
     };
     //send to rabbitmq
-    await this.amqpConnection.publish<ImagesContract.request>(
-      ImagesContract.queue.exchange.name,
-      ImagesContract.queue.routingKey,
-      message,
-    );
+    // await this.amqpConnection.publish<ImagesContract.request>(
+    //   AMPQ_CONTRACT.queue.exchange.name,
+    //   AMPQ_CONTRACT.queue.routingKey,
+    //   message,
+    // );
     //filter ids of posts
     const ids = posts.map(post => post.id);
     //remove posts by ids
     await this.cleanupRepository.removePostsByIds(ids);
     this.logger.log(
-      `Message sent to queue ${ImagesContract.queue.exchange.name} with message ${JSON.stringify(message)} from ${
+      `Message sent to queue ${AMPQ_CONTRACT.queue.exchange.name} with message ${JSON.stringify(message)} from ${
         CleanupService.prototype.removePostWithStatusDeleted.name
       }`,
     );

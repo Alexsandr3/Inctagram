@@ -1,6 +1,6 @@
 import { SessionEntity } from '../domain/session.entity';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 
 /**

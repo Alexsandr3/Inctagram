@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { User, UserStatus } from '@prisma/client';
 import { ProfileViewModel } from '../api/view-models/profile-view.dto';
 import { plainToInstance } from 'class-transformer';

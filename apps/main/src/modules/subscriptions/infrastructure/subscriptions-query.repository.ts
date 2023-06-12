@@ -1,4 +1,4 @@
-import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import {
   ActiveSubscriptionViewModel,

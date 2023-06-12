@@ -4,7 +4,6 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { IPostsRepository, PostsRepository } from './infrastructure/posts.repository';
 import { IPostsQueryRepository, PostsQueryRepository } from './infrastructure/posts-query.repository';
 import { UsersModule } from '../users/users.module';
-import { PrismaModule } from '../../providers/prisma/prisma.module';
 import { DeletePostUseCase } from './application/use-cases/delete-post-use.case';
 import { UpdatePostUseCase } from './application/use-cases/update-post-use.case';
 import { PostsService } from './application/posts.service';
@@ -25,7 +24,7 @@ const useCases = [
 ];
 
 @Module({
-  imports: [CqrsModule, UsersModule, PrismaModule, ClientModule],
+  imports: [CqrsModule, UsersModule, ClientModule],
   controllers: [PostsController, PostsGetController],
   providers: [
     PostsService,

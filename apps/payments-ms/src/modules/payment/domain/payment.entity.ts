@@ -3,6 +3,8 @@ import { BaseDateEntity } from '@common/main/entities/base-date.entity';
 import { Currency } from '@common/main/types/currency';
 import { PaymentStatus } from '@common/main/types/paymentStatus';
 import { StripeEventType } from '@common/main/types/stripe-event.type';
+import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
+import { AMPQ_CONTRACT } from '@common/modules/ampq/ampq-contracts/ampq.contract';
 
 @Entity()
 export class Payment extends BaseDateEntity {
@@ -41,15 +43,24 @@ export class Payment extends BaseDateEntity {
     return instancePayment;
   }
 
-  changeStatusToSuccess(event: StripeEventType): Payment {
+  changeStatusToSuccess(inputEvent: StripeEventType, service: string): { payment: Payment; event: OutboxEventEntity } {
     this.status = PaymentStatus.SUCCESSFUL;
-    this.context = event;
-    return this;
+    this.context = inputEvent;
+    const event = OutboxEventEntity.create(null, service, AMPQ_CONTRACT.EVENTS.PAYMENTS.successfulPayment, {
+      sessionId: inputEvent.id,
+      customer: inputEvent.customer,
+      subscription: inputEvent.subscription,
+    });
+    return { payment: this, event };
   }
 
-  changeStatusToFailed(event: StripeEventType): Payment {
+  changeStatusToFailed(inputEvent: StripeEventType, service: string): { payment: Payment; event: OutboxEventEntity } {
     this.status = PaymentStatus.FAILED;
-    this.context = event;
-    return this;
+    this.context = inputEvent;
+    const event = OutboxEventEntity.create(null, service, AMPQ_CONTRACT.EVENTS.PAYMENTS.failedPayment, {
+      customer: inputEvent.customer,
+      sessionId: inputEvent.id,
+    });
+    return { payment: this, event };
   }
 }

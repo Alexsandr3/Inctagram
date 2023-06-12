@@ -19,7 +19,7 @@ async function bootstrap() {
   //configuration swagger
   swaggerConfig(createdApp);
   await createdApp.listen(PORT).then(async () => {
-    Logger.log(`Server running on http://localhost:${PORT}`, 'Bootstrap');
+    Logger.log(`Server running on http://localhost:${PORT} --- MAIN microservice`, 'Bootstrap');
     console.log(`Server is listening on ${await app.getUrl()}`);
   });
   //connect to ngrok for development if NODE_ENV === test

@@ -6,7 +6,7 @@ import {
 } from './register-user-from-external-account-and-authorize-if-new-use.case';
 import { AuthService } from '../auth.service';
 import { Provider } from '../../../users/domain/external-account.entity';
-import { PrismaService } from '../../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { MailManager } from '../../../../providers/mailer/application/mail-manager.service';
 
 describe('test RegisterUserFromExternalAccountUseCase', () => {

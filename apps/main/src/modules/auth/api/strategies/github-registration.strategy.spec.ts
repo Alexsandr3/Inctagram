@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { ValidatorService } from '../../validator.service';
-import { PrismaService } from '../../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { GitHubRegistrationStrategy } from './github-registration.strategy';
 import { AuthService } from '../../application/auth.service';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';

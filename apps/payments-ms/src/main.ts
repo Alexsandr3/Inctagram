@@ -18,7 +18,7 @@ async function bootstrap() {
   //configuration swagger
   swaggerConfig(createdApp);
   await createdApp.listen(PORT).then(async () => {
-    Logger.log(`Server running on http://localhost:${PORT}`, 'Bootstrap');
+    Logger.log(`Server running on http://localhost:${PORT}  --- PAYMENTS microservice`, 'Bootstrap');
     console.log(`Server is listening on ${await app.getUrl()}`);
   });
 }

@@ -1,12 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Logger } from '@nestjs/common';
-import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 import { ISubscriptionsRepository } from '../../infrastructure/subscriptions.repository';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { PaymentEventSuccess } from '../subscriptions-event-handler';
-import { SubscriptionsContract } from '@common/modules/ampq/ampq-contracts/subscriptions.contract';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OUTBOX_EVENT } from '@common/modules/outbox/outbox.processor';
+import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 export class ActivateSubscriptionCommand {
   constructor(public readonly event: PaymentEventSuccess) {}
@@ -21,7 +21,7 @@ export class ActivateSubscriptionUseCase
   constructor(
     private readonly subscriptionsRepository: ISubscriptionsRepository,
     private readonly usersRepository: IUsersRepository,
-    private readonly amqpConnection: AmqpConnection,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
   }
@@ -46,36 +46,23 @@ export class ActivateSubscriptionUseCase
       lastActiveSubscription.disableAutoRenewal();
       await this.subscriptionsRepository.saveSubscriptionWithPayment(lastActiveSubscription);
     }
-    currentSubscription.changeStatusToActive(command.event, currentPeriodEnd);
-    //save subscription with payment
-    await this.subscriptionsRepository.saveSubscriptionWithPayment(currentSubscription);
-    //send notification to queue that deactivate last active subscription
-    const message: SubscriptionsContract.request = {
-      requestId: currentSubscription.id,
-      payload: {
-        customerId: currentSubscription.customerId,
-        subscriptionId: currentSubscription.id,
-      },
-      timestamp: Date.now(),
-      type: {
-        microservice: MICROSERVICES.MAIN,
-        event: SubscriptionsContract.SubscriptionEventType.deactivateLastActiveSubscription,
-      },
-    };
-    await this.amqpConnection.publish<SubscriptionsContract.request>(
-      SubscriptionsContract.queue.exchange.name,
-      SubscriptionsContract.queue.routingKey,
-      message,
+    const { subscription, event } = currentSubscription.changeStatusToActive(
+      command.event,
+      currentPeriodEnd,
+      `${MICROSERVICES.MAIN}_${ActivateSubscriptionUseCase.name}`,
     );
-    // await this.paymentStripeService.deactivateLastActiveSubscription(event.customer, event.subscription);
     const user = await this.usersRepository.findById(currentSubscription.businessAccountId);
     //activate user - hasActiveBusinessAccount = true
     user.activateBusinessAccount();
     await this.usersRepository.updateExistingUser(user);
-    this.logg.log(
-      `Message sent to queue ${SubscriptionsContract.queue.exchange.name} with message ${JSON.stringify(
-        message,
-      )} from ${ActivateSubscriptionUseCase.name}`,
-    );
+    try {
+      //save subscription with payment
+      await this.subscriptionsRepository.saveSubscriptionWithPayment(subscription, event);
+      //send notification to outbox
+      this.eventEmitter.emit(OUTBOX_EVENT, event);
+    } catch (e) {
+      user.deactivateBusinessAccount();
+      await this.usersRepository.updateExistingUser(user);
+    }
   }
 }

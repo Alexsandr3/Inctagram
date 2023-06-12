@@ -1,18 +1,19 @@
 import { plainToInstance } from 'class-transformer';
 import { PostEntity } from '../domain/post.entity';
-import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { Injectable } from '@nestjs/common';
 import { UserEntity } from '../../users/domain/user.entity';
 import { ImagePostEntity } from '../domain/image-post.entity';
 import { PostForSuperAdminViewModel } from '../../super-admin/api/models/post-for-super-admin-view.model';
 import { UserStatus } from '@prisma/client';
+import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
 
 /**
  * Abstract class for posts repository
  * ['savePost', 'findPostWithOwnerById', 'createPostWithImages', 'getPostsById']
  */
 export abstract class IPostsRepository {
-  abstract savePost(post: PostEntity): Promise<void>;
+  abstract savePost(post: PostEntity, event?: OutboxEventEntity): Promise<void>;
   abstract findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }>;
   abstract createPostWithImages(instancePost: PostEntity): Promise<number>;
 
@@ -35,18 +36,30 @@ export abstract class IPostsRepository {
 export class PostsRepository implements IPostsRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async savePost(post: PostEntity): Promise<void> {
+  async savePost(post: PostEntity, event?: OutboxEventEntity): Promise<void> {
     const updateImagesConfig = this.getUpdateImagesConfig(post.images);
-    await this.prisma.post.update({
-      where: { id: post.id },
-      data: {
-        description: post.description,
-        location: post.location,
-        status: post.status,
-        images: {
-          updateMany: updateImagesConfig,
+    return await this.prisma.$transaction(async tx => {
+      await tx.post.update({
+        where: { id: post.id },
+        data: {
+          description: post.description,
+          location: post.location,
+          status: post.status,
+          images: {
+            updateMany: updateImagesConfig,
+          },
         },
-      },
+      });
+      if (event) {
+        await tx.outBoxEvent.create({
+          data: {
+            userId: event.userId,
+            senderService: event.senderService,
+            eventName: event.eventName,
+            payload: event.payload,
+          },
+        });
+      }
     });
   }
   async findPostWithOwnerById(postId: number): Promise<{ post: PostEntity; owner: UserEntity }> {

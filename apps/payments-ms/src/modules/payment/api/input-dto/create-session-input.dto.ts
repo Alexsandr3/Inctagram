@@ -1,4 +1,4 @@
-import { IsEnum, IsInstance, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsInstance, IsNumber, IsOptional, IsPositive, IsString } from 'class-validator';
 import { SubscriptionType } from '@common/main/types/subscription.type';
 import { PaymentMethod } from '@common/main/types/payment.method';
 import {
@@ -14,12 +14,15 @@ export class CreateSubscriptionInputDto implements CreateSubscriptionInterface {
   paymentType: PaymentMethod;
 
   @IsNumber()
+  @IsPositive()
   amount: number;
 }
 
 export class CreateSessionInputDto implements CreateSessionRequestInterface {
+  // @Transform(({ value }) => (typeof value === 'string' ? (value.trim() ? value.trim() : null) : value))
   @IsString()
-  customerId: string;
+  @IsOptional()
+  customerId: string | null;
   @IsString()
   email: string;
   @IsString()

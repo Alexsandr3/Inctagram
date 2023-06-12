@@ -1,24 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { PaymentEventType } from '@common/main/payment-event.type';
-import { PaymentsContract } from '@common/modules/ampq/ampq-contracts/payments.contract';
 import { RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
+import { AMPQ_CONTRACT } from '@common/modules/ampq/ampq-contracts/ampq.contract';
+import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
 
 @Injectable()
 export class ConsumerService {
   constructor(private readonly eventEmitter: EventEmitter2) {}
 
   @RabbitSubscribe({
-    exchange: PaymentsContract.queue.exchange.name,
-    routingKey: PaymentsContract.queue.routingKey,
+    exchange: AMPQ_CONTRACT.queue.exchange.name,
+    queue: AMPQ_CONTRACT.queue.queue,
+    routingKey: AMPQ_CONTRACT.queue.routingKey,
   })
-  async paymentEvent(request: PaymentsContract.requestSuccess | PaymentsContract.requestFailed): Promise<void> {
-    const { event } = request.type;
-    switch (event) {
-      case PaymentsContract.PaymentEventType.successfulPayment:
+  async paymentEvent(request: OutboxEventEntity): Promise<void> {
+    const { eventName } = request;
+    switch (eventName) {
+      case AMPQ_CONTRACT.EVENTS.PAYMENTS.successfulPayment:
         this.eventEmitter.emit(PaymentEventType.successSubscription, request);
         break;
-      case PaymentsContract.PaymentEventType.failedPayment:
+      case AMPQ_CONTRACT.EVENTS.PAYMENTS.failedPayment:
         this.eventEmitter.emit(PaymentEventType.failedSubscription, request);
         break;
       default:

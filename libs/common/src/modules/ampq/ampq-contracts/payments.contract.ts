@@ -1,14 +1,12 @@
-import { QueueDeclarationInterface } from '@common/modules/ampq/ampq-contracts/shared/queue-declaration.interface';
 import { AmqpBaseRequestInterface } from '@common/modules/ampq/ampq-contracts/shared/amqp-base-request.interface';
-import { EXCHANGE_PAYMENTS } from '@common/modules/ampq/ampq-contracts/exchanges/payments.exchange';
 
 export namespace PaymentsContract {
-  export const queue: QueueDeclarationInterface = {
-    exchange: EXCHANGE_PAYMENTS,
-    queue: `${EXCHANGE_PAYMENTS.name}-queue`,
-    routingKey: `${EXCHANGE_PAYMENTS.name}-queue`,
-    queueOptions: { durable: true },
-  };
+  // export const queue: QueueDeclarationInterface = {
+  //   exchange: EXCHANGE_PAYMENTS,
+  //   queue: `${EXCHANGE_PAYMENTS.name}-queue`,
+  //   routingKey: `${EXCHANGE_PAYMENTS.name}-queue`,
+  //   queueOptions: { durable: true },
+  // };
   export type requestSuccess = AmqpBaseRequestInterface<SuccessfulPaymentRequestInterface>;
   export type requestFailed = AmqpBaseRequestInterface<FailedPaymentRequestInterface>;
   export const PaymentEventType = {

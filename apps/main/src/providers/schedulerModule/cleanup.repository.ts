@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { Status, StatusSubscriptionType } from '@prisma/client';
 import { SubscriptionEntity } from '../../modules/subscriptions/domain/subscription.entity';
 import { plainToInstance } from 'class-transformer';

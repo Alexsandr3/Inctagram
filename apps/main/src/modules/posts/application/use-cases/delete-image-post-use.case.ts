@@ -4,11 +4,10 @@ import { NotificationException } from '@common/main/validators/result-notificati
 import { PostsService } from '../posts.service';
 import { NotificationCode } from '@common/configuration/notificationCode';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { ImagesContract } from '@common/modules/ampq/ampq-contracts/images.contract';
-import { randomUUID } from 'crypto';
-import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 import { Logger } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OUTBOX_EVENT } from '@common/modules/outbox/outbox.processor';
+import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 /**
  * Delete image command
@@ -26,7 +25,7 @@ export class DeleteImageExistingPostUseCase
   constructor(
     private readonly postsRepository: IPostsRepository,
     private readonly postsService: PostsService,
-    private readonly amqpConnection: AmqpConnection,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
   }
@@ -38,39 +37,22 @@ export class DeleteImageExistingPostUseCase
   async executeUseCase(command: DeleteImageExistingPostCommand): Promise<void> {
     const { userId, postId, uploadId } = command;
     //find post and check owner
-    const post = await this.postsService.findPostAndCheckUserForOwner(userId, postId);
+    const foundPost = await this.postsService.findPostAndCheckUserForOwner(userId, postId);
     //check owner and last image with huge size
-    if (post.hasLastImage())
+    if (foundPost.hasLastImage())
       throw new NotificationException(
-        `Post with id: ${post.id} must have at least one image`,
+        `Post with id: ${foundPost.id} must have at least one image`,
         'post',
         NotificationCode.BAD_REQUEST,
       );
     //change status to deleted for image
-    post.changeStatusToDeletedForImage(uploadId);
+    const { post, event } = foundPost.changeStatusToDeletedForImage(
+      uploadId,
+      `${MICROSERVICES.MAIN}_${DeleteImageExistingPostUseCase.name}`,
+    );
     //update post
-    await this.postsRepository.savePost(post);
+    await this.postsRepository.savePost(post, event);
     //send message to queue
-    // this.eventEmitter.emit(PostsEventType.deleteImages, keys);
-    const message: ImagesContract.request = {
-      requestId: randomUUID(),
-      payload: post.getImagesUrlsForDelete(uploadId),
-      timestamp: Date.now(),
-      type: {
-        microservice: MICROSERVICES.MAIN,
-        event: ImagesContract.ImageEventType.deleteImages,
-      },
-    };
-    //send to rabbitmq
-    await this.amqpConnection.publish<ImagesContract.request>(
-      ImagesContract.queue.exchange.name,
-      ImagesContract.queue.routingKey,
-      message,
-    );
-    this.logg.log(
-      `Message sent to queue ${ImagesContract.queue.exchange.name} with message ${JSON.stringify(message)} from ${
-        DeleteImageExistingPostUseCase.name
-      }`,
-    );
+    this.eventEmitter.emit(OUTBOX_EVENT, event);
   }
 }

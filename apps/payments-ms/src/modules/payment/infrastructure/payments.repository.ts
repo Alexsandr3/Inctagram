@@ -3,9 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Payment } from '@payments-ms/modules/payment/domain/payment.entity';
 import { PaymentStatus } from '@common/main/types/paymentStatus';
+import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 
 export abstract class IPaymentsRepository {
-  abstract save(payment: Payment): Promise<Payment>;
+  abstract save(payment: Payment, event?: OutboxEventEntity): Promise<Payment>;
 
   abstract getPaymentWithStatusPendingByPaymentSessionId(id: string): Promise<Payment>;
 }
@@ -15,9 +17,10 @@ export class PaymentsRepository implements IPaymentsRepository {
   constructor(
     @InjectRepository(Payment)
     private paymentsRepository: Repository<Payment>,
+    private readonly prisma: PrismaService,
   ) {}
 
-  getPaymentWithStatusPendingByPaymentSessionId(id: string): Promise<Payment> {
+  async getPaymentWithStatusPendingByPaymentSessionId(id: string): Promise<Payment> {
     return this.paymentsRepository.findOne({
       where: {
         paymentSessionId: id,
@@ -26,7 +29,16 @@ export class PaymentsRepository implements IPaymentsRepository {
     });
   }
 
-  save(payment: Payment): Promise<Payment> {
+  async save(payment: Payment, event?: OutboxEventEntity): Promise<Payment> {
+    if (event) {
+      await this.prisma.outBoxEvent.create({
+        data: {
+          senderService: event.senderService,
+          eventName: event.eventName,
+          payload: event.payload,
+        },
+      });
+    }
     return this.paymentsRepository.save(payment);
   }
 }

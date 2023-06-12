@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BadRequestException } from '@nestjs/common';
 import { GoogleRegistrationStrategy } from './google-registration.strategy';
 import { ValidatorService } from '../../validator.service';
-import { PrismaService } from '../../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { AuthService } from '../../application/auth.service';
 import { IUsersRepository, PrismaUsersRepository } from '../../../users/infrastructure/users.repository';
 import { ApiConfigModule } from '@common/modules/api-config/api.config.module';

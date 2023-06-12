@@ -1,13 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
 import { IPaymentsRepository } from '@payments-ms/modules/payment/infrastructure/payments.repository';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { StripeEventType } from '@common/main/types/stripe-event.type';
-import { randomUUID } from 'crypto';
-import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 import { Logger } from '@nestjs/common';
-import { FailedPaymentUseCase } from '@payments-ms/modules/payment/application/use-cases/failed-payment-use.case';
-import { PaymentsContract } from '@common/modules/ampq/ampq-contracts/payments.contract';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OUTBOX_EVENT } from '@common/modules/outbox/outbox.processor';
+import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 export class SuccessfulPaymentCommand {
   constructor(public readonly eventType: StripeEventType) {}
@@ -19,10 +17,7 @@ export class SuccessfulPaymentUseCase
   implements ICommandHandler<SuccessfulPaymentCommand>
 {
   private readonly logg = new Logger(SuccessfulPaymentUseCase.name);
-  constructor(
-    private readonly paymentsRepository: IPaymentsRepository,
-    private readonly amqpConnection: AmqpConnection,
-  ) {
+  constructor(private readonly paymentsRepository: IPaymentsRepository, private readonly eventEmitter: EventEmitter2) {
     super();
   }
 
@@ -36,32 +31,13 @@ export class SuccessfulPaymentUseCase
     const currentPayment = await this.paymentsRepository.getPaymentWithStatusPendingByPaymentSessionId(id);
     if (!currentPayment) return;
     //change payment status to success
-    currentPayment.changeStatusToSuccess(command.eventType);
+    const { payment, event } = currentPayment.changeStatusToSuccess(
+      command.eventType,
+      `${MICROSERVICES.PAYMENTS}_${SuccessfulPaymentUseCase.name}`,
+    );
     //save payment
-    await this.paymentsRepository.save(currentPayment);
+    await this.paymentsRepository.save(payment, event);
     //send notification to user
-    const message: PaymentsContract.requestSuccess = {
-      requestId: randomUUID(),
-      payload: {
-        sessionId: id,
-        customer,
-        subscription,
-      },
-      timestamp: Date.now(),
-      type: {
-        microservice: MICROSERVICES.PAYMENTS,
-        event: PaymentsContract.PaymentEventType.successfulPayment,
-      },
-    };
-    await this.amqpConnection.publish<PaymentsContract.requestSuccess>(
-      PaymentsContract.queue.exchange.name,
-      PaymentsContract.queue.routingKey,
-      message,
-    );
-    this.logg.log(
-      `Message sent to queue ${PaymentsContract.queue.exchange.name} with message ${JSON.stringify(message)} from ${
-        FailedPaymentUseCase.name
-      }`,
-    );
+    this.eventEmitter.emit(OUTBOX_EVENT, event);
   }
 }

@@ -1,10 +1,11 @@
 import { BusinessAccountEntity } from '../domain/business-account.entity';
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { plainToInstance } from 'class-transformer';
 import { SubscriptionEntity } from '../domain/subscription.entity';
 import { StatusSubscriptionType } from '@common/main/types/status-subscription.type';
 import { PaymentStatus } from '@common/main/types/paymentStatus';
+import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
 
 /**
  * Abstract class that represents the repository of the Clients.
@@ -17,7 +18,10 @@ export abstract class ISubscriptionsRepository {
 
   abstract getSubscriptionWithStatusPendingByPaymentSessionId(id: string): Promise<SubscriptionEntity>;
 
-  abstract saveSubscriptionWithPayment(subscriptionEntity: SubscriptionEntity): Promise<void>;
+  abstract saveSubscriptionWithPayment(
+    subscriptionEntity: SubscriptionEntity,
+    event?: OutboxEventEntity,
+  ): Promise<void>;
 
   abstract updateBusinessAccountWithSubscriptionAndPayment(businessAccount: BusinessAccountEntity): Promise<void>;
 
@@ -52,7 +56,7 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
     return plainToInstance(SubscriptionEntity, subscription);
   }
 
-  async saveSubscriptionWithPayment(subscriptionEntity: SubscriptionEntity): Promise<void> {
+  async saveSubscriptionWithPayment(subscriptionEntity: SubscriptionEntity, event?: OutboxEventEntity): Promise<void> {
     //create subscription and payment in one transaction
     return this.prisma.$transaction(async tx => {
       await tx.subscription.update({
@@ -77,6 +81,17 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
           status: subscriptionEntity.payments[0].status,
         },
       });
+      //create event
+      if (event) {
+        await tx.outBoxEvent.create({
+          data: {
+            userId: event.userId,
+            senderService: event.senderService,
+            eventName: event.eventName,
+            payload: event.payload,
+          },
+        });
+      }
     });
   }
 

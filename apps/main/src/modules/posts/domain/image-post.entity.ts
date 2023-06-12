@@ -48,4 +48,8 @@ export class ImagePostEntity extends BaseImageEntity implements PostImage {
     this.status = PostStatus.DELETED;
     return this;
   }
+
+  getImagesUrls(): string {
+    return this.url;
+  }
 }

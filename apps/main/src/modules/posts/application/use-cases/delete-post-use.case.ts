@@ -3,6 +3,9 @@ import { IUsersRepository } from '../../../users/infrastructure/users.repository
 import { IPostsRepository } from '../../infrastructure/posts.repository';
 import { PostsService } from '../posts.service';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { OUTBOX_EVENT } from '@common/modules/outbox/outbox.processor';
+import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 /**
  * Delete post command
@@ -20,6 +23,7 @@ export class DeletePostUseCase
     private readonly usersRepository: IUsersRepository,
     private readonly postsRepository: IPostsRepository,
     private readonly postsService: PostsService,
+    private readonly eventEmitter: EventEmitter2,
   ) {
     super();
   }
@@ -32,9 +36,12 @@ export class DeletePostUseCase
     const { userId, postId } = command.dto;
 
     //find post and check owner
-    const post = await this.postsService.findPostAndCheckUserForOwner(userId, postId);
+    const foundPost = await this.postsService.findPostAndCheckUserForOwner(userId, postId);
 
-    post.setPostStatusToDeleted();
-    await this.postsRepository.savePost(post);
+    const { post, event } = foundPost.setPostStatusToDeleted(`${MICROSERVICES.MAIN}_${DeletePostUseCase.name}`);
+
+    await this.postsRepository.savePost(post, event);
+
+    this.eventEmitter.emit(OUTBOX_EVENT, event);
   }
 }

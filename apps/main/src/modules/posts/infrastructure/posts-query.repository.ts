@@ -1,4 +1,4 @@
-import { PrismaService } from '../../../providers/prisma/prisma.service';
+import { PrismaService } from '@common/modules/prisma/prisma.service';
 import { PostEntity } from '../domain/post.entity';
 import { plainToInstance } from 'class-transformer';
 import { PostViewModel } from '../api/view-models/post-view.dto';

@@ -11,14 +11,8 @@ import LogsMiddleware from '@common/modules/logger/logs.middleware';
 import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 import { ProvidersModule } from './providers/providers.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
-import { AmpqModule } from '@common/modules/ampq/ampq.module';
-import { RabbitMQExchangeConfig } from '@golevelup/nestjs-rabbitmq';
-import { EXCHANGE_IMAGES } from '@common/modules/ampq/ampq-contracts/exchanges/images.exchange';
 import { ChannelsModule } from './modules/channels/channels.module';
-import { EXCHANGE_SUBSCRIPTIONS } from '@common/modules/ampq/ampq-contracts/exchanges/subscriptions.exchange';
-import { EXCHANGE_PAYMENTS } from '@common/modules/ampq/ampq-contracts/exchanges/payments.exchange';
-
-const AMPQ_EXCHANGES: RabbitMQExchangeConfig[] = [EXCHANGE_IMAGES, EXCHANGE_SUBSCRIPTIONS, EXCHANGE_PAYMENTS];
+import { OutboxModule } from '@common/modules/outbox/outbox.module';
 
 @Module({
   imports: [
@@ -28,14 +22,14 @@ const AMPQ_EXCHANGES: RabbitMQExchangeConfig[] = [EXCHANGE_IMAGES, EXCHANGE_SUBS
     ApiJwtModule,
     SessionsModule,
     PostsModule,
-    // PaymentsModule,
     EventEmitterModule.forRoot(),
     SuperAdminModule,
     // RedirectModule,
     ProvidersModule,
     SubscriptionsModule,
-    AmpqModule.forRoot(AMPQ_EXCHANGES),
+    // AmpqModule.forRootAsync(),
     ChannelsModule,
+    OutboxModule,
   ],
   controllers: [AppController],
   providers: [],
