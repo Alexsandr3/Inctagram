@@ -23,9 +23,7 @@ export class CleanupTask {
   // @Cron(CronExpression.EVERY_10_SECONDS)
   public async handlerCheckPostWithStatusDeleted() {
     //need delete post with status deleted if status deleted and updated_at is older than 2 days
-    //todo: change to 2 days
-    const tenDaysAgo = new Date(Date.now() - 5 * 1000);
-    // const tenDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
+    const tenDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
     await this.cleanupService.removePostWithStatusDeleted(tenDaysAgo);
   }
 
