@@ -4,7 +4,6 @@ import { NotificationException } from '@common/main/validators/result-notificati
 import { PostsService } from '../posts.service';
 import { NotificationCode } from '@common/configuration/notificationCode';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
-import { Logger } from '@nestjs/common';
 import { MICROSERVICES } from '@common/modules/ampq/ampq-contracts/shared/microservices';
 
 /**
@@ -19,7 +18,6 @@ export class DeleteImageExistingPostUseCase
   extends BaseNotificationUseCase<DeleteImageExistingPostCommand, void>
   implements ICommandHandler<DeleteImageExistingPostCommand>
 {
-  private readonly logg = new Logger(DeleteImageExistingPostUseCase.name);
   constructor(private readonly postsRepository: IPostsRepository, private readonly postsService: PostsService) {
     super();
   }

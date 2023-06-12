@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { BaseNotificationUseCase } from '@common/main/use-cases/base-notification.use-case';
-import { Logger } from '@nestjs/common';
 import { ISubscriptionsRepository } from '../../infrastructure/subscriptions.repository';
 import { IUsersRepository } from '../../../users/infrastructure/users.repository';
 import { PaymentEventSuccess } from '../subscriptions-event-handler';
@@ -15,7 +14,6 @@ export class ActivateSubscriptionUseCase
   extends BaseNotificationUseCase<ActivateSubscriptionCommand, void>
   implements ICommandHandler<ActivateSubscriptionCommand>
 {
-  private readonly logg = new Logger(ActivateSubscriptionUseCase.name);
   constructor(
     private readonly subscriptionsRepository: ISubscriptionsRepository,
     private readonly usersRepository: IUsersRepository,

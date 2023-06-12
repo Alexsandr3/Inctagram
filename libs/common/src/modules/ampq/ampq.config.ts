@@ -7,7 +7,6 @@ const AMPQ_EXCHANGES: RabbitMQExchangeConfig[] = [EXCHANGE_INCTAGRAM];
 /**
  * AMPQ configuration accepts an array of exchanges and the URI of the broker.
  * @param configService
- * @param exchanges
  */
 export const ampqConfig = (configService: ApiConfigService): RabbitMQConfig => {
   const uri = configService.RABBITMQ_URL;

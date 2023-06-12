@@ -1,11 +1,11 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CleanupRepository } from './cleanup.repository';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { SubscriptionEventType } from '@common/main/subscription-event.type';
 
 @Injectable()
 export class CleanupService {
-  private readonly logger = new Logger(CleanupService.name);
+  // private readonly logger = new Logger(CleanupService.name);
   constructor(
     private readonly cleanupRepository: CleanupRepository,
     private readonly eventEmitter: EventEmitter2, // private readonly amqpConnection: AmqpConnection,
