@@ -16,6 +16,8 @@ import { IPostsRepository } from '../../posts/infrastructure/posts.repository';
 import DataLoader from 'dataloader';
 import { PostLoader } from '../post-loader';
 import { Loader } from 'nestjs-dataloader';
+import { SubscriptionLoader } from '../subscription-loader';
+import { SubscriptionForSuperAdminViewModel } from './models/subscription-for-super-admin-view.model';
 
 @UseGuards(BasicAuthForGraphqlGuard)
 @Resolver(() => UserForSuperAdminViewModel)
@@ -66,5 +68,14 @@ export class SuperAdminResolver {
   async imagesCount(@Parent() user: UserForSuperAdminViewModel): Promise<number> {
     const { userId } = user;
     return this.postsRepository.getImagesCountByUserId(userId);
+  }
+
+  @ResolveField(() => [SubscriptionForSuperAdminViewModel])
+  async payments(
+    @Parent() user: UserForSuperAdminViewModel,
+    @Loader(SubscriptionLoader) subscriptionLoader: DataLoader<number, SubscriptionForSuperAdminViewModel[]>,
+  ): Promise<SubscriptionForSuperAdminViewModel[]> {
+    const { userId } = user;
+    return subscriptionLoader.load(userId);
   }
 }

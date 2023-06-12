@@ -13,10 +13,13 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { DataLoaderInterceptor } from 'nestjs-dataloader';
 import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 import { ApiConfigService } from '@common/modules/api-config/api.config.service';
+import { SubscriptionLoader } from './subscription-loader';
+import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
 
 const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
 const loaderProviders = [
   PostLoader,
+  SubscriptionLoader,
   {
     provide: APP_INTERCEPTOR,
     useClass: DataLoaderInterceptor,
@@ -27,6 +30,7 @@ const loaderProviders = [
   imports: [
     CqrsModule,
     ApiConfigModule,
+    SubscriptionsModule,
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
       imports: [ApiConfigModule],

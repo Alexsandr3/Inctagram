@@ -39,5 +39,6 @@ const useCases = [
       useClass: SubscriptionsQueryRepository,
     },
   ],
+  exports: [ISubscriptionsRepository],
 })
 export class SubscriptionsModule {}

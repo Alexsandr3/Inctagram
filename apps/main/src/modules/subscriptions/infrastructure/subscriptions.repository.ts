@@ -6,6 +6,7 @@ import { SubscriptionEntity } from '../domain/subscription.entity';
 import { StatusSubscriptionType } from '@common/main/types/status-subscription.type';
 import { PaymentStatus } from '@common/main/types/paymentStatus';
 import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
+import { SubscriptionForSuperAdminViewModel } from '../../super-admin/api/models/subscription-for-super-admin-view.model';
 
 /**
  * Abstract class that represents the repository of the Clients.
@@ -26,6 +27,8 @@ export abstract class ISubscriptionsRepository {
   abstract updateBusinessAccountWithSubscriptionAndPayment(businessAccount: BusinessAccountEntity): Promise<void>;
 
   abstract getLastActiveCreatedSubscriptionByCustomerId(customerId: string): Promise<SubscriptionEntity>;
+
+  abstract getSubscriptionForSuperAdmin(userIds: number[]): Promise<SubscriptionForSuperAdminViewModel[]>;
 }
 
 @Injectable()
@@ -234,5 +237,18 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
       },
     });
     return plainToInstance(SubscriptionEntity, subscription);
+  }
+
+  async getSubscriptionForSuperAdmin(userIds: number[]): Promise<SubscriptionForSuperAdminViewModel[]> {
+    const subscriptions = await this.prisma.subscription.findMany({
+      where: {
+        businessAccountId: {
+          in: userIds,
+        },
+      },
+    });
+    return subscriptions.map(s =>
+      SubscriptionForSuperAdminViewModel.create(s.businessAccountId, s.dateOfPayment, s.price, s.type, s.paymentType),
+    );
   }
 }
