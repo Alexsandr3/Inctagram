@@ -1,5 +1,5 @@
 import { INestApplication, Logger } from '@nestjs/common';
-import { ApiConfigService } from '../modules/api-config/api.config.service';
+import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 import * as ngrok from 'ngrok';
 
 export const connectToNgrok = async (app: INestApplication) => {
