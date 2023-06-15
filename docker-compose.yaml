@@ -5,14 +5,14 @@ services:
    build:
      context: .
      dockerfile: ./apps/main/Dockerfile
-#   command: yarn migrate:deploy:main
+    #   command: yarn migrate:deploy:main
    env_file:
      - .env
    volumes:
      - .:/usr/src/app
      - /usr/src/app/node_modules
    ports:
-     - '5003:5003'
+    - '5003:5003'
 #   restart: always
 
   images-ms:
