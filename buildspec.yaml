@@ -6,9 +6,12 @@ phases:
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 775076602207.dkr.ecr.us-east-1.amazonaws.com
   build:
       commands:
-        - docker tag inctagram-main:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/main:latest
-        - docker tag inctagram-images-ms:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/images:latest
-        - docker tag inctagram-payments-ms:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/payments:latest
+        - docker build -t main -f ./apps/main/Dockerfile .
+        - docker tag main:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/main:latest
+        - docker build -t images -f ./apps/images-ms/Dockerfile .
+        - docker tag images:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/images:latest
+        - docker build -t payments -f ./apps/payments-ms/Dockerfile .
+        - docker tag payments:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/payments:latest
   post_build:
       commands:
         - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/main:latest
