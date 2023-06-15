@@ -16,6 +16,6 @@ phases:
       - docker tag inctagram-payments-ms:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/inctagram-payments-ms:latest
   post_build:
     commands:
-      - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/main:latest
-      - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/images:latest
-      - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/payments:latest
+      - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/inctagram-main:latest
+      - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/inctagram-images-ms:latest
+      - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/inctagram-payments-ms:latest
