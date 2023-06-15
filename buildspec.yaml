@@ -4,12 +4,12 @@ phases:
   pre_build:
     commands:
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 775076602207.dkr.ecr.us-east-1.amazonaws.com
-    build:
+  build:
       commands:
         - docker tag inctagram-main:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/main:latest
         - docker tag inctagram-images-ms:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/images:latest
         - docker tag inctagram-payments-ms:latest 775076602207.dkr.ecr.us-east-1.amazonaws.com/payments:latest
-    post_build:
+  post_build:
       commands:
         - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/main:latest
         - docker push 775076602207.dkr.ecr.us-east-1.amazonaws.com/images:latest
