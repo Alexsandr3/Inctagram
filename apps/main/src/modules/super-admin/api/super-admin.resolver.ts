@@ -8,8 +8,6 @@ import { PaginationUsersInputDto } from './input-dto/pagination-users.input.args
 import { Paginated } from '../../../main/shared/paginated';
 import { UserForSuperAdminViewModel } from './models/user-for-super-admin-view.model';
 import { UsersWithPaginationViewModel } from './models/users-with-pagination-view.model';
-import { UseGuards } from '@nestjs/common';
-import { BasicAuthForGraphqlGuard } from './guards/basic-auth-for-graphql.guard';
 import { UpdateUserStatusInputArgs } from './input-dto/update-user-status-input.args';
 import { PostForSuperAdminViewModel } from './models/post-for-super-admin-view.model';
 import { IPostsRepository } from '../../posts/infrastructure/posts.repository';
@@ -18,6 +16,10 @@ import { PostLoader } from '../post-loader';
 import { Loader } from 'nestjs-dataloader';
 import { SubscriptionLoader } from '../subscription-loader';
 import { SubscriptionForSuperAdminViewModel } from './models/subscription-for-super-admin-view.model';
+import { ImageForSuperAdminViewModel } from './models/image-for-super-admin-view.model';
+import { ImageLoader } from '../image-loader';
+import { UseGuards } from '@nestjs/common';
+import { BasicAuthForGraphqlGuard } from './guards/basic-auth-for-graphql.guard';
 
 @UseGuards(BasicAuthForGraphqlGuard)
 @Resolver(() => UserForSuperAdminViewModel)
@@ -68,6 +70,15 @@ export class SuperAdminResolver {
   async imagesCount(@Parent() user: UserForSuperAdminViewModel): Promise<number> {
     const { userId } = user;
     return this.postsRepository.getImagesCountByUserId(userId);
+  }
+
+  @ResolveField(() => [ImageForSuperAdminViewModel])
+  async getImagesUser(
+    @Parent() user: UserForSuperAdminViewModel,
+    @Loader(ImageLoader) imageLoader: DataLoader<number, ImageForSuperAdminViewModel[]>,
+  ): Promise<ImageForSuperAdminViewModel[]> {
+    const { userId } = user;
+    return imageLoader.load(userId);
   }
 
   @ResolveField(() => [SubscriptionForSuperAdminViewModel])

@@ -15,11 +15,13 @@ import { ApiConfigModule } from '@common/modules/api-config/api.config.module';
 import { ApiConfigService } from '@common/modules/api-config/api.config.service';
 import { SubscriptionLoader } from './subscription-loader';
 import { SubscriptionsModule } from '../subscriptions/subscriptions.module';
+import { ImageLoader } from './image-loader';
 
 const useCases = [DeleteUserUseCase, UpdateUserStatusUseCase];
 const loaderProviders = [
   PostLoader,
   SubscriptionLoader,
+  ImageLoader,
   {
     provide: APP_INTERCEPTOR,
     useClass: DataLoaderInterceptor,

@@ -7,6 +7,7 @@ import { ImagePostEntity } from '../domain/image-post.entity';
 import { PostForSuperAdminViewModel } from '../../super-admin/api/models/post-for-super-admin-view.model';
 import { UserStatus } from '@prisma/client';
 import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
+import { ImageForSuperAdminViewModel } from '../../super-admin/api/models/image-for-super-admin-view.model';
 
 /**
  * Abstract class for posts repository
@@ -30,6 +31,8 @@ export abstract class IPostsRepository {
   abstract getPostsCountByUserId(userId: number): Promise<number>;
 
   abstract getImagesCountByUserId(userId: number): Promise<number>;
+
+  abstract getImages(userIds: number[]): Promise<ImageForSuperAdminViewModel[]>;
 }
 
 @Injectable()
@@ -157,6 +160,20 @@ export class PostsRepository implements IPostsRepository {
       where: { post: { ownerId: userId, user: { status: { notIn: [UserStatus.DELETED] } } } },
     });
     return count / 2;
+  }
+
+  async getImages(userIds: number[]): Promise<ImageForSuperAdminViewModel[]> {
+    const images = await this.prisma.postImage.findMany({
+      where: {
+        post: { ownerId: { in: userIds }, user: { status: { notIn: [UserStatus.DELETED] } } },
+      },
+      include: { post: { include: { user: true } } },
+    });
+    //filter images by sizeType where sizeType starts with 'HUGE'
+    const filteredImages = images.filter(i => i.sizeType.startsWith('HUGE'));
+    return filteredImages.map(i =>
+      ImageForSuperAdminViewModel.createIns(i.post.ownerId, i.fileSize, i.url, i.createdAt, i.updatedAt),
+    );
   }
 }
 
