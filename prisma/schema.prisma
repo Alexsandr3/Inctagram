@@ -280,3 +280,22 @@ model Payment {
 
   @@map("Payments")
 }
+
+enum OutBoxEventType {
+  PENDING_FOR_BROKER
+  SENT_TO_BROKER
+  FAILED_SEND_TO_BROKER
+}
+
+model OutBoxEvent {
+  id            Int             @id @default(autoincrement())
+  userId        Int?
+  senderService String
+  statusEvent   OutBoxEventType @default(PENDING_FOR_BROKER)
+  eventName     String
+  payload       Json
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@map("OutBoxEvents")
+}

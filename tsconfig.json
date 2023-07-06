@@ -17,6 +17,26 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "paths": {
+      "@common": [
+        "libs/common/src"
+      ],
+      "@common/*": [
+        "libs/common/src/*"
+      ],
+      "@images-ms": [
+        "apps/images-ms/src"
+      ],
+      "@images-ms/*": [
+        "apps/images-ms/src/*"
+      ],
+      "@payments-ms": [
+        "apps/payments-ms/src"
+      ],
+      "@payments-ms/*": [
+        "apps/payments-ms/src/*"
+      ]
+    }
   }
 }

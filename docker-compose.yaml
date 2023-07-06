@@ -1,0 +1,46 @@
+version: '3.8'
+services:
+
+  main:
+   build:
+     context: .
+     dockerfile: ./apps/main/Dockerfile
+    #   command: yarn migrate:deploy:main
+   env_file:
+     - .env
+   volumes:
+     - .:/usr/src/app
+     - /usr/src/app/node_modules
+   ports:
+    - '5003:5003'
+#   restart: always
+
+  images-ms:
+    build:
+      context: .
+      dockerfile: ./apps/images-ms/Dockerfile
+#    command: yarn migrate:deploy:images-ms
+    env_file:
+      - .env
+    volumes:
+         - .:/usr/src/app
+         - /usr/src/app/node_modules
+    ports:
+      - '5004:5004'
+#    restart: always
+
+  payments-ms:
+    build:
+      context: .
+      dockerfile: ./apps/payments-ms/Dockerfile
+#    command: yarn migrate:deploy:payments-ms
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - '5005:5005'
+#    restart: always
+
+
