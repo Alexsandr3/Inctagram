@@ -8,6 +8,9 @@ import { PostForSuperAdminViewModel } from '../../super-admin/api/models/post-fo
 import { UserStatus } from '@prisma/client';
 import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
 import { ImageForSuperAdminViewModel } from '../../super-admin/api/models/image-for-super-admin-view.model';
+import { Paginated } from '../../../main/shared/paginated';
+import { ImagesWithPaginationViewModel } from '../../super-admin/api/models/images-with-pagination-view.model';
+import { IPaginationInputDto } from '../../super-admin/api/input-dto/pagination.input.interface';
 
 /**
  * Abstract class for posts repository
@@ -32,7 +35,10 @@ export abstract class IPostsRepository {
 
   abstract getImagesCountByUserId(userId: number): Promise<number>;
 
-  abstract getImages(userIds: number[]): Promise<ImageForSuperAdminViewModel[]>;
+  abstract getImagesById(
+    userId: number,
+    pagination: IPaginationInputDto,
+  ): Promise<Paginated<ImageForSuperAdminViewModel[]>>;
 }
 
 @Injectable()
@@ -111,6 +117,7 @@ export class PostsRepository implements IPostsRepository {
       const images = instancePost.images.map(i => {
         return {
           postId: post.id,
+          ownerId: i.ownerId,
           status: i.status,
           imageType: i.imageType,
           sizeType: i.sizeType,
@@ -162,19 +169,59 @@ export class PostsRepository implements IPostsRepository {
     return count / 2;
   }
 
-  async getImages(userIds: number[]): Promise<ImageForSuperAdminViewModel[]> {
+  //for super admin
+  async getImagesById(
+    userId: number,
+    pagination: IPaginationInputDto,
+  ): Promise<Paginated<ImageForSuperAdminViewModel[]>> {
+    const { skip, getPageSize, getPageNumber, sortBy, isSortDirection } = pagination;
+
     const images = await this.prisma.postImage.findMany({
-      where: {
-        post: { ownerId: { in: userIds }, user: { status: { notIn: [UserStatus.DELETED] } } },
-      },
-      include: { post: { include: { user: true } } },
+      orderBy: { [sortBy]: isSortDirection },
+      skip: skip,
+      take: getPageSize * 2, //because we have 2 images for each post
+      where: { post: { ownerId: userId, user: { status: { notIn: [UserStatus.DELETED] } } } },
     });
+    const usersCount = await this.getImagesCountByUserId(userId);
     //filter images by sizeType where sizeType starts with 'HUGE'
     const filteredImages = images.filter(i => i.sizeType.startsWith('HUGE'));
-    return filteredImages.map(i =>
-      ImageForSuperAdminViewModel.createIns(i.post.ownerId, i.fileSize, i.url, i.createdAt, i.updatedAt),
+    const viewImages = filteredImages.map(i =>
+      ImageForSuperAdminViewModel.createIns(i.ownerId, i.fileSize, i.url, i.createdAt, i.updatedAt),
     );
+    return ImagesWithPaginationViewModel.getPaginated({
+      items: viewImages,
+      page: getPageNumber,
+      size: getPageSize,
+      count: usersCount,
+    });
   }
+
+  // async getImages(
+  //   userId: number,
+  //   pagination: BasePaginationInputDto,
+  // ): Promise<Paginated<ImageForSuperAdminViewModel[]>> {
+  //   console.log('pagination', pagination);
+  //   console.log('userIds', userIds);
+  //   const images = await this.prisma.postImage.findMany({
+  //     orderBy: { [pagination.sortBy]: pagination.isSortDirection() },
+  //     skip: pagination.skip,
+  //     take: pagination.getPageSize(),
+  //     where: { post: { ownerId: { in: userIds }, user: { status: { notIn: [UserStatus.DELETED] } } } },
+  //   });
+  //
+  //   const usersCount = await this.getImagesCountByUserId(userIds);
+  //   //filter images by sizeType where sizeType starts with 'HUGE'
+  //   const filteredImages = images.filter(i => i.sizeType.startsWith('HUGE'));
+  //   const viewImages = filteredImages.map(i =>
+  //     ImageForSuperAdminViewModel.createIns(i.ownerId, i.fileSize, i.url, i.createdAt, i.updatedAt),
+  //   );
+  //   return ImagesWithPaginationViewModel.getPaginated({
+  //     items: viewImages,
+  //     page: pagination.getPageNumber(),
+  //     size: pagination.getPageSize(),
+  //     count: usersCount,
+  //   });
+  // }
 }
 
 //unused

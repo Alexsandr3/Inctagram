@@ -7,6 +7,9 @@ import { StatusSubscriptionType } from '@common/main/types/status-subscription.t
 import { PaymentStatus } from '@common/main/types/paymentStatus';
 import { OutboxEventEntity } from '@common/modules/outbox/outbox-event.entity';
 import { SubscriptionForSuperAdminViewModel } from '../../super-admin/api/models/subscription-for-super-admin-view.model';
+import { IPaginationInputDto } from '../../super-admin/api/input-dto/pagination.input.interface';
+import { Paginated } from '../../../main/shared/paginated';
+import { PaymentsWithPaginationViewModel } from '../../super-admin/api/models/payments-with-pagination-view.model';
 
 /**
  * Abstract class that represents the repository of the Clients.
@@ -28,7 +31,12 @@ export abstract class ISubscriptionsRepository {
 
   abstract getLastActiveCreatedSubscriptionByCustomerId(customerId: string): Promise<SubscriptionEntity>;
 
+  // Super Admin
   abstract getSubscriptionForSuperAdmin(userIds: number[]): Promise<SubscriptionForSuperAdminViewModel[]>;
+  abstract getPaymentsById(
+    userId: number,
+    pagination: IPaginationInputDto,
+  ): Promise<Paginated<SubscriptionForSuperAdminViewModel[]>>;
 }
 
 @Injectable()
@@ -248,7 +256,52 @@ export class SubscriptionsRepository implements ISubscriptionsRepository {
       },
     });
     return subscriptions.map(s =>
-      SubscriptionForSuperAdminViewModel.create(s.businessAccountId, s.dateOfPayment, s.price, s.type, s.paymentType),
+      SubscriptionForSuperAdminViewModel.create(
+        s.businessAccountId,
+        s.dateOfPayment,
+        s.endDate,
+        s.price,
+        s.type,
+        s.paymentType,
+      ),
     );
+  }
+  async getPaymentsById(
+    userId: number,
+    pagination: IPaginationInputDto,
+  ): Promise<Paginated<SubscriptionForSuperAdminViewModel[]>> {
+    const { skip, getPageSize, getPageNumber, sortBy, isSortDirection } = pagination;
+
+    const [subscriptions, count] = await this.prisma.$transaction([
+      this.prisma.subscription.findMany({
+        where: {
+          businessAccountId: userId,
+        },
+        orderBy: { [sortBy]: isSortDirection },
+        skip: skip,
+        take: getPageSize,
+      }),
+      this.prisma.subscription.count({
+        where: {
+          businessAccountId: userId,
+        },
+      }),
+    ]);
+    const viewPayments = subscriptions.map(s =>
+      SubscriptionForSuperAdminViewModel.create(
+        s.businessAccountId,
+        s.dateOfPayment,
+        s.endDate,
+        s.price,
+        s.type,
+        s.paymentType,
+      ),
+    );
+    return PaymentsWithPaginationViewModel.getPaginated({
+      items: viewPayments,
+      page: getPageNumber,
+      size: getPageSize,
+      count: count,
+    });
   }
 }
