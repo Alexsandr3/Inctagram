@@ -105,13 +105,12 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
     });
     const userWithProfile = plainToInstance(UserEntity, user);
     const url = user.profile.avatars.length > 0 ? user.profile.avatars[0].url : null;
-    const res = UserForSuperAdminViewModel.create(
+    return UserForSuperAdminViewModel.create(
       userWithProfile.id,
       userWithProfile.userName,
       url,
       userWithProfile.createdAt,
       userWithProfile.status,
     );
-    return res;
   }
 }
