@@ -161,6 +161,7 @@ enum Status {
 model PostImage {
   id         Int           @id @default(autoincrement())
   postId     Int?
+  ownerId    Int
   resourceId String
   status     Status        @default(PENDING)
   imageType  ImageType

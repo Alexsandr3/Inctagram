@@ -4,6 +4,7 @@ import { PostStatus } from '@common/main/types/post-status.type';
 
 export class ImagePostEntity extends BaseImageEntity implements PostImage {
   postId: number;
+  ownerId: number;
   status: PostStatus;
   constructor() {
     super();
@@ -12,6 +13,7 @@ export class ImagePostEntity extends BaseImageEntity implements PostImage {
   static initCreate(userId: number, baseImage: BaseImageEntity): ImagePostEntity {
     const imagePost = new ImagePostEntity();
     imagePost.postId = null;
+    imagePost.ownerId = userId;
     imagePost.status = PostStatus.PUBLISHED;
     imagePost.imageType = baseImage.imageType;
     imagePost.sizeType = baseImage.sizeType;

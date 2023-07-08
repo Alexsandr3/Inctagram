@@ -17,7 +17,9 @@ export class SubscriptionForSuperAdminViewModel extends SubscriptionEntity {
   @Field(() => Number, { nullable: true })
   ownerId: number;
   @Field(() => GraphQLISODateTime, { nullable: true })
-  startDate: Date;
+  dataOfPayment: Date;
+  @Field(() => GraphQLISODateTime, { nullable: true })
+  endDateOfSubscription: Date;
   @Field(() => Number, { nullable: true })
   price: number;
   @Field(() => SubscriptionType, { nullable: true })
@@ -31,13 +33,15 @@ export class SubscriptionForSuperAdminViewModel extends SubscriptionEntity {
   static create(
     ownerId: number,
     dataOfPayment: Date,
+    endDateOfSubscription: Date,
     price: number,
     type: string,
     paymentType: string,
   ): SubscriptionForSuperAdminViewModel {
     const subscription = new SubscriptionForSuperAdminViewModel();
     subscription.ownerId = ownerId;
-    subscription.startDate = dataOfPayment;
+    subscription.dataOfPayment = dataOfPayment;
+    subscription.endDateOfSubscription = endDateOfSubscription;
     subscription.price = price;
     subscription.type = type as SubscriptionType;
     subscription.paymentType = paymentType as PaymentMethod;
