@@ -10,6 +10,7 @@ import { UserStatusInputType } from '../../super-admin/api/input-dto/types/user-
 import { PaginationUsersInputDto } from '../../super-admin/api/input-dto/pagination-users.input.args';
 import { Paginated } from '../../../main/shared/paginated';
 import { UsersWithPaginationViewModel } from '../../super-admin/api/models/users-with-pagination-view.model';
+import { PaginationUserInputDto } from '../../super-admin/api/input-dto/pagination-user.input.args';
 
 /**
  * Abstract class for users query repository
@@ -17,17 +18,26 @@ import { UsersWithPaginationViewModel } from '../../super-admin/api/models/users
  */
 export abstract class IUsersQueryRepository {
   abstract findUserById(id: number): Promise<User>;
-
   abstract findUserProfile(userId: number): Promise<ProfileViewModel>;
   abstract findUserAvatars(userId: number): Promise<AvatarsViewModel>;
 
   //need for super-admin
   abstract getUsersForSuperAdmin(usersArgs: PaginationUsersInputDto): Promise<Paginated<UserForSuperAdminViewModel[]>>;
+  abstract getUserForSuperAdmin(usersArgs: PaginationUserInputDto): Promise<UserForSuperAdminViewModel>;
 }
 
 @Injectable()
 export class PrismaUsersQueryRepository implements IUsersQueryRepository {
   constructor(private readonly prisma: PrismaService) {}
+
+  private getDefaultArgs(usersArgs: PaginationUsersInputDto | PaginationUserInputDto) {
+    return {
+      orderBy: { [usersArgs.sortBy]: usersArgs.isSortDirection() },
+      skip: usersArgs.skip,
+      take: usersArgs.getPageSize(),
+      include: { profile: { include: { avatars: true } } },
+    };
+  }
 
   async findUserById(id: number) {
     return this.prisma.user.findFirst({ where: { id } });
@@ -50,12 +60,7 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
 
   //need for super-admin
   async getUsersForSuperAdmin(usersArgs: PaginationUsersInputDto): Promise<Paginated<UserForSuperAdminViewModel[]>> {
-    let defaultArgs = {
-      orderBy: { [usersArgs.sortBy]: usersArgs.isSortDirection() },
-      skip: usersArgs.skip,
-      take: usersArgs.getPageSize(), //limit - default 10
-      include: { profile: { include: { avatars: true } } },
-    };
+    let defaultArgs = this.getDefaultArgs(usersArgs);
     if (usersArgs.status === UserStatusInputType.all) {
       defaultArgs['where'] = { status: { notIn: [UserStatus.DELETED] } };
     }
@@ -90,5 +95,23 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
       size: usersArgs.getPageSize(),
       count: usersCount,
     });
+  }
+  async getUserForSuperAdmin(usersArgs: PaginationUserInputDto): Promise<UserForSuperAdminViewModel> {
+    let defaultArgs = this.getDefaultArgs(usersArgs);
+    // get user by id with profile
+    const user = await this.prisma.user.findUnique({
+      where: { id: usersArgs.userId },
+      include: { ...defaultArgs.include },
+    });
+    const userWithProfile = plainToInstance(UserEntity, user);
+    const url = user.profile.avatars.length > 0 ? user.profile.avatars[0].url : null;
+    const res = UserForSuperAdminViewModel.create(
+      userWithProfile.id,
+      userWithProfile.userName,
+      url,
+      userWithProfile.createdAt,
+      userWithProfile.status,
+    );
+    return res;
   }
 }
