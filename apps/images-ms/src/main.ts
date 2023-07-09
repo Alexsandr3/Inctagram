@@ -16,7 +16,7 @@ async function bootstrap() {
 
   const PORT = app.get(ApiConfigService).PORT_IMAGES;
   //configuration swagger
-  swaggerConfig(createdApp);
+  swaggerConfig(createdApp, 'swagger-images');
   await createdApp.listen(PORT).then(async () => {
     Logger.log(`Server running on http://localhost:${PORT} --- IMAGES microservice`, 'Bootstrap');
     console.log(`Server is listening on ${await app.getUrl()}`);

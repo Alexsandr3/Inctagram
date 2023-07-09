@@ -4,7 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 /**
  * @swagger configuration swagger
  */
-export const swaggerConfig = (app: INestApplication) => {
+export const swaggerConfig = (app: INestApplication, name: string) => {
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Open API for team  The 🍊🍊🍊 Dogs 🦮 🔜 🤦🏽‍♂️')
     .setDescription('Week.999 division into more microservices 🤦🏽')
@@ -16,5 +16,5 @@ export const swaggerConfig = (app: INestApplication) => {
   //create static swagger for vercel, heroku, etc
   // swaggerStatic(app);
   //end swagger configuration
-  return SwaggerModule.setup('swagger', app, document);
+  return SwaggerModule.setup(name, app, document);
 };

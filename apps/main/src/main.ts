@@ -17,7 +17,7 @@ async function bootstrap() {
   //configuration app
   const PORT = app.get(ApiConfigService).PORT;
   //configuration swagger
-  swaggerConfig(createdApp);
+  swaggerConfig(createdApp, 'swagger-main');
   await createdApp.listen(PORT).then(async () => {
     Logger.log(`Server running on http://localhost:${PORT} --- MAIN microservice`, 'Bootstrap');
     console.log(`Server is listening on ${await app.getUrl()}`);
