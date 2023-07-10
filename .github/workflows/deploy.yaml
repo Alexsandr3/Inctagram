@@ -1,0 +1,36 @@
+name: Deploy to VPS from The Earth
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      #
+      #      - name: Install dependencies
+      #        run: yarn
+      #
+      #      - name: Build main service
+      #        run: yarn build
+
+      - name: SSH Setup
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          username: ${{ secrets.REMOTE_USER }}
+          password: ${{ secrets.REMOTE_PASSWORD }}
+          port: 22
+          script: |
+            cd ~/back/nest/Inctagram
+            git pull
+            git status
+            yarn --only=prod
+            yarn build main
+            yarn build images-ms
+            yarn build payments-ms
+            pm2 restart ecosystem.config.js
