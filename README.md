@@ -65,7 +65,7 @@ For detailed API documentation, please refer to the Swagger Documentation.
 
 ## App Screenshots
 
-![Project screenshot](assets/images/screens/10.png)
+
 ![Project screenshot](assets/images/screens/1.png)
 ![Project screenshot](assets/images/screens/2.png)
 ![Project screenshot](assets/images/screens/3.png)
@@ -73,7 +73,9 @@ For detailed API documentation, please refer to the Swagger Documentation.
 ![Project screenshot](assets/images/screens/5.png)
 ![Project screenshot](assets/images/screens/6.png)
 ![Project screenshot](assets/images/screens/7.png)
-![Project screenshot](assets/images/screens/8.png)
+
+[//]: # (![Project screenshot]&#40;assets/images/screens/8.png&#41;)
+![Project screenshot](assets/images/screens/10.png)
 <img src="assets/images/screens/9.png" alt="Project screenshot" width="400" style="display: block; margin: 0 auto;">
 
 

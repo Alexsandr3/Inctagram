@@ -60,6 +60,9 @@ export class SuperAdminResolver {
     return this.userQueryRepository.getUserForSuperAdmin(userArgs);
   }
 
+  @Query(() => Number)
+  async statistics(@Args('userId') userId: number): Promise<any> {}
+
   /**
    * Get images by user id with pagination
    * @param context
@@ -97,7 +100,7 @@ export class SuperAdminResolver {
   @Mutation(() => Boolean)
   async updateUserStatus(@Args() inputArgs: UpdateUserStatusInputArgs): Promise<boolean> {
     const notification = await this.commandBus.execute<UpdateUserStatusCommand, ResultNotification<boolean>>(
-      new UpdateUserStatusCommand(inputArgs.userId, inputArgs.banReason, inputArgs.isBanned),
+      new UpdateUserStatusCommand(inputArgs.userId, inputArgs.banReason, inputArgs.isBanned, inputArgs.details),
     );
     return notification.getData();
   }

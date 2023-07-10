@@ -145,6 +145,7 @@ export class PrismaUsersRepository implements IUsersRepository {
             dateOfBirth: user.profile.dateOfBirth,
             aboutMe: user.profile.aboutMe,
             banReason: user.profile.banReason,
+            details: user.profile.details,
             //modules: { disconnect: true },
           },
         },

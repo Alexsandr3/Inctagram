@@ -13,6 +13,7 @@ export class ProfileEntity extends BaseDateEntity implements Profile {
   dateOfBirth: Date;
   aboutMe: string;
   banReason: BanReasonInputType;
+  details: string;
   @Type(() => AvatarEntity)
   avatars: AvatarEntity[];
 
@@ -32,7 +33,8 @@ export class ProfileEntity extends BaseDateEntity implements Profile {
     this.setValues(dto);
   }
 
-  setBanReason(banReason: BanReasonInputType) {
+  setBanReason(banReason: BanReasonInputType, details?: string) {
     this.banReason = banReason ? BanReasonInputType[banReason] : null;
+    this.details = this.banReason === BanReasonInputType.Another_reason ? details : null;
   }
 }
