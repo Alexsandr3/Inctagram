@@ -26,6 +26,8 @@ export const appConfig = (app: INestApplication) => {
       'https://inctagram-main.vercel.app',
       'https://inctagram-admin.vercel.app',
       'https://inctagram-admin-dev.vercel.app',
+      'https://cygan.lol',
+      'https://admin.cygan.lol',
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
