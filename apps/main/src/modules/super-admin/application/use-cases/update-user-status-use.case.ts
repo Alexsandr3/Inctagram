@@ -11,6 +11,7 @@ export class UpdateUserStatusCommand {
     public readonly userId: number,
     public readonly banReason: BanReasonInputType,
     public readonly isBanned: boolean,
+    public readonly details: string,
   ) {}
 }
 
@@ -24,7 +25,7 @@ export class UpdateUserStatusUseCase
   }
 
   async executeUseCase(command: UpdateUserStatusCommand): Promise<boolean> {
-    const { userId, banReason, isBanned } = command;
+    const { userId, banReason, isBanned, details } = command;
     //find profile
     const user = await this.usersRepository.findById(userId);
     if (!user)
@@ -34,7 +35,7 @@ export class UpdateUserStatusUseCase
         NotificationCode.NOT_FOUND,
       );
     //if user isBanned = true, ban user, else unban user
-    isBanned ? user.setStatusBanned(banReason) : user.setStatusActive();
+    isBanned ? user.setStatusBanned(banReason, details) : user.setStatusActive();
     //update user with new status
     await this.usersRepository.updateUser(user);
     return true;
