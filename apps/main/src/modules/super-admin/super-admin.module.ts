@@ -57,6 +57,7 @@ const loaderProviders = [
                 statusCode: error?.extensions?.statusCode,
               },
               path: error?.path,
+              locations: error?.locations,
             };
             return graphQLFormattedError;
           },
