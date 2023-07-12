@@ -11,6 +11,8 @@ import { PaginationUsersInputDto } from '../../super-admin/api/input-dto/paginat
 import { Paginated } from '../../../main/shared/paginated';
 import { UsersWithPaginationViewModel } from '../../super-admin/api/models/users-with-pagination-view.model';
 import { PaginationUserInputDto } from '../../super-admin/api/input-dto/pagination-user.input.args';
+import { StatisticsUsersInputArgs } from '../../super-admin/api/input-dto/statistics-users.input.args';
+import { StatisticsForGraphicsAdminViewModel } from '../../super-admin/api/models/statistics-for-graphics-admin-view.model';
 
 /**
  * Abstract class for users query repository
@@ -24,6 +26,9 @@ export abstract class IUsersQueryRepository {
   //need for super-admin
   abstract getUsersForSuperAdmin(usersArgs: PaginationUsersInputDto): Promise<Paginated<UserForSuperAdminViewModel[]>>;
   abstract getUserForSuperAdmin(usersArgs: PaginationUserInputDto): Promise<UserForSuperAdminViewModel>;
+
+  //need for graphics in super-admin
+  abstract getStatisticsUsers(args: StatisticsUsersInputArgs): Promise<StatisticsForGraphicsAdminViewModel>;
 }
 
 @Injectable()
@@ -37,6 +42,23 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
       take: usersArgs.getPageSize(),
       include: { profile: { include: { avatars: true } } },
     };
+  }
+  private getUserForSuperAdminViewModel<T>(data: { users: any[] }): UserForSuperAdminViewModel[] {
+    return data.users.map(user => {
+      let url = null;
+      if (!user) return null;
+      if (user.profile) {
+        url = user.profile.avatars.length > 0 ? user.profile.avatars[0].url : null;
+      }
+      const instanceUser = plainToInstance(UserEntity, user);
+      return UserForSuperAdminViewModel.create(
+        instanceUser.id,
+        instanceUser.userName,
+        url,
+        instanceUser.createdAt,
+        instanceUser.status,
+      );
+    });
   }
 
   async findUserById(id: number) {
@@ -78,17 +100,7 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
     }
     const users = await this.prisma.user.findMany(defaultArgs);
     const usersCount = await this.prisma.user.count({ where: defaultArgs['where'] });
-    const usersView = users.map(user => {
-      const url = user.profile.avatars.length > 0 ? user.profile.avatars[0].url : null;
-      const instanceUser = plainToInstance(UserEntity, user);
-      return UserForSuperAdminViewModel.create(
-        instanceUser.id,
-        instanceUser.userName,
-        url,
-        instanceUser.createdAt,
-        instanceUser.status,
-      );
-    });
+    const usersView = this.getUserForSuperAdminViewModel({ users });
     return UsersWithPaginationViewModel.getPaginated({
       items: usersView,
       page: usersArgs.getPageNumber(),
@@ -103,14 +115,20 @@ export class PrismaUsersQueryRepository implements IUsersQueryRepository {
       where: { id: usersArgs.userId },
       include: { ...defaultArgs.include },
     });
-    const userWithProfile = plainToInstance(UserEntity, user);
-    const url = user.profile.avatars.length > 0 ? user.profile.avatars[0].url : null;
-    return UserForSuperAdminViewModel.create(
-      userWithProfile.id,
-      userWithProfile.userName,
-      url,
-      userWithProfile.createdAt,
-      userWithProfile.status,
-    );
+    return this.getUserForSuperAdminViewModel({ users: [user] })[0];
+  }
+
+  async getStatisticsUsers(args: StatisticsUsersInputArgs): Promise<StatisticsForGraphicsAdminViewModel> {
+    const { startDate, endDate, comparisonStartDate, comparisonEndDate } = args;
+    const foundUsers = await this.prisma.user.findMany({ where: { createdAt: { gte: startDate, lte: endDate } } });
+    let usersComparison = [];
+    if (comparisonStartDate && comparisonEndDate) {
+      usersComparison = await this.prisma.user.findMany({
+        where: { createdAt: { gte: comparisonStartDate, lte: comparisonEndDate } },
+      });
+    }
+    const users = this.getUserForSuperAdminViewModel({ users: foundUsers });
+    const comparisonUsers = this.getUserForSuperAdminViewModel({ users: usersComparison });
+    return StatisticsForGraphicsAdminViewModel.create({ users, args, comparisonUsers });
   }
 }

@@ -22,6 +22,8 @@ import { PaginationUserInputDto } from './input-dto/pagination-user.input.args';
 import { ImagesWithPaginationViewModel } from './models/images-with-pagination-view.model';
 import { ISubscriptionsRepository } from '../../subscriptions/infrastructure/subscriptions.repository';
 import { PaymentsWithPaginationViewModel } from './models/payments-with-pagination-view.model';
+import { StatisticsUsersInputArgs } from './input-dto/statistics-users.input.args';
+import { StatisticsForGraphicsAdminViewModel } from './models/statistics-for-graphics-admin-view.model';
 
 @UseGuards(BasicAuthForGraphqlGuard)
 @Resolver(() => UserForSuperAdminViewModel)
@@ -60,15 +62,21 @@ export class SuperAdminResolver {
     return this.userQueryRepository.getUserForSuperAdmin(userArgs);
   }
 
-  @Query(() => Number)
-  async statistics(@Args('userId') userId: number): Promise<any> {}
+  /**
+   * Get statistics users for drawing graphics
+   * @param args
+   */
+  @Query(() => StatisticsForGraphicsAdminViewModel)
+  async statisticsUsers(@Args() args: StatisticsUsersInputArgs): Promise<StatisticsForGraphicsAdminViewModel> {
+    return this.userQueryRepository.getStatisticsUsers(args);
+  }
 
   /**
    * Get images by user id with pagination
    * @param context
    */
   @ResolveField(() => ImagesWithPaginationViewModel)
-  async images(@Context() context: any): Promise<Paginated<ImageForSuperAdminViewModel[]>> {
+  async imagesUser(@Context() context: any): Promise<Paginated<ImageForSuperAdminViewModel[]>> {
     return this.postsRepository.getImagesById(context.inputData.userId, context.inputData);
   }
 
@@ -77,7 +85,7 @@ export class SuperAdminResolver {
    * @param context
    */
   @ResolveField(() => PaymentsWithPaginationViewModel)
-  async payments(@Context() context: any): Promise<Paginated<SubscriptionForSuperAdminViewModel[]>> {
+  async paymentsUser(@Context() context: any): Promise<Paginated<SubscriptionForSuperAdminViewModel[]>> {
     return this.subscriptionRepository.getPaymentsById(context.inputData.userId, context.inputData);
   }
 
